@@ -18,13 +18,17 @@ package uk.gov.hmrc.ct.ct600.v3
 
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.ct600.v3.retriever.RepaymentsBoxRetriever
+import uk.gov.hmrc.ct.ct600.v3.validators.BankDetailsValidation
 
 
 case class B925(value: String) extends CtBoxIdentifier("sort code")
-with CtString with Input with ValidatableBox[RepaymentsBoxRetriever] {
+                                with CtString
+                                with Input
+                                with EncryptedBox[RepaymentsBoxRetriever]
+                                with BankDetailsValidation {
 
-  def validate(boxRetriever: RepaymentsBoxRetriever): Set[CtValidation] = {
-      validateAllFilledOrEmptyStringsForBankDetails(boxRetriever, "B925") ++
-      validateStringByRegex("B925", this, SortCodeValidChars)
+  override def decryptAndValidate(boxRetriever: RepaymentsBoxRetriever)(decryptor: (CtString) => String): Set[CtValidation] = {
+      validateAllFilledOrEmptyStringsForBankDetails(boxRetriever, "B925")(decryptor) ++
+      validateStringByRegex("B925", decryptor(this), SortCodeValidChars)
   }
 }

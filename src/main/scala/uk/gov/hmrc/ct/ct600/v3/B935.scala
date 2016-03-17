@@ -18,14 +18,15 @@ package uk.gov.hmrc.ct.ct600.v3
 
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.ct600.v3.retriever.{RepaymentsBoxRetriever, CT600BoxRetriever}
+import uk.gov.hmrc.ct.ct600.v3.validators.BankDetailsValidation
 
 
 case class B935(value: String) extends CtBoxIdentifier("account name")
-with CtString with Input with ValidatableBox[RepaymentsBoxRetriever] {
+with CtString with Input with EncryptedBox[RepaymentsBoxRetriever] with BankDetailsValidation {
 
-  def validate(boxRetriever: RepaymentsBoxRetriever): Set[CtValidation] = {
-    validateAllFilledOrEmptyStringsForBankDetails(boxRetriever,"B935") ++
-      validateStringByLength("B935", this, 2, 28) ++
-      validateStringByRegex("B935", this, validNonForeignLessRestrictiveCharacters)
+  override def decryptAndValidate(boxRetriever: RepaymentsBoxRetriever)(decryptor: (CtString) => String): Set[CtValidation] = {
+    validateAllFilledOrEmptyStringsForBankDetails(boxRetriever,"B935")(decryptor) ++
+      validateStringByLength("B935", decryptor(this), 2, 28) ++
+      validateStringByRegex("B935", decryptor(this), validNonForeignLessRestrictiveCharacters)
   }
 }

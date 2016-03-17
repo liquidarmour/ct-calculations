@@ -221,38 +221,6 @@ class ValidatableBoxSpec  extends WordSpec with MockitoSugar  with Matchers with
     }
   }
 
-  "validateAllFilledOrEmptyStrings" should {
-    "pass if all strings non-empty" in {
-      validateAllFilledOrEmptyStrings("testBox", Set(testStringBox("something"),testStringBox("something"))) shouldBe Set()
-    }
-
-    "pass if all string empty" in {
-      validateAllFilledOrEmptyStrings("testBox", Set(testStringBox(""),testStringBox(""))) shouldBe Set()
-    }
-
-    "return error if mix of empty and non-empty" in {
-      validateAllFilledOrEmptyStrings("testBox", Set(testStringBox("something"),testStringBox(""))) shouldBe Set(CtValidation(Some("testBox"),"error.testBox.allornone"))
-    }
-  }
-
-  "validateAllFilledOrEmptyStringsForBankDetails" should {
-    "return error if mixing empty and non-empty" in {
-      val mockBoxRetriever = mock[RepaymentsBoxRetriever]
-      when(mockBoxRetriever.retrieveB920()).thenReturn(B920(""))
-      when(mockBoxRetriever.retrieveB925()).thenReturn(B925(""))
-      when(mockBoxRetriever.retrieveB930()).thenReturn(B930(""))
-      when(mockBoxRetriever.retrieveB935()).thenReturn(B935("something"))
-
-      validateAllFilledOrEmptyStringsForBankDetails(mockBoxRetriever, "testBox") shouldBe Set(CtValidation(Some("testBox"),"error.testBox.allornone"))
-
-      verify(mockBoxRetriever).retrieveB920()
-      verify(mockBoxRetriever).retrieveB925()
-      verify(mockBoxRetriever).retrieveB930()
-      verify(mockBoxRetriever).retrieveB935()
-      verifyNoMoreInteractions(mockBoxRetriever)
-    }
-  }
-
   "validateStringAsMandatoryIfPAYEEQ1False" should {
     "return is-required error if PAYEEQ1 is false" in {
       val mockBoxRetriever = mock[RepaymentsBoxRetriever]

@@ -21,17 +21,15 @@ import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.ct600.v3.retriever.RepaymentsBoxRetriever
 import uk.gov.hmrc.ct.domain.ValidationConstants._
 
-trait ValidatableBox[T <: BoxRetriever] {
 
 
-  val validNonForeignLessRestrictiveCharacters = "[A-Za-z0-9 ,\\.\\(\\)/&'\\-\"!%\\*_\\+:@<>\\?=;]*"
-  val validNonForeignMoreRestrictiveCharacters = "[A-Za-z0-9 ,\\.\\(\\)/&'\\-\"]*"
-  val SortCodeValidChars = """^[0-9]{6}$"""
-  val AccountNumberValidChars = """^[0-9]{8}$"""
+
+
+trait ValidatableBox[T <: BoxRetriever] extends StringValidation {
+
 
   // Taken from PostCodeType on http://www.hmrc.gov.uk/schemas/core-v2-0.xsd
   private val postCodeRegex = """(GIR 0AA)|((([A-Z][0-9][0-9]?)|(([A-Z][A-HJ-Y][0-9][0-9]?)|(([A-Z][0-9][A-Z])|([A-Z][A-HJ-Y][0-9]?[A-Z])))) [0-9][A-Z]{2})"""
-
 
   def validate(boxRetriever: T): Set[CtValidation]
 
@@ -49,14 +47,6 @@ trait ValidatableBox[T <: BoxRetriever] {
     }
   }
 
-  protected def validateStringAsMandatory(boxId: String, box: CtOptionalString): Set[CtValidation] = {
-    box.value match {
-      case None => Set(CtValidation(Some(boxId), s"error.$boxId.required"))
-      case Some(x) if x.isEmpty => Set(CtValidation(Some(boxId), s"error.$boxId.required"))
-      case _ => Set()
-    }
-  }
-
   protected def validateAsMandatory[U](box: CtValue[U] with CtBoxIdentifier): Set[CtValidation] = {
     box.value match {
       case None => Set(CtValidation(Some(box.id), s"error.${box.id}.required"))
@@ -69,35 +59,6 @@ trait ValidatableBox[T <: BoxRetriever] {
     if (!payeeq1.value.getOrElse(true)) {
       validateStringAsMandatory(boxId, box)
     } else Set()
-  }
-
-  protected def validateAllFilledOrEmptyStrings(boxId: String, allBoxes: Set[CtString]): Set[CtValidation] = {
-    val allEmpty = allBoxes.count(_.value.isEmpty) == allBoxes.size
-    val allNonEmpty = allBoxes.count(_.value.nonEmpty) == allBoxes.size
-
-    if(allEmpty || allNonEmpty) {
-      Set()
-    } else {
-      Set(CtValidation(Some(boxId), s"error.$boxId.allornone"))
-    }
-  }
-
-  protected def validateAllFilledOrEmptyStringsForBankDetails(boxRetriever: RepaymentsBoxRetriever, boxId: String): Set[CtValidation] = {
-    val bankDetailsBoxGroup:Set[CtString] = Set(
-      boxRetriever.retrieveB920(),
-      boxRetriever.retrieveB925(),
-      boxRetriever.retrieveB930(),
-      boxRetriever.retrieveB935()
-    )
-    validateAllFilledOrEmptyStrings(boxId, bankDetailsBoxGroup)
-  }
-
-  protected def validateStringAsBlank(boxId: String, box: CtOptionalString): Set[CtValidation] = {
-    box.value match {
-      case None => Set()
-      case Some(x) if x.isEmpty => Set()
-      case _ => Set(CtValidation(Some(boxId), s"error.$boxId.nonBlankValue"))
-    }
   }
 
   protected def validateDateAsMandatory(boxId: String, box: CtOptionalDate): Set[CtValidation] = {
@@ -139,16 +100,6 @@ trait ValidatableBox[T <: BoxRetriever] {
     }
   }
 
-  protected def validateIntegerRange(boxId: String, box: CtOptionalInteger, min: Int = 0, max: Int): Set[CtValidation] = {
-    box.value match {
-      case Some(x) => {
-        if (min <= x && x <= max) Set()
-        else Set(CtValidation(Some(boxId), s"error.$boxId.outOfRange", Some(Seq(min.toString,max.toString))))
-      }
-      case _ => Set()
-    }
-  }
-
   protected def validateZeroOrPositiveBigDecimal(box: CtOptionalBigDecimal with CtBoxIdentifier): Set[CtValidation] = {
     box.value match {
       case Some(x) if x < BigDecimal(0) => Set(CtValidation(Some(box.id), s"error.${box.id}.mustBeZeroOrPositive"))
@@ -177,36 +128,14 @@ trait ValidatableBox[T <: BoxRetriever] {
     }
   }
 
-  protected def validateOptionalStringByRegex(boxId: String, box: CtOptionalString, regex: String): Set[CtValidation] = {
+  protected def validateIntegerRange(boxId: String, box: CtOptionalInteger, min: Int = 0, max: Int): Set[CtValidation] = {
     box.value match {
-      case Some(x) if x.nonEmpty => {
-        if (x.matches(regex)) Set()
-        else Set(CtValidation(Some(boxId), s"error.$boxId.regexFailure"))
+      case Some(x) => {
+        if (min <= x && x <= max) Set()
+        else Set(CtValidation(Some(boxId), s"error.$boxId.outOfRange", Some(Seq(min.toString,max.toString))))
       }
       case _ => Set()
     }
-  }
-
-  protected def validateStringByRegex(boxId: String, box: CtString, regex: String): Set[CtValidation] = {
-    if (box.value.isEmpty || box.value.matches(regex)) Set()
-    else Set(CtValidation(Some(boxId), s"error.$boxId.regexFailure"))
-  }
-
-  protected def validateOptionalStringByLength(boxId: String, box: CtOptionalString, min: Int, max: Int): Set[CtValidation] = {
-    box.value match {
-      case Some(x) => validateStringByLength(boxId, x, min, max)
-      case _ => Set()
-    }
-  }
-
-  protected def validateStringByLength(boxId: String, box: CtString, min:Int, max:Int): Set[CtValidation] = {
-     validateStringByLength(boxId, box.value, min, max)
-  }
-
-  private def validateStringByLength(boxId: String, value: String, min: Int, max: Int): Set[CtValidation] = {
-    if (value.nonEmpty && value.size < min || value.size > max) {
-      Set(CtValidation(Some(boxId), s"error.$boxId.text.sizeRange", Some(Seq(min.toString, max.toString))))
-    } else Set()
   }
 
   def validatePostcode(boxId: String, box: CtOptionalString): Set[CtValidation] = {

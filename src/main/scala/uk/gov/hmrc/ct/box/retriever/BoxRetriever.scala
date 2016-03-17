@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.ct.box.retriever
 
-import uk.gov.hmrc.ct.box.{CtValidation, ValidatableBox, CtValue}
+import uk.gov.hmrc.ct.box._
 
 trait BoxRetriever {
 
   def generateValues: Map[String, CtValue[_]]
+
+  def decryptor(string: CtString): String = string.value
 
   def validateValues(values: Map[String, CtValue[_]]): Set[CtValidation] = {
     var validationErrors = Set[CtValidation]()
@@ -28,6 +30,11 @@ trait BoxRetriever {
     values.foreach {
       case (_, box: ValidatableBox[_]) =>
         box.asInstanceOf[ValidatableBox[BoxRetriever]].validate(this) match {
+          case errors if errors.nonEmpty => validationErrors ++= errors
+          case _ =>
+        }
+      case (_, box: EncryptedBox[BoxRetriever]) =>
+        box.decryptAndValidate(this)(decryptor) match {
           case errors if errors.nonEmpty => validationErrors ++= errors
           case _ =>
         }
