@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,6 @@ object AC61 extends Calculated[AC61, Frs102AccountsBoxRetriever] with NetCurrent
 
   override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC61 = {
     import boxRetriever._
-    calculatePreviousNetCurrentAssetsLiabilities(ac57(), ac466(), ac59())
+    calculatePreviousNetCurrentAssetsLiabilities(ac57(), ac139(), ac59())
   }
 }

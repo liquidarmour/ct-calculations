@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,6 @@ object AC68 extends Calculated[AC68, Frs102AccountsBoxRetriever] with TotalNetAs
 
   override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC68 = {
     import boxRetriever._
-    calculateCurrentTotalNetAssetsLiabilities(ac62(), ac64(), ac66(), ac470())
+    calculateCurrentTotalNetAssetsLiabilities(ac62(), ac64(), ac66(), ac150())
   }
 }

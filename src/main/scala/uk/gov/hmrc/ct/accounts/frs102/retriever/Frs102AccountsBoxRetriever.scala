@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -190,13 +190,13 @@ trait Frs102AccountsBoxRetriever extends Frs10xAccountsBoxRetriever {
 
   def ac7110A(): AC7110A
 
-  def ac465(): AC465
+  def ac138(): AC138
 
-  def ac466(): AC466
+  def ac139(): AC139
 
-  def ac470(): AC470
+  def ac150(): AC150
 
-  def ac471(): AC471
+  def ac151(): AC151
 
   def ac5032(): AC5032
 
