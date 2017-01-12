@@ -28,6 +28,7 @@ class AC5032Spec extends WordSpec with MockitoSugar with Matchers with MockFrs10
 
   override def setUpMocks(): Unit = {
     when(boxRetriever.ac32()).thenReturn(AC32(Some(4)))
+    when(boxRetriever.ac33()).thenReturn(AC33(Some(4)))
   }
 
   testTextFieldValidation("AC5032", AC5032, testUpperLimit = Some(StandardCohoTextFieldLimit))
@@ -35,9 +36,23 @@ class AC5032Spec extends WordSpec with MockitoSugar with Matchers with MockFrs10
 
   "AC5032" should {
 
-    "fail validation when populated and AC32 is empty" in {
+    "pass validation when populated and AC32 is empty" in {
       when(boxRetriever.ac32()).thenReturn(AC32(None))
+      when(boxRetriever.ac33()).thenReturn(AC33(Some(4)))
+      AC5032(Some("testing")).validate(boxRetriever) shouldBe Set.empty
+    }
+
+    "pass validation when populated and AC33 is empty" in {
+      when(boxRetriever.ac32()).thenReturn(AC32(Some(4)))
+      when(boxRetriever.ac33()).thenReturn(AC33(None))
+      AC5032(Some("testing")).validate(boxRetriever) shouldBe Set.empty
+    }
+
+    "fail validation when populated and AC32 and AC33 are empty" in {
+      when(boxRetriever.ac32()).thenReturn(AC32(None))
+      when(boxRetriever.ac33()).thenReturn(AC33(None))
       AC5032(Some("testing")).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC5032"), "error.AC5032.cannot.exist"))
     }
+
   }
 }
