@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frs102.boxes
+package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
-import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
 
-case class AC471(value: Option[Int]) extends CtBoxIdentifier(name = "Accruals and deferred income (previous PoA)")
-  with CtOptionalInteger
+case class ACQ8999(value: Option[Boolean]) extends CtBoxIdentifier(name = "The company was dormant.")
+  with CtOptionalBoolean
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever]
-  with Validators
-  with Debit {
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
-    collectErrors(
-      validateMoney(value, min = 0)
-    )
-  }
-}

@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.ct600a.v3
+package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDormancyBoxRetriever
 import uk.gov.hmrc.ct.box._
-import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
-case class LPQ04(value: Option[Boolean]) extends CtBoxIdentifier(name = "Is the company controlled by 5 or fewer participators none of whom are directors?") with CtOptionalBoolean with Input with ValidatableBox[CT600ABoxRetriever] {
-  override def validate(boxRetriever: CT600ABoxRetriever): Set[CtValidation] = validateBooleanAsMandatory("LPQ04", this)
+case class ACQ8991(value: Option[Boolean]) extends CtBoxIdentifier(name = "The company has previously traded.")
+  with CtOptionalBoolean
+  with Input
+  with ValidatableBox[Frs10xDormancyBoxRetriever]
+  with Validators {
+
+  override def validate(boxRetriever: Frs10xDormancyBoxRetriever): Set[CtValidation] = {
+    failIf(boxRetriever.acq8999().orFalse) {
+      validateAsMandatory(this)
+    }
+  }
 }

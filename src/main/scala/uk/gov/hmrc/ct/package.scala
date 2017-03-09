@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frsse2008
+package uk.gov.hmrc
 
-import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtOptionalInteger, Input}
+import uk.gov.hmrc.ct.box.CtValidation
 
-case class AC406(value: Option[Int]) extends CtBoxIdentifier(name = "Previous Other Income")
-                                    with CtOptionalInteger with Input
+package object ct {
+
+  implicit def validationsToValidationsFunction(xs: Set[CtValidation]): () => Set[CtValidation] = () => xs
+
+}

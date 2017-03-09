@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.ct600a.v3
+package uk.gov.hmrc.ct.accounts.frs102.boxes
 
+import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
-import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
-case class LPQ04(value: Option[Boolean]) extends CtBoxIdentifier(name = "Is the company controlled by 5 or fewer participators none of whom are directors?") with CtOptionalBoolean with Input with ValidatableBox[CT600ABoxRetriever] {
-  override def validate(boxRetriever: CT600ABoxRetriever): Set[CtValidation] = validateBooleanAsMandatory("LPQ04", this)
+case class AC138B(value: Option[Int]) extends CtBoxIdentifier(name = "Prepayments and accrued income (current PoA)")
+  with CtOptionalInteger
+  with Input
+  with ValidatableBox[Frs102AccountsBoxRetriever]
+  with Validators {
+
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
+    collectErrors(
+      validateMoney(value, min = 0)
+    )
+  }
 }

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frsse2008
+package uk.gov.hmrc.ct.accounts.frs10x.retriever
 
-import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtOptionalInteger, Input}
+import uk.gov.hmrc.ct.accounts.frs10x.boxes.{ACQ8991, ACQ8999}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-case class AC410(value: Option[Int]) extends CtBoxIdentifier(name = "Current Cost of raw materials and consumables")
-                                    with CtOptionalInteger with Input
+trait Frs10xDormancyBoxRetriever extends AccountsBoxRetriever {
+  self: FilingAttributesBoxValueRetriever =>
+
+  def acq8999(): ACQ8999
+
+  def acq8991(): ACQ8991
+}

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frsse2008
+package uk.gov.hmrc.ct.accounts.frs102.boxes
 
-import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtOptionalInteger, Input}
+import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.box._
 
-case class AC426(value: Option[Int]) extends CtBoxIdentifier(name = "Previous Other charges")
-                                    with CtOptionalInteger with Input
+case class AC139B(value: Option[Int]) extends CtBoxIdentifier(name = "Prepayments and accrued income (previous PoA)")
+  with CtOptionalInteger
+  with Input
+  with ValidatableBox[Frs102AccountsBoxRetriever]
+  with Validators {
+
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
+    collectErrors(
+      validateMoney(value, min = 0)
+    )
+  }
+}

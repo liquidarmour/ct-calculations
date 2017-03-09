@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frsse2008
+package uk.gov.hmrc.ct.ct600.v3
 
-import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtOptionalInteger, Input}
+import uk.gov.hmrc.ct.box._
 
-case class AC411(value: Option[Int]) extends CtBoxIdentifier(name = "Previous Cost of raw materials and consumables")
-                                    with CtOptionalInteger with Input
+case class B527(value: Option[BigDecimal]) extends CtBoxIdentifier("Restitution tax") with CtOptionalBigDecimal with Input
