@@ -21,11 +21,11 @@ import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 
-case class DirectorsReportEnabled(value: Boolean) extends CtBoxIdentifier(name = "Do you want to file a directors' report to Companies House?") with CtBoolean
+case class DirectorsReportEnabled(value: Boolean) extends CtBoxIdentifier(name = "Do you want to file a directors' report to Companies House?") with CtBoolean with Calculated
 
-object DirectorsReportEnabled extends Calculated[DirectorsReportEnabled, Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever] with DirectorsReportEnabledCalculator {
+object DirectorsReportEnabled extends DirectorsReportEnabledCalculator {
 
-  override def calculate(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): DirectorsReportEnabled = {
-    DirectorsReportEnabled(directorsReportEnabled(boxRetriever))
+  def calculate(frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever, filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever): DirectorsReportEnabled = {
+    DirectorsReportEnabled(directorsReportEnabled(frs10xDirectorsBoxRetriever, filingAttributesBoxValueRetriever))
   }
 }

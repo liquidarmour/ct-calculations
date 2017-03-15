@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.ct.ct600a.v3.retriever
 
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
-import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxRetriever}
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
+import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
 import uk.gov.hmrc.ct.ct600a.v3._
 
-trait CT600ABoxRetriever extends ComputationsBoxRetriever {
+trait CT600ABoxRetriever extends BoxRetriever {
 
-  self: CT600BoxRetriever with AccountsBoxRetriever with AboutThisReturnBoxRetriever =>
+  def ct600Retriever: CT600BoxRetriever
 
   def lp04(): LP04
 
@@ -41,13 +40,13 @@ trait CT600ABoxRetriever extends ComputationsBoxRetriever {
 
   def loansToParticipators(): LoansToParticipators
 
-  def a1(): A1 = A1(b1())
+  def a1(): A1 = A1(ct600Retriever.b1())
 
-  def a2(): A2 = A2(b3())
+  def a2(): A2 = A2(ct600Retriever.b3())
 
-  def a3(): A3 = A3(b30())
+  def a3(): A3 = A3(ct600Retriever.b30())
 
-  def a4(): A4 = A4(b35())
+  def a4(): A4 = A4(ct600Retriever.b35())
 
   def a5(): A5
 

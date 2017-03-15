@@ -18,13 +18,16 @@ package uk.gov.hmrc.ct.ct600.v2.retriever
 
 import uk.gov.hmrc.ct.CATO04
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v2._
 import uk.gov.hmrc.ct.ct600a.v2.retriever.CT600ABoxRetriever
 
-trait CT600BoxRetriever extends ComputationsBoxRetriever {
+trait CT600BoxRetriever extends BoxRetriever {
 
-  self: AccountsBoxRetriever =>
+  def accountsRetriever: AccountsBoxRetriever
+
+  def computationsRetriever: ComputationsBoxRetriever
 
   def b38(): B38
 
@@ -42,31 +45,31 @@ trait CT600BoxRetriever extends ComputationsBoxRetriever {
 
   def b155(): B155
 
-  def b1(): B1 = B1(cp7)
+  def b1(): B1 = B1(computationsRetriever.cp7)
 
-  def b3(): B3 = B3(cp256())
+  def b3(): B3 = B3(computationsRetriever.cp256())
 
-  def b4(): B4 = B4(cp257())
+  def b4(): B4 = B4(computationsRetriever.cp257())
 
-  def b5(): B5 = B5(cp258())
+  def b5(): B5 = B5(computationsRetriever.cp258())
 
-  def b6(): B6 = B6(cp259())
+  def b6(): B6 = B6(computationsRetriever.cp259())
 
-  def b11(): B11 = B11(cp511())
+  def b11(): B11 = B11(computationsRetriever.cp511())
 
-  def b14(): B14 = B14(cp515())
+  def b14(): B14 = B14(computationsRetriever.cp515())
 
-  def b21(): B21 = B21(cp265())
+  def b21(): B21 = B21(computationsRetriever.cp265())
 
-  def b30(): B30 = B30(cp264())
+  def b30(): B30 = B30(computationsRetriever.cp264())
 
-  def b35(): B35 = B35(cp305())
+  def b35(): B35 = B35(computationsRetriever.cp305())
 
-  def b37(): B37 = B37(cp295())
+  def b37(): B37 = B37(computationsRetriever.cp295())
 
-  def b43(): B43 = B43.calculate(this)
+  def b43(): B43 = B43.calculate(computationsRetriever)
 
-  def b44(): B44 = B44.calculate(this)
+  def b44(): B44 = B44.calculate(computationsRetriever)
 
   def b45(): B45 = B45.calculate(this)
 
@@ -74,9 +77,9 @@ trait CT600BoxRetriever extends ComputationsBoxRetriever {
 
   def b46R(): B46R = B46R.calculate(this)
 
-  def b53(): B53 = B53.calculate(this)
+  def b53(): B53 = B53.calculate(computationsRetriever)
 
-  def b54(): B54 = B54.calculate(this)
+  def b54(): B54 = B54.calculate(computationsRetriever)
 
   def b55(): B55 = B55.calculate(this)
 
@@ -117,27 +120,27 @@ trait CT600BoxRetriever extends ComputationsBoxRetriever {
 
   def b93(): B93 = B93.calculate(this)
 
-  def b105(): B105 = B105(cp668())
+  def b105(): B105 = B105(computationsRetriever.cp668())
 
-  def b106(): B106 = B106(cp670())
+  def b106(): B106 = B106(computationsRetriever.cp670())
 
-  def b107(): B107 = B107(cp248())
+  def b107(): B107 = B107(computationsRetriever.cp248())
 
-  def b108(): B108 = B108(cp247())
+  def b108(): B108 = B108(computationsRetriever.cp247())
 
-  def b118(): B118 = B118(cp251())
+  def b118(): B118 = B118(computationsRetriever.cp251())
 
-  def b121(): B121 = B121(cp253())
+  def b121(): B121 = B121(computationsRetriever.cp253())
 
-  def b122(): B122 = B122.calculate(this)
+  def b122(): B122 = B122.calculate(computationsRetriever)
 
-  def b172(): B172 = B172(cp88())
+  def b172(): B172 = B172(computationsRetriever.cp88())
 
-  def b174(): B174 = B174(cp278)
+  def b174(): B174 = B174(computationsRetriever.cp278)
 
   def cato04(): CATO04 = CATO04.calculate(this)
 
   def b1000: B1000
 
-  def b1001: B1001 = B1001(this.ac1())
+  def b1001: B1001 = B1001(accountsRetriever.ac1())
 }

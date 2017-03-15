@@ -21,8 +21,6 @@ import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetri
 
 trait AccountsBoxRetriever extends BoxRetriever {
 
-  self: FilingAttributesBoxValueRetriever =>
-
   def companyAddress(): CompanyAddress
 
   def ac1(): AC1

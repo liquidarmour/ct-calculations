@@ -21,5 +21,4 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 trait AbridgedAccountsBoxRetriever extends Frs102AccountsBoxRetriever {
 
   self: FilingAttributesBoxValueRetriever =>
-
 }

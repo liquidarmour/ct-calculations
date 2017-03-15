@@ -27,7 +27,7 @@ import uk.gov.hmrc.ct.ct600j.v3.B140
 
 trait AboutThisReturnBoxRetriever extends BoxRetriever {
 
-  self: AccountsBoxRetriever =>
+  def accountsRetriever: AccountsBoxRetriever
 
   def b30(): B30 = {
     this match {
@@ -51,7 +51,7 @@ trait AboutThisReturnBoxRetriever extends BoxRetriever {
 
   def b45Input(): B45Input
 
-  def b50(): B50 = B50.calculate(this)
+  def b50(): B50 = B50.calculate(accountsRetriever)
 
   def b55(): B55
 

@@ -20,11 +20,8 @@ import uk.gov.hmrc.ct.accounts.frs102.boxes._
 import uk.gov.hmrc.ct.accounts.frs102.boxes.loansToDirectors.LoansToDirectors
 import uk.gov.hmrc.ct.accounts.frs102.boxes.relatedPartyTransactions.RelatedPartyTransactions
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 trait Frs102AccountsBoxRetriever extends Frs10xAccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
 
   def ac16(): AC16
 

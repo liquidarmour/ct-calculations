@@ -22,13 +22,13 @@ import uk.gov.hmrc.ct.ct600.v2._
 
 trait ReturnStatementsBoxRetriever extends BoxRetriever {
 
-  self: AccountsBoxRetriever =>
+  def accountsRetriever: AccountsBoxRetriever
 
   def rsq1(): RSQ1
 
   def rsq2(): RSQ2
 
-  def rsq3(): RSQ3 = RSQ3.calculate(this)
+  def rsq3(): RSQ3 = RSQ3.calculate(accountsRetriever)
 
   def rsq4(): RSQ4
 

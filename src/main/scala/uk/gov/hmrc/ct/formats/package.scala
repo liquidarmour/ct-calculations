@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ct
 
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.ct.box.AttachmentDetails
 import uk.gov.hmrc.ct.box.formats._
 
 package object formats {
@@ -70,4 +71,6 @@ package object formats {
   implicit val cato22Format: Format[CATO22] = new BigDecimalFormat[CATO22](CATO22.apply)
 
   implicit val CountryOfRegistrationFormat: Format[CountryOfRegistration] = new OptionalStringFormat[CountryOfRegistration](CountryOfRegistration.apply)
+
+  implicit val attachmentDetailsFormat = Json.format[AttachmentDetails]
 }
