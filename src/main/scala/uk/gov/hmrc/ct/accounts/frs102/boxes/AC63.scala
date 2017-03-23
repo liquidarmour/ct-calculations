@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.accounts.frs102.calculations.TotalAssetsLessCurrentLiabili
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 
-case class AC63(value: Option[Int]) extends CtBoxIdentifier(name = "Total assets less current liabilities (previous PoA)") with CtOptionalInteger
+case class AC63(value: Option[Int]) extends CtBoxIdentifier(name = "Total assets less current liabilities (previous PoA)") with CtOptionalInteger with Calculated
 
-object AC63 extends Calculated[AC63, Frs102AccountsBoxRetriever] with TotalAssetsLessCurrentLiabilitiesCalculator {
+object AC63 extends TotalAssetsLessCurrentLiabilitiesCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC63 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC63 = {
     import boxRetriever._
     calculatePreviousTotalAssetsLessCurrentLiabilities(ac61(), ac49())
   }

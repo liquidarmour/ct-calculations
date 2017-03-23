@@ -25,7 +25,8 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC36(value: Option[Int]) extends CtBoxIdentifier(name = "Profit or loss for financial year (current PoA)")
   with CtOptionalInteger
   with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever): Set[CtValidation] = {
     failIf(boxRetriever.hmrcFiling().value || boxRetriever.acq8161().orFalse)(
@@ -48,9 +49,9 @@ case class AC36(value: Option[Int]) extends CtBoxIdentifier(name = "Profit or lo
 
 }
 
-object AC36 extends Calculated[AC36, Frs102AccountsBoxRetriever] with ProfitOrLossFinancialYearCalculator {
+object AC36 extends ProfitOrLossFinancialYearCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC36 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC36 = {
     import boxRetriever._
     calculateAC36(ac32(), ac34())
   }

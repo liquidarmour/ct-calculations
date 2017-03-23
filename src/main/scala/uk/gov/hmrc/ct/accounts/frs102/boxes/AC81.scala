@@ -24,16 +24,16 @@ import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger, CtValidation}
 
 case class AC81(value: Option[Int]) extends CtBoxIdentifier(name = "Total Shareholders Funds (previous PoA)")
-  with CtOptionalInteger with AssetsEqualToSharesValidator with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever] {
+  with CtOptionalInteger with AssetsEqualToSharesValidator with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever] with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
     validateAssetsEqualToShares("AC81", boxRetriever.ac69(), boxRetriever.companyType().isLimitedByGuarantee)
   }
 }
 
-object AC81 extends Calculated[AC81, Frs102AccountsBoxRetriever] with TotalShareholdersFundsCalculator {
+object AC81 extends TotalShareholdersFundsCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC81 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC81 = {
     import boxRetriever._
     calculatePreviousTotalShareholdersFunds(ac71(), ac77(), ac75())
   }

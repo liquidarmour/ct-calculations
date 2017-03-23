@@ -26,7 +26,8 @@ case class AC115(value: Option[Int]) extends CtBoxIdentifier(name = "Additions")
   with CtOptionalInteger
   with Input
   with ValidatableBox[Frs102AccountsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   private def getNoteValues(boxRetriever: Frs102AccountsBoxRetriever) = {
     boxRetriever match {
@@ -127,10 +128,9 @@ case class AC115(value: Option[Int]) extends CtBoxIdentifier(name = "Additions")
 
 }
 
-object AC115 extends Calculated[AC115, FullAccountsBoxRetriever]
-  with IntangibleAssetsCalculator {
+object AC115 extends IntangibleAssetsCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC115 = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC115 = {
     import boxRetriever._
     calculateAC115(ac115A(), ac115B())
   }

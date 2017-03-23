@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.accounts.frs102.calculations.OperatingProfitOrLossCalculat
 import uk.gov.hmrc.ct.accounts.frs102.retriever.{AbridgedAccountsBoxRetriever, Frs102AccountsBoxRetriever, FullAccountsBoxRetriever}
 import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 
-case class AC27(value: Option[Int]) extends CtBoxIdentifier(name = "Operating profit or loss (current PoA)") with CtOptionalInteger
+case class AC27(value: Option[Int]) extends CtBoxIdentifier(name = "Operating profit or loss (current PoA)") with CtOptionalInteger with Calculated
 
-object AC27 extends Calculated[AC27, Frs102AccountsBoxRetriever] with OperatingProfitOrLossCalculator {
+object AC27 extends OperatingProfitOrLossCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC27 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC27 = {
     boxRetriever match {
       case br: FullAccountsBoxRetriever => calculateAC27(br.ac17(), br.ac19(), br.ac21(), br.ac23())
       case br: AbridgedAccountsBoxRetriever => calculateAC27(br.ac17(), br.ac19(), br.ac21())

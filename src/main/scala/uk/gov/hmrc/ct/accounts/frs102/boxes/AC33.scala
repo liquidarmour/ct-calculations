@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.accounts.frs102.calculations.ProfitOrLossBeforeTaxCalculat
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 
-case class AC33(value: Option[Int]) extends CtBoxIdentifier(name = "Profit or loss before tax (previous PoA)") with CtOptionalInteger
+case class AC33(value: Option[Int]) extends CtBoxIdentifier(name = "Profit or loss before tax (previous PoA)") with CtOptionalInteger with Calculated
 
-object AC33 extends Calculated[AC33, Frs102AccountsBoxRetriever] with ProfitOrLossBeforeTaxCalculator {
+object AC33 extends ProfitOrLossBeforeTaxCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC33 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC33 = {
     import boxRetriever._
     calculateAC33(ac27(), ac29(), ac31())
   }

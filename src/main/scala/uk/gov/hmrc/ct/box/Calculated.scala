@@ -16,5 +16,7 @@
 
 package uk.gov.hmrc.ct.box
 
-trait Calculated
+trait Calculated {
+   self: CtValue[_] =>
+}
 
