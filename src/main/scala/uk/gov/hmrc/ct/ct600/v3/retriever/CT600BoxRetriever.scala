@@ -26,13 +26,15 @@ trait CT600BoxRetriever extends ComputationsBoxRetriever with CT600DeclarationBo
 
   def accountsRetriever: AccountsBoxRetriever
 
+  def filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever
+
   def b1(): B1
 
   def b2(): B2 = B2(accountsRetriever.ac1())
 
-  def b3(): B3 = B3(accountsRetriever.utr())
+  def b3(): B3 = B3(filingAttributesBoxRetriever.utr())
 
-  def b4(): B4 = B4(accountsRetriever.companyType())
+  def b4(): B4 = B4(filingAttributesBoxRetriever.companyType())
 
   def b145(): B145 = B145(cp7())
 
