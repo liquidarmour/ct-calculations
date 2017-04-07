@@ -27,9 +27,9 @@ package object formats {
   implicit val ac8082Format = new OptionalBooleanFormat(AC8082.apply)
   implicit val ac8083Format = new OptionalBooleanFormat(AC8083.apply)
   implicit val ac8088Format = new OptionalBooleanFormat(AC8088.apply)
+  implicit val ac8089Format = new OptionalBooleanFormat(AC8089.apply)
 
   implicit val acq8161Format = new OptionalBooleanFormat[ACQ8161](ACQ8161.apply)
-
   implicit val ac8021Format: Format[AC8021] = new OptionalBooleanFormat[AC8021](AC8021.apply)
   implicit val ac8023Format: Format[AC8023] = new OptionalBooleanFormat[AC8023](AC8023.apply)
   implicit val ac8051Format: Format[AC8051] = new OptionalStringFormat[AC8051](AC8051.apply)
@@ -44,4 +44,9 @@ package object formats {
   implicit val acq8003Format: Format[ACQ8003] = new OptionalBooleanFormat[ACQ8003](ACQ8003.apply)
   implicit val acq8009Format: Format[ACQ8009] = new OptionalBooleanFormat[ACQ8009](ACQ8009.apply)
 
+  implicit val acq8991Format: Format[ACQ8991] = new OptionalBooleanFormat[ACQ8991](ACQ8991.apply)
+  implicit val acq8999Format: Format[ACQ8999] = new OptionalBooleanFormat[ACQ8999](ACQ8999.apply)
+
+  implicit val acq8989Format: Format[ACQ8989] = new OptionalBooleanFormat[ACQ8989](ACQ8989.apply)
+  implicit val acq8990Format: Format[ACQ8990] = new OptionalBooleanFormat[ACQ8990](ACQ8990.apply)
 }
