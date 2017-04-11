@@ -22,14 +22,14 @@ import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.calculations.CorporationTaxCalculatorParameters
 import uk.gov.hmrc.ct.ct600.v2.calculations.CorporationTaxCalculator
 
-case class B54(value: Int) extends CtBoxIdentifier("Amount of Profit") with CtInteger
+case class B54(value: Int) extends CtBoxIdentifier("Amount of Profit") with CtInteger with Calculated
 
-object B54 extends CorporationTaxCalculator with Calculated[B54, ComputationsBoxRetriever] {
+object B54 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): B54 =
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): B54 =
     calculateApportionedProfitsChargeableFy2(
       CorporationTaxCalculatorParameters(
         fieldValueRetriever.cp295(),
-        HmrcAccountingPeriod(fieldValueRetriever.cp1(),fieldValueRetriever.cp2())
+        HmrcAccountingPeriod(fieldValueRetriever.cp1(), fieldValueRetriever.cp2())
       ))
 }

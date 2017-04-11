@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.SummaryCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP305(value: Int) extends CtBoxIdentifier(name = "Qualifying charitable Donation") with CtInteger
+case class CP305(value: Int) extends CtBoxIdentifier(name = "Qualifying charitable Donation") with CtInteger with Calculated
 
-object CP305 extends Calculated[CP305, ComputationsBoxRetriever] with SummaryCalculator {
+object CP305 extends SummaryCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP305 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP305 = {
    calculateQualifyingCharitableDonations(fieldValueRetriever.cp301(), fieldValueRetriever.cp302())
   }
 

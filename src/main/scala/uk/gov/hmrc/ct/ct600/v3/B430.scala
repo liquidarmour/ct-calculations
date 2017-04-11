@@ -21,10 +21,10 @@ import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
 
 // was b63
-case class B430(value: BigDecimal) extends CtBoxIdentifier("Corporation Tax") with CtBigDecimal
+case class B430(value: BigDecimal) extends CtBoxIdentifier("Corporation Tax") with CtBigDecimal with Calculated
 
-object B430 extends CorporationTaxCalculator with Calculated[B430, CT600BoxRetriever] {
+object B430 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: CT600BoxRetriever): B430 =
+  def calculate(fieldValueRetriever: CT600BoxRetriever): B430 =
     calculateCorporationTax(fieldValueRetriever.b345(), fieldValueRetriever.b395())
 }

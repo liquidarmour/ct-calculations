@@ -22,12 +22,12 @@ import uk.gov.hmrc.ct.ct600a.v2.retriever.CT600ABoxRetriever
 
 
 case class A8Inverse(value: Option[Int]) extends CtBoxIdentifier(name = "A8Inverse - Loans made during the return period which have been repaid more than nine months after the end of the period and relief is NOT YET DUE")
-with CtOptionalInteger
+with CtOptionalInteger with Calculated
 
-object A8Inverse extends Calculated[A8Inverse, CT600ABoxRetriever] with LoansToParticipatorsCalculator {
+object A8Inverse extends LoansToParticipatorsCalculator {
 
-  override def calculate(fieldValueRetriever: CT600ABoxRetriever): A8Inverse = {
+  def calculate(fieldValueRetriever: CT600ABoxRetriever): A8Inverse = {
     import fieldValueRetriever._
-    calculateA8Inverse(cp2(), lp02(), lpq07())
+    calculateA8Inverse(computationsBoxRetriever.cp2(), lp02(), lpq07())
   }
 }

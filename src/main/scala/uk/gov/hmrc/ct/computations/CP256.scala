@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.AdjustedTradingProfitCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP256(value: Int) extends CtBoxIdentifier(name = "Adjusted Trading Or Loss") with CtInteger
+case class CP256(value: Int) extends CtBoxIdentifier(name = "Adjusted Trading Or Loss") with CtInteger with Calculated
 
-object CP256 extends Calculated[CP256, ComputationsBoxRetriever] with AdjustedTradingProfitCalculator {
+object CP256 extends AdjustedTradingProfitCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP256 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP256 = {
     adjustedTradingProfitCalculationNonOptional(cp117 = fieldValueRetriever.cp117())
   }
 }

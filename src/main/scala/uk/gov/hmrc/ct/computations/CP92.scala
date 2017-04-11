@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.computations.calculations.MachineryAndPlantCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP92(value: Option[Int]) extends CtBoxIdentifier(name = "Written down value brought forward") with CtOptionalInteger
+case class CP92(value: Option[Int]) extends CtBoxIdentifier(name = "Written down value brought forward") with CtOptionalInteger with Calculated
 
-object CP92 extends Calculated[CP92, ComputationsBoxRetriever] with MachineryAndPlantCalculator {
+object CP92 extends MachineryAndPlantCalculator {
 
-  override def calculate(boxRetriever: ComputationsBoxRetriever): CP92 = {
+  def calculate(boxRetriever: ComputationsBoxRetriever): CP92 = {
     writtenDownValue(cpq8 = boxRetriever.cpQ8(),
                      cp78 = boxRetriever.cp78(),
                      cp82 = boxRetriever.cp82(),

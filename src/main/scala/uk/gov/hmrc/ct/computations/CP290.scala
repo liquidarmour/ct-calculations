@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.computations.calculations.LossesBroughtForwardAgainstTradingProfitCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP290(value: Option[Int]) extends CtBoxIdentifier(name = "Adjusted Trading Or Loss") with CtOptionalInteger
+case class CP290(value: Option[Int]) extends CtBoxIdentifier(name = "Adjusted Trading Or Loss") with CtOptionalInteger with Calculated
 
-object CP290 extends Calculated[CP290, ComputationsBoxRetriever] with LossesBroughtForwardAgainstTradingProfitCalculator {
+object CP290 extends LossesBroughtForwardAgainstTradingProfitCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP290 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP290 = {
     lossesBroughtForwardUsedAgainstTradingProfitForProfitsChargeable(fieldValueRetriever.cp283())
   }
 

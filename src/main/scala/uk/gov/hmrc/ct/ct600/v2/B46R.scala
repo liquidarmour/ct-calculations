@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.ct600.v2.calculations.CorporationTaxCalculator
 import uk.gov.hmrc.ct.ct600.v2.retriever.CT600BoxRetriever
 
-case class B46R(value: Int) extends CtBoxIdentifier("Tax rounded") with CtInteger
+case class B46R(value: Int) extends CtBoxIdentifier("Tax rounded") with CtInteger with Calculated
 
-object B46R extends CorporationTaxCalculator with Calculated[B46R, CT600BoxRetriever] {
+object B46R extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: CT600BoxRetriever): B46R =
+  def calculate(fieldValueRetriever: CT600BoxRetriever): B46R =
     corporationTaxFy1RoundedHalfDown(fieldValueRetriever.b46())
 
 }

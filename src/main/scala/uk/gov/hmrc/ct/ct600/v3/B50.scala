@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 import uk.gov.hmrc.ct.ct600.calculations.PeriodOfAccountsCalculator
 
-case class B50(value: Boolean) extends CtBoxIdentifier("Making more then one return for this company") with CtBoolean
+case class B50(value: Boolean) extends CtBoxIdentifier("Making more then one return for this company") with CtBoolean with Calculated
 
-object B50 extends Calculated[B50, AccountsBoxRetriever] with PeriodOfAccountsCalculator {
+object B50 extends PeriodOfAccountsCalculator {
 
-  override def calculate(boxRetriever: AccountsBoxRetriever) =
+  def calculate(boxRetriever: AccountsBoxRetriever) =
     B50(isLongPeriodOfAccounts(boxRetriever.ac3(), boxRetriever.ac4()))
 
 }

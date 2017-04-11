@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.TotalProfitsBeforeDeductionsCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP293(value: Int) extends CtBoxIdentifier("Total profits before other deductions and reliefs") with CtInteger
+case class CP293(value: Int) extends CtBoxIdentifier("Total profits before other deductions and reliefs") with CtInteger with Calculated
 
-object CP293 extends Calculated[CP293, ComputationsBoxRetriever] with TotalProfitsBeforeDeductionsCalculator  {
+object CP293 extends TotalProfitsBeforeDeductionsCalculator  {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP293 =
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP293 =
    computeTotalProfitsBeforeDeductionsAndReliefs(fieldValueRetriever.cp284(),
                                                  fieldValueRetriever.cp58(),
                                                  fieldValueRetriever.cp511(),

@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.computations.calculations.SummaryLossesArisingThisPeriodCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class B122(value: Option[Int]) extends CtBoxIdentifier("Trading losses arising") with CtOptionalInteger
+case class B122(value: Option[Int]) extends CtBoxIdentifier("Trading losses arising") with CtOptionalInteger with Calculated
 
-object B122 extends Calculated[B122, ComputationsBoxRetriever] with SummaryLossesArisingThisPeriodCalculator{
+object B122 extends SummaryLossesArisingThisPeriodCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): B122 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): B122 = {
     summaryTradingLossesArisingCalculation(cp118 = fieldValueRetriever.cp118())
   }
 }

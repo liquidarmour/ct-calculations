@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.SummaryCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP258(value: Int) extends CtBoxIdentifier("Net trading and professional profits (box 5)") with CtInteger
+case class CP258(value: Int) extends CtBoxIdentifier("Net trading and professional profits (box 5)") with CtInteger with Calculated
 
-object CP258 extends Calculated[CP258, ComputationsBoxRetriever] with SummaryCalculator  {
+object CP258 extends SummaryCalculator  {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP258 =
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP258 =
     calculateNetTradingAndProfessionalProfits(fieldValueRetriever.cp256(), fieldValueRetriever.cp257())
 
 }

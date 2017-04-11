@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.computations.calculations.MachineryAndPlantCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP186(value: Option[Int]) extends CtBoxIdentifier(name = "Total Allowances") with CtOptionalInteger
+case class CP186(value: Option[Int]) extends CtBoxIdentifier(name = "Total Allowances") with CtOptionalInteger with Calculated
 
-object CP186 extends Calculated[CP186, ComputationsBoxRetriever] with MachineryAndPlantCalculator {
+object CP186 extends MachineryAndPlantCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP186 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP186 = {
     computeTotalAllowancesClaimed(cpq8 = fieldValueRetriever.cpQ8(),
                                   cp87 = fieldValueRetriever.cp87(),
                                   cp88 = fieldValueRetriever.cp88(),

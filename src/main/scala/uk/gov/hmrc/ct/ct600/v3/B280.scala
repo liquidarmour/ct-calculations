@@ -20,11 +20,12 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 
-case class B280(value: Boolean) extends CtBoxIdentifier("Amounts carried back from later periods") with CtBoolean
+case class B280(value: Boolean) extends CtBoxIdentifier("Amounts carried back from later periods")
+  with CtBoolean
+  with Calculated
 
-//Hidden field, used for XML only
-object B280 extends CorporationTaxCalculator with Calculated[B280, ComputationsBoxRetriever] {
+object B280 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): B280 =
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): B280 =
     areAmountsCarriedBackFromLaterPeriods(fieldValueRetriever.cp286())
 }

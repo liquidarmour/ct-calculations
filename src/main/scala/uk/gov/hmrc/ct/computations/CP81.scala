@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.computations.calculations.TotalExpenditureQualifyingForTheFirstYearAllowanceCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP81(value: Int) extends CtBoxIdentifier(name = "Total expenditure qualifying for the first year allowance (FYA)") with CtInteger
+case class CP81(value: Int) extends CtBoxIdentifier(name = "Total expenditure qualifying for the first year allowance (FYA)") with CtInteger with Calculated
 
-object CP81 extends Calculated[CP81, ComputationsBoxRetriever] with CtTypeConverters with TotalExpenditureQualifyingForTheFirstYearAllowanceCalculator {
+object CP81 extends CtTypeConverters with TotalExpenditureQualifyingForTheFirstYearAllowanceCalculator {
 
-  override def calculate(retriever: ComputationsBoxRetriever) = {
+  def calculate(retriever: ComputationsBoxRetriever) = {
     totalExpenditureQualifyingForTheFirstYearAllowance(cp79 = retriever.cp79, cp80 = retriever.cp80)
   }
 }

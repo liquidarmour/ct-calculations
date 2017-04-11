@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBigDecimal, CtBoxIdentifier}
 import uk.gov.hmrc.ct.ct600.v2.calculations.Ct600FinalisationCalculator
 import uk.gov.hmrc.ct.ct600.v2.retriever.CT600BoxRetriever
 
-case class B85(value: BigDecimal) extends CtBoxIdentifier("Income Tax Repayable to the company") with CtBigDecimal
+case class B85(value: BigDecimal) extends CtBoxIdentifier("Income Tax Repayable to the company") with CtBigDecimal with Calculated
 
-object B85 extends Ct600FinalisationCalculator with Calculated[B85, CT600BoxRetriever]{
+object B85 extends Ct600FinalisationCalculator {
 
-  override def calculate(fieldValueRetriever: CT600BoxRetriever): B85 =
+  def calculate(fieldValueRetriever: CT600BoxRetriever): B85 =
     computeTaxRepayable(
         fieldValueRetriever.b70(),
         fieldValueRetriever.b79(),

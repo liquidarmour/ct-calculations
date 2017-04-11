@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.TotalAdditionsCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP54(value: Int) extends CtBoxIdentifier(name = "Total Additions") with CtInteger
+case class CP54(value: Int) extends CtBoxIdentifier(name = "Total Additions") with CtInteger with Calculated
 
-object CP54 extends Calculated[CP54, ComputationsBoxRetriever] with TotalAdditionsCalculator {
+object CP54 extends TotalAdditionsCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP54 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP54 = {
     totalAdditionsCalculation(cp46 = fieldValueRetriever.cp46(),
                               cp47 = fieldValueRetriever.cp47(),
                               cp48 = fieldValueRetriever.cp48(),

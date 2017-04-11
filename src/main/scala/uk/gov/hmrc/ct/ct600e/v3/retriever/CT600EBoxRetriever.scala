@@ -25,9 +25,11 @@ trait CT600EBoxRetriever extends BoxRetriever {
 
   def accountsRetriever: AccountsBoxRetriever
 
+  def filingAttributeBoxRetriever: FilingAttributesBoxValueRetriever
+
   def e1(): E1
 
-  def e2(): E2 = E2(accountsRetriever.utr())
+  def e2(): E2 = E2(filingAttributeBoxRetriever.utr())
 
   def e3(): E3
 

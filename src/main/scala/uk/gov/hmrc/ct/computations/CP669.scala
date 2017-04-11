@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.computations.calculations.LowEmissionCarsCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CP669(value: Option[Int]) extends CtBoxIdentifier(name = "Special rate pool written down value carried forward") with CtOptionalInteger
+case class CP669(value: Option[Int]) extends CtBoxIdentifier(name = "Special rate pool written down value carried forward") with CtOptionalInteger with Calculated
 
-object CP669 extends Calculated[CP669, ComputationsBoxRetriever] with LowEmissionCarsCalculator {
+object CP669 extends LowEmissionCarsCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP669 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CP669 = {
 
     calculateSpecialRatePoolWrittenDownValueCarriedForward(
       fieldValueRetriever.cpQ8(),
