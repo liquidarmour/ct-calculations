@@ -21,11 +21,11 @@ import uk.gov.hmrc.ct.computations.calculations.{AnnualInvestmentAllowanceCalcul
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
 
-case class CATO02(value: Int) extends CtBoxIdentifier(name = "Maximum Annual Investment Allowance") with CtInteger
+case class CATO02(value: Int) extends CtBoxIdentifier(name = "Maximum Annual Investment Allowance") with CtInteger with Calculated
 
-object CATO02 extends Calculated[CATO02, ComputationsBoxRetriever] with AnnualInvestmentAllowanceCalculator {
+object CATO02 extends AnnualInvestmentAllowanceCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO02 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO02 = {
     maximum(cp1 = fieldValueRetriever.cp1(),
             cp2 = fieldValueRetriever.cp2(),
             allowableAmounts = AnnualInvestmentAllowancePeriods())

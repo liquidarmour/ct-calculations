@@ -24,9 +24,9 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 case class AC16(value: Option[Int]) extends CtBoxIdentifier(name = "Current Gross profit or loss") with CtOptionalInteger with Calculated
 
 object AC16 extends ProfitOrLossCalculator {
-  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever with FilingAttributesBoxValueRetriever): AC16 = {
+  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever): AC16 = {
     calculateCurrentGrossProfitOrLoss(ac12 = boxRetriever.ac12(),
                                       ac14 = boxRetriever.ac14(),
-                                      statutoryAccountsFiling = boxRetriever.statutoryAccountsFiling())
+                                      statutoryAccountsFiling = boxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling())
   }
 }

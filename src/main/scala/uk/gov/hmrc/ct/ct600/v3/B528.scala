@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
 
-case class B528(value: Option[BigDecimal]) extends CtBoxIdentifier(name = "Self-assessment of tax payable") with CtOptionalBigDecimal
+case class B528(value: Option[BigDecimal]) extends CtBoxIdentifier(name = "Self-assessment of tax payable") with CtOptionalBigDecimal with Calculated
 
-object B528 extends CorporationTaxCalculator with Calculated[B528, CT600BoxRetriever] {
+object B528 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: CT600BoxRetriever): B528 = {
+  def calculate(fieldValueRetriever: CT600BoxRetriever): B528 = {
     calculateSelfAssessmentOfTaxPayable(fieldValueRetriever.b525(), fieldValueRetriever.b527())
   }
 

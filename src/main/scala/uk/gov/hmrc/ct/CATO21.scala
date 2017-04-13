@@ -20,9 +20,9 @@ import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.computations.calculations.PoolPercentageCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CATO21(value: BigDecimal) extends CtBoxIdentifier(name = "Apportioned Main Rate") with CtBigDecimal with NotInPdf
+case class CATO21(value: BigDecimal) extends CtBoxIdentifier(name = "Apportioned Main Rate") with CtBigDecimal with NotInPdf with Calculated
 
-object CATO21 extends Calculated[CATO21, ComputationsBoxRetriever]  {
+object CATO21 {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO21 = CATO21(PoolPercentageCalculator().apportionedMainRate(fieldValueRetriever.cp1, fieldValueRetriever.cp2))
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO21 = CATO21(PoolPercentageCalculator().apportionedMainRate(fieldValueRetriever.cp1, fieldValueRetriever.cp2))
 }

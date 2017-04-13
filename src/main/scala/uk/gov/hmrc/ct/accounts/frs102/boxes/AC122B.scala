@@ -24,7 +24,8 @@ case class AC122B(value: Option[Int]) extends CtBoxIdentifier(name = "Intangible
   with CtOptionalInteger
   with Input
   with ValidatableBox[Frs102AccountsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
@@ -33,10 +34,9 @@ case class AC122B(value: Option[Int]) extends CtBoxIdentifier(name = "Intangible
   }
 }
 
-object AC122B extends Calculated[AC122B, FullAccountsBoxRetriever]
-  with IntangibleAssetsCalculator {
+object AC122B extends IntangibleAssetsCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC122B = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC122B = {
     import boxRetriever._
     calculateAC122B(ac117B(), ac121B())
   }

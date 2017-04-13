@@ -25,7 +25,7 @@ case class DirectorsReportEnabled(value: Boolean) extends CtBoxIdentifier(name =
 
 object DirectorsReportEnabled extends DirectorsReportEnabledCalculator {
 
-  def calculate(frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever, filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever): DirectorsReportEnabled = {
-    DirectorsReportEnabled(calculateDirectorsReportEnabled(frs10xDirectorsBoxRetriever, filingAttributesBoxValueRetriever))
+  def calculate(frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever): DirectorsReportEnabled = {
+    DirectorsReportEnabled(calculateDirectorsReportEnabled(frs10xDirectorsBoxRetriever))
   }
 }

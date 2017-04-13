@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger, NotInPdf}
 import uk.gov.hmrc.ct.computations.calculations.ExpensesCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CATO14(value: Int) extends CtBoxIdentifier(name = "Directors Expenses") with CtInteger with NotInPdf
+case class CATO14(value: Int) extends CtBoxIdentifier(name = "Directors Expenses") with CtInteger with NotInPdf with Calculated
 
-object CATO14 extends Calculated[CATO14, ComputationsBoxRetriever] with ExpensesCalculator {
+object CATO14 extends ExpensesCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO14 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO14 = {
     calculateDirectorsExpenses(cp15 = fieldValueRetriever.cp15(),
                                cp16 = fieldValueRetriever.cp16(),
                                cp17 = fieldValueRetriever.cp17(),

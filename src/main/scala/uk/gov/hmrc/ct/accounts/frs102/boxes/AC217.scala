@@ -21,12 +21,12 @@ import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
 
 case class AC217(value: Option[Int]) extends CtBoxIdentifier(name = "The total cost or valuation of all tangible assets at the end of the period")
-  with CtOptionalInteger {
+  with CtOptionalInteger with Calculated {
 }
 
-object AC217 extends Calculated[AC217, Frs102AccountsBoxRetriever] with BalanceSheetTangibleAssetsCalculator {
+object AC217 extends BalanceSheetTangibleAssetsCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC217 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC217 = {
     calculateTangibleAssetsAtTheEndOFThePeriod(
       boxRetriever.ac124(),
       boxRetriever.ac125(),

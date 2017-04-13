@@ -21,11 +21,11 @@ import uk.gov.hmrc.ct.ct600.v3.calculations.LoansToParticipatorsCalculator
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
 case class A20(value: Option[BigDecimal]) extends CtBoxIdentifier(name = "A20 - Tax chargeable on loans - (Tax due before any relief for loans repaid, released, or written off after the end of the period)")
-with CtOptionalBigDecimal
+with CtOptionalBigDecimal with Calculated
 
-object A20 extends Calculated[A20, CT600ABoxRetriever] with LoansToParticipatorsCalculator {
+object A20 extends LoansToParticipatorsCalculator {
 
- override def calculate(fieldValueRetriever: CT600ABoxRetriever): A20 = {
-  calculateA20(fieldValueRetriever.a15(), fieldValueRetriever.loansToParticipators(), fieldValueRetriever.cp2())
+ def calculate(fieldValueRetriever: CT600ABoxRetriever): A20 = {
+  calculateA20(fieldValueRetriever.a15(), fieldValueRetriever.loansToParticipators(), fieldValueRetriever.computationsBoxRetriever.cp2())
  }
 }

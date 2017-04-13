@@ -20,15 +20,15 @@ import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDormancyBoxRetriever, Frs
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 
-case class ProfitAndLossStatementRequired(value: Boolean) extends CtBoxIdentifier(name = "Dormancy profit and loss statement required") with CtBoolean
+case class ProfitAndLossStatementRequired(value: Boolean) extends CtBoxIdentifier(name = "Dormancy profit and loss statement required") with CtBoolean with Calculated
 
-object ProfitAndLossStatementRequired extends Calculated[ProfitAndLossStatementRequired, Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever] {
+object ProfitAndLossStatementRequired {
 
-  override def calculate(fieldValueRetriever: Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever): ProfitAndLossStatementRequired = {
+  def calculate(fieldValueRetriever: Frs10xDormancyBoxRetriever): ProfitAndLossStatementRequired = {
     val dormant = fieldValueRetriever.acq8999().orFalse
-    val cohoOnly = !fieldValueRetriever.hmrcFiling().value
+    val cohoOnly = !fieldValueRetriever.filingAttributesBoxRetriever.hmrcFiling().value
 
-    val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse)
+    val result = dormant && !(cohoOnly && !fieldValueRetriever.frs10xFilingQuestionsBoxRetriever.acq8161().orFalse)
     ProfitAndLossStatementRequired(result)
   }
 }

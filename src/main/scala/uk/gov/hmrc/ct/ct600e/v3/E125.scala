@@ -20,10 +20,10 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 import uk.gov.hmrc.ct.ct600e.v3.calculations.ExpenditureCalculator
 import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 
-case class E125(value: Option[Int]) extends CtBoxIdentifier("Expenditure: Total of boxes E95 to E120") with CtOptionalInteger
+case class E125(value: Option[Int]) extends CtBoxIdentifier("Expenditure: Total of boxes E95 to E120") with CtOptionalInteger with Calculated
 
-object E125 extends Calculated[E125, CT600EBoxRetriever] with ExpenditureCalculator {
-  override def calculate(boxRetriever: CT600EBoxRetriever): E125 = {
+object E125 extends ExpenditureCalculator {
+  def calculate(boxRetriever: CT600EBoxRetriever): E125 = {
     calculateTotalExpenditure(
       e95 = boxRetriever.e95(),
       e100 = boxRetriever.e100(),

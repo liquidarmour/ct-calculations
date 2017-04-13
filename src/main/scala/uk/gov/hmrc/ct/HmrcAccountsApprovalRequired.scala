@@ -23,11 +23,11 @@ import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105}
 import uk.gov.hmrc.ct.version.calculations.ReturnVersionsCalculator
 import uk.gov.hmrc.ct.version.{CoHoEquivalent, HmrcAccounts, Return}
 
-case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier("True if approval required for HMRC version of accounts requires") with CtBoolean
+case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier("True if approval required for HMRC version of accounts requires") with CtBoolean with Calculated
 
-object HmrcAccountsApprovalRequired extends Calculated[HmrcAccountsApprovalRequired, FilingAttributesBoxValueRetriever] with HmrcAccountsApprovalRequiredCalculator {
+object HmrcAccountsApprovalRequired extends HmrcAccountsApprovalRequiredCalculator {
 
-  override def calculate(boxRetriever: FilingAttributesBoxValueRetriever): HmrcAccountsApprovalRequired = calculateApprovalRequired(boxRetriever)
+  def calculate(boxRetriever: FilingAttributesBoxValueRetriever): HmrcAccountsApprovalRequired = calculateApprovalRequired(boxRetriever)
 }
 
 trait HmrcAccountsApprovalRequiredCalculator extends ReturnVersionsCalculator {

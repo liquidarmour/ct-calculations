@@ -58,7 +58,7 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     }
   }
 
-  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     failIf (
       calculateDirectorsReportEnabled(boxRetriever) &&
         boxRetriever.acQ8009().value.getOrElse(false) &&
@@ -121,7 +121,8 @@ case class Director(id: String,
   }
 
   def validateAppointmentDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
-    (ac8007, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
+    val accountsBoxRetriever = boxRetriever.accountsBoxRetriever
+    (ac8007, accountsBoxRetriever.ac3().value, accountsBoxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8007.$id", ac8007, ac3, ac4, "ac8007")
       case _ => Set()
     }
@@ -135,7 +136,8 @@ case class Director(id: String,
   }
 
   def validateResignationDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
-    (ac8013, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
+    val accountsBoxRetriever = boxRetriever.accountsBoxRetriever
+    (ac8013, accountsBoxRetriever.ac3().value, accountsBoxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8013.$id", ac8013, ac3, ac4, "ac8013")
       case _ => Set()
     }

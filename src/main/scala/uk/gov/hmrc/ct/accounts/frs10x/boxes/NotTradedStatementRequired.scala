@@ -21,15 +21,21 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 
 
-case class NotTradedStatementRequired(value: Boolean) extends CtBoxIdentifier(name = "Dormancy not traded statement required") with CtBoolean
+case class NotTradedStatementRequired(value: Boolean)
+  extends CtBoxIdentifier(name = "Dormancy not traded statement required")
+  with CtBoolean
+  with Calculated
 
-object NotTradedStatementRequired extends Calculated[NotTradedStatementRequired, Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever] {
+object NotTradedStatementRequired {
 
-  override def calculate(fieldValueRetriever: Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever): NotTradedStatementRequired = {
+  def calculate(fieldValueRetriever: Frs10xDormancyBoxRetriever): NotTradedStatementRequired = {
     val dormant = fieldValueRetriever.acq8999().orFalse
-    val cohoOnly = !fieldValueRetriever.hmrcFiling().value
+    val cohoOnly = !fieldValueRetriever.filingAttributesBoxRetriever.hmrcFiling().value
 
-    val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse && !fieldValueRetriever.ac8021().orFalse)
+    val result = dormant && !(cohoOnly &&
+                              !fieldValueRetriever.frs10xFilingQuestionsBoxRetriever.acq8161().orFalse &&
+                              !fieldValueRetriever.frs10xDirectorsBoxRetriever.ac8021().orFalse)
+
     NotTradedStatementRequired(result)
   }
 }

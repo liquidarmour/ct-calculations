@@ -24,7 +24,8 @@ import uk.gov.hmrc.ct.box.retriever.BoxRetriever._
 case class AC141(value: Option[Int]) extends CtBoxIdentifier(name = "Debtors - Total (PY)")
   with CtOptionalInteger
   with ValidatableBox[FullAccountsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   override def validate(boxRetriever: FullAccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
@@ -45,9 +46,9 @@ case class AC141(value: Option[Int]) extends CtBoxIdentifier(name = "Debtors - T
 
 }
 
-object AC141 extends Calculated[AC141, FullAccountsBoxRetriever] with BalanceSheetDebtorsCalculator {
+object AC141 extends BalanceSheetDebtorsCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC141 = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC141 = {
     import boxRetriever._
     calculateAC141(
       ac135(),

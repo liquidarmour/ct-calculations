@@ -21,6 +21,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, AC8023, ACQ8003, ACQ8009}
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AC3, AC4}
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
@@ -30,9 +31,12 @@ trait  MockableFrs10xBoxretrieverWithFilingAttributes extends Frs10xDirectorsBox
 object DirectorsMockSetup extends MockitoSugar {
 
   def setupDefaults(mockBoxRetriever: MockableFrs10xBoxretrieverWithFilingAttributes) = {
+    val accountsBoxRetriever = mock[AccountsBoxRetriever]
+    when(mockBoxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+
     // POA responses
-    when (mockBoxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
-    when (mockBoxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
+    when (accountsBoxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
+    when (accountsBoxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
 
     // directors report enabled responses
     when (mockBoxRetriever.companiesHouseFiling()).thenReturn (CompaniesHouseFiling (true) )

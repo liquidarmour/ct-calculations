@@ -21,11 +21,11 @@ import uk.gov.hmrc.ct.ct600.v3.calculations.LoansToParticipatorsCalculator
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
 case class A40(value: Option[Int]) extends CtBoxIdentifier(name = "A40 - Total amount of loans made during the return period which have been repaid, released or written off after the end of the period but earlier than nine months and one day after the end of the period")
-with CtOptionalInteger
+with CtOptionalInteger with Calculated
 
-object A40 extends Calculated[A40, CT600ABoxRetriever] with LoansToParticipatorsCalculator {
+object A40 extends LoansToParticipatorsCalculator {
 
- override def calculate(fieldValueRetriever: CT600ABoxRetriever): A40 = {
+ def calculate(fieldValueRetriever: CT600ABoxRetriever): A40 = {
   calculateA40(fieldValueRetriever.a30(), fieldValueRetriever.a35())
  }
 }

@@ -23,7 +23,8 @@ import uk.gov.hmrc.ct.box._
 case class AC131D(value: Option[Int]) extends CtBoxIdentifier(name = "Tangible assets - Office Equipment - deprecation - at POA END")
   with CtOptionalInteger
   with ValidatableBox[Frs102AccountsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
@@ -33,9 +34,9 @@ case class AC131D(value: Option[Int]) extends CtBoxIdentifier(name = "Tangible a
 
 }
 
-object AC131D extends Calculated[AC131D, FullAccountsBoxRetriever] with BalanceSheetTangibleAssetsCalculator {
+object AC131D extends BalanceSheetTangibleAssetsCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC131D = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC131D = {
     import boxRetriever._
     calculateAC131D(
       ac128D(),

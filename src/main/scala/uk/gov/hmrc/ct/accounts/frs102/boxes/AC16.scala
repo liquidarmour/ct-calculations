@@ -24,7 +24,8 @@ case class AC16(value: Option[Int]) extends CtBoxIdentifier(name = "Gross profit
   with CtOptionalInteger
   with Input
   with ValidatableBox[Frs102AccountsBoxRetriever]
-  with Validators {
+  with Validators
+  with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors {
@@ -33,8 +34,8 @@ case class AC16(value: Option[Int]) extends CtBoxIdentifier(name = "Gross profit
   }
 }
 
-object AC16 extends Calculated[AC16, FullAccountsBoxRetriever] with GrossProfitAndLossCalculator {
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC16 = {
+object AC16 extends GrossProfitAndLossCalculator {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC16 = {
     calculateAC16(boxRetriever.ac12, boxRetriever.ac14())
   }
 }

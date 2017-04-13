@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtInteger}
 import uk.gov.hmrc.ct.computations.calculations.WritingDownAllowanceCalculator
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-case class CATO03(value: Int) extends CtBoxIdentifier(name = "Write down allowance limit") with CtInteger
+case class CATO03(value: Int) extends CtBoxIdentifier(name = "Write down allowance limit") with CtInteger with Calculated
 
-object CATO03 extends Calculated[CATO03, ComputationsBoxRetriever] with WritingDownAllowanceCalculator {
+object CATO03 extends WritingDownAllowanceCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO03 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): CATO03 = {
     super.calculate(cp1 = fieldValueRetriever.cp1(),
                     cp2 = fieldValueRetriever.cp2(),
                     cp78 = fieldValueRetriever.cp78(),

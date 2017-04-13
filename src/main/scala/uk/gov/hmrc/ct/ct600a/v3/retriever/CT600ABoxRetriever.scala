@@ -17,12 +17,15 @@
 package uk.gov.hmrc.ct.ct600a.v3.retriever
 
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
 import uk.gov.hmrc.ct.ct600a.v3._
 
 trait CT600ABoxRetriever extends BoxRetriever {
 
   def ct600Retriever: CT600BoxRetriever
+
+  def computationsBoxRetriever: ComputationsBoxRetriever
 
   def lp04(): LP04
 

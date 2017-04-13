@@ -24,7 +24,8 @@ import uk.gov.hmrc.ct.box.retriever.BoxRetriever._
 case class AC190(value: Option[Int]) extends CtBoxIdentifier(name = "Balance at [POA END DATE]")
                                        with CtOptionalInteger
                                        with ValidatableBox[Frs102AccountsBoxRetriever]
-                                       with Validators {
+                                       with Validators
+                                       with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
@@ -53,10 +54,9 @@ case class AC190(value: Option[Int]) extends CtBoxIdentifier(name = "Balance at 
 
 }
 
-object AC190 extends Calculated[AC190, Frs102AccountsBoxRetriever]
-               with RevaluationReserveCalculator {
+object AC190 extends RevaluationReserveCalculator {
 
-  override def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC190 = {
+  def calculate(boxRetriever: Frs102AccountsBoxRetriever): AC190 = {
     calculateAC190(boxRetriever.ac76(), boxRetriever.ac77(), boxRetriever.ac189())
   }
 

@@ -25,7 +25,7 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 trait Frsse2008AccountsBoxRetriever extends AccountsBoxRetriever {
 
-  self: FilingAttributesBoxValueRetriever =>
+  def filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever
 
   def ac12(): AC12
 

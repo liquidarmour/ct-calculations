@@ -18,11 +18,14 @@ package uk.gov.hmrc.ct.accounts.frs10x.retriever
 
 import uk.gov.hmrc.ct.accounts.frs102.helper.DirectorsReportEnabled
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{Directors, _}
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait Frs10xDirectorsBoxRetriever {
+trait Frs10xDirectorsBoxRetriever extends BoxRetriever {
 
   def filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever
+
+  def accountsBoxRetriever: AccountsBoxRetriever
 
   def ac8021(): AC8021
 
@@ -46,5 +49,5 @@ trait Frs10xDirectorsBoxRetriever {
 
   def ac8899(): AC8899
 
-  def directorsReportEnabled(): DirectorsReportEnabled = DirectorsReportEnabled.calculate(this, filingAttributesBoxValueRetriever)
+  def directorsReportEnabled(): DirectorsReportEnabled = DirectorsReportEnabled.calculate(this)
 }

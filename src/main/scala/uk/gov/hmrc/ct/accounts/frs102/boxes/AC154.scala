@@ -23,7 +23,7 @@ import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever._
 
 case class AC154(value: Option[Int]) extends CtBoxIdentifier(name = "Total creditors within one year (current PoA)")
-  with CtOptionalInteger with AssetsEqualToSharesValidator with ValidatableBox[Frs102AccountsBoxRetriever] {
+  with CtOptionalInteger with AssetsEqualToSharesValidator with ValidatableBox[Frs102AccountsBoxRetriever] with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
@@ -40,9 +40,9 @@ case class AC154(value: Option[Int]) extends CtBoxIdentifier(name = "Total credi
   }
 }
 
-object AC154 extends Calculated[AC154, FullAccountsBoxRetriever] with TotalCreditorsWithinOneYearCalculator {
+object AC154 extends TotalCreditorsWithinOneYearCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC154 = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC154 = {
     import boxRetriever._
     calculateCurrentTotalCreditorsWithinOneYear(ac142(), ac144(), ac146(), ac148(), ac150(), ac152())
   }

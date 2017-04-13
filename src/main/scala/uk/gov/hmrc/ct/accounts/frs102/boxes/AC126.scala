@@ -25,7 +25,8 @@ case class AC126(value: Option[Int]) extends CtBoxIdentifier(name = "Cost or val
   with Input
   with ValidatableBox[Frs102AccountsBoxRetriever]
   with Validators
-  with Debit {
+  with Debit
+  with Calculated {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
@@ -34,9 +35,9 @@ case class AC126(value: Option[Int]) extends CtBoxIdentifier(name = "Cost or val
   }
 }
 
-object AC126 extends Calculated[AC126, FullAccountsBoxRetriever] with BalanceSheetTangibleAssetsCalculator {
+object AC126 extends BalanceSheetTangibleAssetsCalculator {
 
-  override def calculate(boxRetriever: FullAccountsBoxRetriever): AC126 = {
+  def calculate(boxRetriever: FullAccountsBoxRetriever): AC126 = {
     import boxRetriever._
     calculateAC126(
       ac126A(),

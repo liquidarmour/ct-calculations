@@ -20,11 +20,11 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalBigDecimal}
 import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
 
-case class B605(value: Option[BigDecimal]) extends CtBoxIdentifier(name = "Tax overpaid including surplus or payable credits") with CtOptionalBigDecimal
+case class B605(value: Option[BigDecimal]) extends CtBoxIdentifier(name = "Tax overpaid including surplus or payable credits") with CtOptionalBigDecimal with Calculated
 
-object B605 extends CorporationTaxCalculator with Calculated[B605, CT600BoxRetriever] {
+object B605 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: CT600BoxRetriever): B605 = {
+  def calculate(fieldValueRetriever: CT600BoxRetriever): B605 = {
     calculateTaxOverpaid(fieldValueRetriever.b595(), fieldValueRetriever.b525())
   }
 }

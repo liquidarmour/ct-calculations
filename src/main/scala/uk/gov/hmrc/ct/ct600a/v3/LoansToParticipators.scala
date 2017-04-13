@@ -161,9 +161,9 @@ case class Repayment(id: String, amount: Option[Int], amountBefore06042016: Opti
     }
   }
 
-  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
+  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.computationsBoxRetriever.cp2().value.plusMonths(9)
 
-  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value
+  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.computationsBoxRetriever.cp2().value
 
   def earlierOfNowAndAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = {
     currentAPEndDatePlus9Months(boxRetriever) < dateAtStartOfToday match {
@@ -220,15 +220,15 @@ case class WriteOff(id: String, amount: Option[Int], amountBefore06042016: Optio
     }
   }
 
-  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value
+  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.computationsBoxRetriever.cp2().value
 
-  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
+  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.computationsBoxRetriever.cp2().value.plusMonths(9)
 
   def errorArgsWriteOffApEndDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
-    Some(Seq(toErrorArgsFormat(boxRetriever.cp2().value)))
+    Some(Seq(toErrorArgsFormat(boxRetriever.computationsBoxRetriever.cp2().value)))
 
   def errorArgsWriteOffDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
-    Some(Seq(toErrorArgsFormat(boxRetriever.cp2().value.plusDays(1)), toErrorArgsFormat(DateHelper.now())))
+    Some(Seq(toErrorArgsFormat(boxRetriever.computationsBoxRetriever.cp2().value.plusDays(1)), toErrorArgsFormat(DateHelper.now())))
 
 }
 
