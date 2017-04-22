@@ -18,10 +18,10 @@ package uk.gov.hmrc.ct.accounts
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.box.{CtValidation, ValidatableBox}
 
-trait AccountStatementValidationFixture[T <: AccountsBoxRetriever] extends WordSpec with Matchers with MockitoSugar {
+trait AccountStatementValidationFixture[T <: BoxRetriever] extends WordSpec with Matchers with MockitoSugar {
 
   def boxRetriever: T
 

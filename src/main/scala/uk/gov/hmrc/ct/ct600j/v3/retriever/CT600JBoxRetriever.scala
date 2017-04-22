@@ -24,7 +24,7 @@ import uk.gov.hmrc.ct.ct600j.v3._
 
 trait CT600JBoxRetriever extends BoxRetriever {
 
-  self: AboutThisReturnBoxRetriever =>
+  def aboutThisReturnBoxRetriever: AboutThisReturnBoxRetriever
 
   def j1(): J1 = {
     this match {

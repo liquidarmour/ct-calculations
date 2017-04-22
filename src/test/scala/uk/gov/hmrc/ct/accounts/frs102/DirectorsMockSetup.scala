@@ -26,22 +26,23 @@ import uk.gov.hmrc.ct.accounts.{AC3, AC4}
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
 
-trait  MockableFrs10xBoxretrieverWithFilingAttributes extends Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever
-
 object DirectorsMockSetup extends MockitoSugar {
 
-  def setupDefaults(mockBoxRetriever: MockableFrs10xBoxretrieverWithFilingAttributes) = {
+  def setupDefaults(mockBoxRetriever: Frs10xDirectorsBoxRetriever) = {
     val accountsBoxRetriever = mock[AccountsBoxRetriever]
+    val filingAttributesBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+
     when(mockBoxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+    when(mockBoxRetriever.filingAttributesBoxRetriever).thenReturn(filingAttributesBoxRetriever)
 
     // POA responses
     when (accountsBoxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
     when (accountsBoxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
 
     // directors report enabled responses
-    when (mockBoxRetriever.companiesHouseFiling()).thenReturn (CompaniesHouseFiling (true) )
-    when (mockBoxRetriever.hmrcFiling()).thenReturn (HMRCFiling (true) )
-    when (mockBoxRetriever.microEntityFiling()).thenReturn (MicroEntityFiling (true) )
+    when (mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn (CompaniesHouseFiling (true) )
+    when (mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn (HMRCFiling (true) )
+    when (mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn (MicroEntityFiling (true) )
     when (mockBoxRetriever.ac8021()).thenReturn (AC8021 (Some (true) ) )
     when (mockBoxRetriever.ac8023()).thenReturn (AC8023 (Some (true) ) )
 

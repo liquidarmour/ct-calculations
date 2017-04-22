@@ -27,7 +27,7 @@ import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
 
 class ACQ8003Spec extends WordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
-  val mockBoxRetriever = mock[MockableFrs10xBoxretrieverWithFilingAttributes]
+  val mockBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
 
   override def beforeEach = {
     DirectorsMockSetup.setupDefaults(mockBoxRetriever)

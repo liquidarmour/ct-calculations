@@ -23,7 +23,7 @@ import uk.gov.hmrc.ct._
 import uk.gov.hmrc.ct.accounts.{AC2, AC205, AC206, AC3}
 import uk.gov.hmrc.ct.accounts.frsse2008._
 import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedFrsse2008AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValue
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.box.stubs.StubbedFilingAttributesBoxValueRetriever
@@ -113,16 +113,8 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers {
 
       "match successfully for AccountsBoxRetriever" in {
 
-        val accountsBoxRetriever = new StubbedAccountsBoxRetriever with StubbedFilingAttributesBoxValueRetriever {
+        val accountsBoxRetriever = new StubbedFrsse2008AccountsBoxRetriever {
 
-          override def abbreviatedAccountsFiling(): AbbreviatedAccountsFiling = AbbreviatedAccountsFiling(false)
-          override def statutoryAccountsFiling(): StatutoryAccountsFiling = StatutoryAccountsFiling(false)
-          override def microEntityFiling(): MicroEntityFiling = MicroEntityFiling(true)
-          override def companyType(): FilingCompanyType = FilingCompanyType(UkTradingCompany)
-          override def abridgedFiling(): AbridgedFiling = AbridgedFiling(false)
-          override def companiesHouseFiling(): CompaniesHouseFiling = CompaniesHouseFiling(true)
-          override def hmrcFiling(): HMRCFiling = HMRCFiling(false)
-          override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration(Some("EW"))
           override def ac3(): AC3 = AC3(new LocalDate(2015,3,30))
           override def ac2(): AC2 = AC2(Some("Random company name"))
         }
@@ -132,7 +124,7 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers {
 
       "match successfully for ComputationsBoxRetriever" in {
 
-        ReturnVersionsCalculator.doCalculation(new ComputationsBoxRetrieverForTest with StubbedAccountsBoxRetriever {
+        ReturnVersionsCalculator.doCalculation(new ComputationsBoxRetrieverForTest {
           override def ac3(): AC3 = AC3(new LocalDate(2015,3,30))
         }) shouldBe jointMicroFRSSE2008V2Returns
       }
@@ -1253,35 +1245,11 @@ class ReturnVersionsCalculatorWithDefaults extends  ReturnVersionsCalculator {
   }
 }
 
-class ComputationsBoxRetrieverForTest extends StubbedComputationsBoxRetriever with StubbedFilingAttributesBoxValueRetriever {
-
-  self: Frsse2008AccountsBoxRetriever =>
+class ComputationsBoxRetrieverForTest extends StubbedComputationsBoxRetriever {
 
   override def cp1(): CP1 = CP1(LocalDate.parse("2015-03-31"))
 
   override def cp2(): CP2 = CP2(LocalDate.parse("2015-12-31"))
 
-  override def companyType(): FilingCompanyType = FilingCompanyType(UkTradingCompany)
-
-  override def abbreviatedAccountsFiling(): AbbreviatedAccountsFiling = AbbreviatedAccountsFiling(false)
-
-  override def statutoryAccountsFiling(): StatutoryAccountsFiling = StatutoryAccountsFiling(false)
-
-  override def microEntityFiling(): MicroEntityFiling = MicroEntityFiling(true)
-
-  override def abridgedFiling(): AbridgedFiling = AbridgedFiling(false)
-
-  override def companiesHouseFiling(): CompaniesHouseFiling = CompaniesHouseFiling(true)
-
-  override def hmrcFiling(): HMRCFiling = HMRCFiling(true)
-
-  override def hmrcAmendment(): HMRCAmendment = HMRCAmendment(false)
-
   override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration.EnglandWales
-
-  override def ac205(): AC205 = ???
-
-  override def ac206(): AC206 = ???
-
-  override def ac2(): AC2 = ???
 }

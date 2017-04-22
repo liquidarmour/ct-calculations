@@ -22,9 +22,10 @@ import uk.gov.hmrc.ct.accounts.frs102.helper.DirectorsReportEnabled
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-class AC8899Spec extends AccountStatementValidationFixture[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever] {
+class AC8899Spec extends AccountStatementValidationFixture[Frs10xDirectorsBoxRetriever] {
 
-  trait MockRetriever extends Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever
+  trait MockRetriever extends Frs10xDirectorsBoxRetriever
+
   override val boxRetriever: MockRetriever = mock[MockRetriever] (RETURNS_SMART_NULLS)
 
   override def setupMocks() = {

@@ -21,7 +21,7 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 trait DirectorsReportEnabledCalculator {
   def calculateDirectorsReportEnabled(boxRetriever: Frs10xDirectorsBoxRetriever): Boolean = {
-    val filingAttributesBoxValueRetriever = boxRetriever.filingAttributesBoxValueRetriever
+    val filingAttributesBoxValueRetriever = boxRetriever.filingAttributesBoxRetriever
 
     val isCoHoFiling = filingAttributesBoxValueRetriever.companiesHouseFiling().value
     val isHmrcFiling = filingAttributesBoxValueRetriever.hmrcFiling().value

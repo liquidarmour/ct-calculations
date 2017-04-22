@@ -22,13 +22,20 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.Tables.Table
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.frs102.{DirectorsMockSetup, MockableFrs10xBoxretrieverWithFilingAttributes}
+import uk.gov.hmrc.ct.accounts.frs102.DirectorsMockSetup
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValidation
+import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling, StatutoryAccountsFiling}
 
 class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach {
 
-  val mockBoxRetriever = mock[MockableFrs10xBoxretrieverWithFilingAttributes]
+  val mockBoxRetriever = {
+    val temp = mock[Frs10xDirectorsBoxRetriever]
+    val filingAttributesBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+    when(temp.filingAttributesBoxRetriever).thenReturn(filingAttributesBoxRetriever)
+    temp
+  }
 
   override def beforeEach = {
     DirectorsMockSetup.setupDefaults(mockBoxRetriever)
@@ -43,40 +50,40 @@ class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with Before
       "cannot exist for statutory accounts answered no to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set(CtValidation(None, "error.Directors.AC8021.cannot.exist"))
       }
 
       "validate successfully for statutory accounts answered yes to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
 
       "cannot exist for micro entity accounts answered no to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set(CtValidation(None, "error.Directors.AC8021.cannot.exist"))
       }
 
       "validate successfully for micro entity accounts answered yes to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
     }
@@ -85,40 +92,40 @@ class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with Before
       "validate successfully for statutory accounts answered no to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
 
       "validate successfully for statutory accounts answered yes to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
 
       "cannot exist for micro entity accounts answered no to AC8021 amd AC8023" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set(CtValidation(None, "error.Directors.AC8023.cannot.exist"))
       }
 
       "validate successfully for micro entity accounts answered yes to AC8023 and no to AC8021" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(true)))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
     }
@@ -127,30 +134,30 @@ class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with Before
       "validate successfully for statutory accounts no answer for AC8023" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(None))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(None))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
 
       "cannot exist for micro entity accounts answered no to AC8023" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(None))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set(CtValidation(None, "error.Directors.AC8023.cannot.exist"))
       }
 
       "validate successfully for micro entity accounts answered yes to AC8023" in {
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(None))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(true)))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
         populatedDirectors.validate(mockBoxRetriever) shouldBe Set()
       }
     }
@@ -217,9 +224,9 @@ class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with Before
       )
 
       forAll(testTable) { (companiesHouseFiling: Boolean, hmrcFiling: Boolean, microEntityFiling: Boolean, ac8021: Option[Boolean], ac8023: Option[Boolean], expectedResult: Boolean) =>
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(companiesHouseFiling))
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(hmrcFiling))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(microEntityFiling))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(companiesHouseFiling))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(hmrcFiling))
+        when(mockBoxRetriever.filingAttributesBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(microEntityFiling))
         when(mockBoxRetriever.ac8021()).thenReturn(AC8021(ac8021))
         when(mockBoxRetriever.ac8023()).thenReturn(AC8023(ac8023))
 

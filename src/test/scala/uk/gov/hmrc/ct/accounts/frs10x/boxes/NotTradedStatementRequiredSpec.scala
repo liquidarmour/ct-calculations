@@ -25,14 +25,22 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 class NotTradedStatementRequiredSpec extends WordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
-  trait MockRetriever extends Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever
+  trait MockRetriever extends Frs10xDormancyBoxRetriever
+
   val mockBoxRetriever: MockRetriever = mock[MockRetriever] (RETURNS_SMART_NULLS)
+  val filingAttributesBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+  val frs10xFilingQuestionsBoxRetriever = mock[Frs10xFilingQuestionsBoxRetriever]
+  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
 
   "NotTradedStatementRequired should" should {
 
+    when(mockBoxRetriever.frs10xFilingQuestionsBoxRetriever).thenReturn(frs10xFilingQuestionsBoxRetriever)
+    when(mockBoxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
+    when(mockBoxRetriever.filingAttributesBoxRetriever).thenReturn(filingAttributesBoxRetriever)
+
     "be false if not dormant" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
       NotTradedStatementRequired.calculate(mockBoxRetriever) shouldBe NotTradedStatementRequired(false)
 
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
@@ -42,28 +50,28 @@ class NotTradedStatementRequiredSpec extends WordSpec with Matchers with Mockito
     "be false if dormant, coho only and not filing P&L to coho, and not filing directors report to coho" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+      when(filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(frs10xFilingQuestionsBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
+      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
       NotTradedStatementRequired.calculate(mockBoxRetriever) shouldBe NotTradedStatementRequired(false)
     }
 
     "be true if dormant and 1) not coho only or 2) filing P&L to coho or 3) filing directors report to coho" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-      when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+      when(filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(frs10xFilingQuestionsBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
+      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
       NotTradedStatementRequired.calculate(mockBoxRetriever) shouldBe NotTradedStatementRequired(true)
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+      when(filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(frs10xFilingQuestionsBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
+      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
       NotTradedStatementRequired.calculate(mockBoxRetriever) shouldBe NotTradedStatementRequired(true)
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
+      when(filingAttributesBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(frs10xFilingQuestionsBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
+      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
       NotTradedStatementRequired.calculate(mockBoxRetriever) shouldBe NotTradedStatementRequired(true)
     }
   }

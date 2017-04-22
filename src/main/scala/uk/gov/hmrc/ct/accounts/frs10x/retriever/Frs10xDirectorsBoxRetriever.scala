@@ -23,7 +23,7 @@ import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetri
 
 trait Frs10xDirectorsBoxRetriever extends BoxRetriever {
 
-  def filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever
+  def filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever
 
   def accountsBoxRetriever: AccountsBoxRetriever
 
