@@ -17,13 +17,11 @@
 package uk.gov.hmrc.ct.computations
 
 import org.joda.time.LocalDate
+import org.mockito.Mockito._
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.Tables.Table
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.CountryOfRegistration
-import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedAccountsBoxRetriever
-import uk.gov.hmrc.ct.computations.stubs.StubbedComputationsBoxRetriever
+import uk.gov.hmrc.ct.computations.fixture.ComputationsTestFixture
 
 class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
@@ -58,7 +56,7 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
   "Low Emmission Cars calculations" should {
 
-    "calculate values for Companies Still Trading" in {
+    "calculate values for Companies Still Trading"  in new ComputationsTestFixture {
       val companiesStillTrading =
         Table(
           ("Scenario",
@@ -91,6 +89,8 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
             Some(false), Some(11), Some(98), Some(30), Some(1),  Some(43), Some(77), Some(4), Some(3500), Some(21), Some(20), Some(0), Some(64), None, Some(85), Some(3348), Some(3348), Some(0), Some(674))
         )
 
+
+
       forAll(companiesStillTrading) {
         (scenario: String,
          lec01: List[Car],
@@ -114,29 +114,35 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = new TestComputationsRetriever(
-            lec01 = lec01,
-            cpq8 = cpq8,
-            cp78 = cp78,
-            cp79 = cp79,
-            cp80 = cp80,
-            cp82 = cp82,
-            cp83 = cp83,
-            cp87Input = cp87_Input,
-            cp88 = cp88,
-            cp89 = cp89,
-            cp666 = cp666,
-            cp667 = cp667,
-            cp668 = cp668,
-            cp672 = cp672
-          ) with StubbedAccountsBoxRetriever
+          withBox(LEC01(lec01))
+          withBox(CPQ8(cpq8))
+          withBox(CP78(cp78))
+          withBox(CP79(cp79))
+          withBox(CP80(cp80))
+          withBox(CP82(cp82))
+          withBox(CP83(cp83))
+          withBox(CP87Input(cp87_Input))
+          withBox(CP88(cp88))
+          withBox(CP89(cp89))
 
-          assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
-          assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
-          assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
-          assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
-          assert(retriever.cp670().value equals cp670, clue("CP670", retriever.cp670().value, cp670))
-          assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+          withBox(CP666(cp666))
+          withBox(CP667(cp667))
+          withBox(CP668(cp668))
+          withBox(CP672(cp672))
+
+          when(computationsBoxRetriever.cp91()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp92()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp186()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp669()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp670()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp671()).thenCallRealMethod()
+
+          assert(computationsBoxRetriever.cp91().value equals cp91, clue("CP91", computationsBoxRetriever.cp91().value, cp91))
+          assert(computationsBoxRetriever.cp92().value equals cp92, clue("CP92", computationsBoxRetriever.cp92().value, cp92))
+          assert(computationsBoxRetriever.cp186().value equals cp186, clue("CP186", computationsBoxRetriever.cp186().value, cp186))
+          assert(computationsBoxRetriever.cp669().value equals cp669, clue("CP669", computationsBoxRetriever.cp669().value, cp669))
+          assert(computationsBoxRetriever.cp670().value equals cp670, clue("CP670", computationsBoxRetriever.cp670().value, cp670))
+          assert(computationsBoxRetriever.cp671().value equals cp671, clue("CP671", computationsBoxRetriever.cp671().value, cp671))
         }
       }
     }
@@ -161,7 +167,8 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
           Some(2175), Some(2175), Some(0), Some(0), Some(0), Some(0))
       )
 
-    "calculate values for Companies No Longer Trading" in {
+    "calculate values for Companies No Longer Trading"  in new ComputationsTestFixture {
+
       forAll(companiesNoLongerTrading) {
         (scenario: String,
          lec01: List[Car],
@@ -182,26 +189,31 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = new TestComputationsRetriever(
-            lec01 = lec01,
-            cpq8 = cpq8,
-            cp78 = cp78,
-            cp79 = cp79,
-            cp80 = cp80,
-            cp82 = cp82,
-            cp83 = cp83,
-            cp84 = cp84,
-            cp666 = cp666,
-            cp673 = cp673,
-            cp674 = cp674
-          ) with Frsse2008AccountsBoxRetriever
+          withBox(LEC01(lec01))
+          withBox(CPQ8(cpq8))
+          withBox(CP78(cp78))
+          withBox(CP79(cp79))
+          withBox(CP80(cp80))
+          withBox(CP82(cp82))
+          withBox(CP83(cp83))
+          withBox(CP84(cp84))
+          withBox(CP666(cp666))
+          withBox(CP673(cp673))
+          withBox(CP674(cp674))
 
-          assert(retriever.cp90().value equals cp90, clue("CP90", retriever.cp90().value, cp90))
-          assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
-          assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
-          assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
-          assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
-          assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+          when(computationsBoxRetriever.cp90()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp91()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp92()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp186()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp669()).thenCallRealMethod()
+          when(computationsBoxRetriever.cp671()).thenCallRealMethod()
+
+          assert(computationsBoxRetriever.cp90().value equals cp90, clue("CP90", computationsBoxRetriever.cp90().value, cp90))
+          assert(computationsBoxRetriever.cp91().value equals cp91, clue("CP91", computationsBoxRetriever.cp91().value, cp91))
+          assert(computationsBoxRetriever.cp92().value equals cp92, clue("CP92", computationsBoxRetriever.cp92().value, cp92))
+          assert(computationsBoxRetriever.cp186().value equals cp186, clue("CP186", computationsBoxRetriever.cp186().value, cp186))
+          assert(computationsBoxRetriever.cp669().value equals cp669, clue("CP669", computationsBoxRetriever.cp669().value, cp669))
+          assert(computationsBoxRetriever.cp671().value equals cp671, clue("CP671", computationsBoxRetriever.cp671().value, cp671))
         }
       }
 
@@ -220,62 +232,4 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
   private def mainRatePoolCar(value: Int) = Car(regNumber = "XYZ123A", isNew = true, price = value, emissions = 160, dateOfPurchase = new LocalDate("2009-04-01"))
 
   private def specialRatePoolCar(value: Int) = Car(regNumber = "XYZ789C", isNew = true, price = value, emissions = 161, dateOfPurchase = new LocalDate("2013-03-31"))
-
-  class TestComputationsRetriever(lec01: List[Car],
-                                  cpq8: Option[Boolean],
-                                  cp78: Option[Int] = None,
-                                  cp79: Option[Int] = None,
-                                  cp80: Option[Int] = None,
-                                  cp82: Option[Int] = None,
-                                  cp83: Option[Int] = None,
-                                  cp84: Option[Int] = None,
-                                  cp87Input: Option[Int] = None,
-                                  cp88: Option[Int] = None,
-                                  cp89: Option[Int] = None,
-                                  cp666: Option[Int] = None,
-                                  cp667: Option[Int] = None,
-                                  cp668: Option[Int] = None,
-                                  cp672: Option[Int] = None,
-                                  cp673: Option[Int] = None,
-                                  cp674: Option[Int] = None
-                                   ) extends StubbedComputationsBoxRetriever {
-
-    self: Frsse2008AccountsBoxRetriever =>
-
-    override def lec01: LEC01 = LEC01(lec01)
-
-    override def cpQ8: CPQ8 = CPQ8(cpq8)
-
-    override def cp78: CP78 = CP78(cp78)
-
-    override def cp666: CP666 = CP666(cp666)
-
-    override def cp79: CP79 = CP79(cp79)
-
-    override def cp80: CP80 = CP80(cp80)
-
-    override def cp82: CP82 = CP82(cp82)
-
-    override def cp83: CP83 = CP83(cp83)
-
-    override def cp84: CP84 = CP84(cp84)
-
-    override def cp667: CP667 = CP667(cp667)
-
-    override def cp672: CP672 = CP672(cp672)
-
-    override def cp673: CP673 = CP673(cp673)
-
-    override def cp674: CP674 = CP674(cp674)
-
-    override def cp87Input: CP87Input = CP87Input(cp87Input)
-
-    override def cp88: CP88 = CP88(cp88)
-
-    override def cp89: CP89 = CP89(cp89)
-
-    override def cp668: CP668 = CP668(cp668)
-
-    override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration.EnglandWales
-  }
 }
