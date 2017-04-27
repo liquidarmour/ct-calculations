@@ -21,6 +21,7 @@ import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct._
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.computations.fixture.ComputationsTestFixture
+import org.mockito.Mockito._
 
 class MachineryAndPlantValidationSpec extends WordSpec with Matchers with MockitoSugar {
 
@@ -82,9 +83,17 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
 
   "CP83 " should {
     "validate if present and non-negative or if not present, otherwise fail" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       CP83(Some(0)).validate(computationsBoxRetriever) shouldBe Set()
       CP83(None).validate(computationsBoxRetriever) shouldBe Set()
       CP83(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP83"), errorMessageKey = "error.CP83.mustBeZeroOrPositive"))
+    }
+    "fail cannot exist if CPQ8 is true" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(true)))
+      CP83(Some(0)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP83"), errorMessageKey = "error.CP83.cannot.exist"))
+      CP83(None).validate(computationsBoxRetriever) shouldBe Set()
+      CP83(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP83"), errorMessageKey = "error.CP83.cannot.exist"),
+                                                                     CtValidation(boxId = Some("CP83"), errorMessageKey = "error.CP83.mustBeZeroOrPositive"))
     }
   }
 
@@ -106,9 +115,19 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
 
   "CP252" should {
     "validate if present and non-negative or if not present, otherwise fail" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
+      withBox(CP79(Some(100)))
       CP252(Some(0)).validate(computationsBoxRetriever) shouldBe Set()
       CP252(None).validate(computationsBoxRetriever) shouldBe Set()
       CP252(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP252"), errorMessageKey = "error.CP252.mustBeZeroOrPositive"))
+    }
+    "fail cannot exist if CPQ8 is true" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(true)))
+      withBox(CP79(Some(100)))
+      CP252(Some(0)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP252"), errorMessageKey = "error.CP252.cannot.exist"))
+      CP252(None).validate(computationsBoxRetriever) shouldBe Set()
+      CP252(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP252"), errorMessageKey = "error.CP252.mustBeZeroOrPositive"),
+                                                                      CtValidation(boxId = Some("CP252"), errorMessageKey = "error.CP252.cannot.exist"))
     }
   }
 
@@ -122,6 +141,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
 
   "CP667 " should {
     "validate if present and non-negative or if not present, otherwise fail" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       CP667(Some(0)).validate(computationsBoxRetriever) shouldBe Set()
       CP667(None).validate(computationsBoxRetriever) shouldBe Set()
       CP667(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP667"), errorMessageKey = "error.CP667.mustBeZeroOrPositive"))
@@ -130,6 +150,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
 
   "CP672 " should {
     "validate if present and non-negative or if not present, otherwise fail" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       CP672(Some(0)).validate(computationsBoxRetriever) shouldBe Set()
       CP672(None).validate(computationsBoxRetriever) shouldBe Set()
       CP672(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP672"), errorMessageKey = "error.CP672.mustBeZeroOrPositive"))
@@ -139,9 +160,11 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
   "CP87Input, given is trading and first Year Allowance Not Greater Than Max FYA" should {
     "validate if present and non-negative, otherwise fail" in new ComputationsTestFixture {
       withBox(CPQ8(Some(false)))
-
+      withBox(CP81(100))
+      withBox(CPAux1(100))
       CP87Input(Some(0)).validate(computationsBoxRetriever) shouldBe Set()
       CP87Input(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.mustBeZeroOrPositive"))
+      CP87Input(Some(201)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.firstYearAllowanceClaimExceedsAllowance", Some(List("200"))))
     }
   }
 
@@ -152,6 +175,8 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
       withBox(CP80(Some(29)))
       withBox(CPAux1(51))
 
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
+
       CP87Input(Some(100)).validate(computationsBoxRetriever) shouldBe Set()
     }
 
@@ -161,6 +186,8 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
       withBox(CP80(Some(29)))
       withBox(CPAux1(51))
 
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
+
       CP87Input(Some(101)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.firstYearAllowanceClaimExceedsAllowance", args = Some(Seq("100"))))
     }
 
@@ -169,25 +196,35 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
       withBox(CP79(Some(20)))
       withBox(CP80(Some(29)))
       withBox(CPAux1(51))
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
 
       CP87Input(None).validate(computationsBoxRetriever) shouldBe Set()
     }
 
     "fail validation when trading but no value entered" in new ComputationsTestFixture {
       withBox(CPQ8(Some(false)))
+      withBox(CP81(29))
+      withBox(CPAux1(51))
 
       CP87Input(None).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.fieldMustHaveValueIfTrading"))
     }
     "validate when ceased trading but no value entered" in new ComputationsTestFixture {
       withBox(CPQ8(Some(true)))
+      withBox(CP81(29))
+      withBox(CPAux1(51))
 
       CP87Input(None).validate(computationsBoxRetriever) shouldBe Set()
     }
     "validate when ceased trading not set" in new ComputationsTestFixture {
+      withBox(CPQ8(None))
+      withBox(CP81(29))
+      withBox(CPAux1(51))
       CP87Input(None).validate(computationsBoxRetriever) shouldBe Set()
     }
     "fails validation when negative" in new ComputationsTestFixture {
       withBox(CPQ8(Some(false)))
+      withBox(CP81(29))
+      withBox(CPAux1(51))
 
       CP87Input(-1).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.mustBeZeroOrPositive"))
     }
@@ -196,6 +233,9 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
   "CP88(annual investment allowance claimed)" should {
 
     "fail to validate when negative" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
+      withBox(CP83(None))
+      withBox(CATO02(0))
       CP88(Some(-1)).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
     }
 
