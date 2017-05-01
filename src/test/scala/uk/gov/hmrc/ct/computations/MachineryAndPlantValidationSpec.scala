@@ -385,6 +385,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
 
   "(CP668) Writing Down Allowance claimed from Special rate pool" should {
     "validates correctly when not greater than MAX( 0, SpecialPool% * ( CP666 + CPaux3 - CP667) )" in new ComputationsTestFixture {
+      withDefaults()
       withBox(CP666(Some(100)))
       withBox(CP667(100))
       withBox(CPAux3(100))
@@ -395,6 +396,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "fails validation when CP667 is large enough to make the total -ve and any +ve claim is made" in new ComputationsTestFixture {
+      withDefaults()
       withBox(CP666(Some(100)))
       withBox(CP667(1000))
       withBox(CPAux3(100))
@@ -405,11 +407,13 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "validate when ceased trading but no value entered" in new ComputationsTestFixture {
+      withDefaults()
       withBox(CPQ8(Some(true)))
 
       CP668(None).validate(computationsBoxRetriever) shouldBe Set()
     }
     "validate when ceased trading not set" in new ComputationsTestFixture {
+      withDefaults()
       CP668(None).validate(computationsBoxRetriever) shouldBe Set()
     }
   }

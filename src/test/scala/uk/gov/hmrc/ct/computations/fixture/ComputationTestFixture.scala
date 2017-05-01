@@ -201,10 +201,14 @@ trait ComputationsTestFixture extends MockitoSugar {
     withBox(CP83(None))
     withBox(CP87(0))
     withBox(CP88(0))
+    withBox(CP666(None))
+    withBox(CP667(None))
     withBox(CP672(None))
     withBox(CPAux1(0))
     withBox(CPAux2(0))
+    withBox(CPAux3(0))
     withBox(CATO21(0))
+    withBox(CATO22(0))
   }
 
   def withBox(cpq8: CPQ8) = when(computationsBoxRetriever.cpQ8()).thenReturn(cpq8)
