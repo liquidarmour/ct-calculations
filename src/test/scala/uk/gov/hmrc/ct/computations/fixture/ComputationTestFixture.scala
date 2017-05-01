@@ -191,6 +191,22 @@ trait ComputationsTestFixture extends MockitoSugar {
 
   val computationsBoxRetriever = mock[ComputationsBoxRetrieverForTest]
 
+  def withDefaults() = {
+
+    withBox(CPQ8(None))
+    withBox(CP78(None))
+    withBox(CP79(None))
+    withBox(CP80(None))
+    withBox(CP82(None))
+    withBox(CP83(None))
+    withBox(CP87(0))
+    withBox(CP88(0))
+    withBox(CP672(None))
+    withBox(CPAux1(0))
+    withBox(CPAux2(0))
+    withBox(CATO21(0))
+  }
+
   def withBox(cpq8: CPQ8) = when(computationsBoxRetriever.cpQ8()).thenReturn(cpq8)
 
   def withBox(cp78: CP78) = when(computationsBoxRetriever.cp78()).thenReturn(cp78)
@@ -206,6 +222,8 @@ trait ComputationsTestFixture extends MockitoSugar {
   def withBox(cp83: CP83) = when(computationsBoxRetriever.cp83()).thenReturn(cp83)
 
   def withBox(cp87Input: CP87Input) = when(computationsBoxRetriever.cp87Input()).thenReturn(cp87Input)
+
+  def withBox(cp87: CP87) = when(computationsBoxRetriever.cp87()).thenReturn(cp87)
 
   def withBox(cp666: CP666) = when(computationsBoxRetriever.cp666()).thenReturn(cp666)
 
@@ -250,4 +268,6 @@ trait ComputationsTestFixture extends MockitoSugar {
   def withBox(cp673: CP673) = when(computationsBoxRetriever.cp673()).thenReturn(cp673)
 
   def withBox(cp674: CP674) = when(computationsBoxRetriever.cp674()).thenReturn(cp674)
+
+
 }

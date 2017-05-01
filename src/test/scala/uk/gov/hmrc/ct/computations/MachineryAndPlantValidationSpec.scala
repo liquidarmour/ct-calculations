@@ -240,6 +240,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "validate correctly when not greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       withBox(CP83(Some(11)))
       withBox(CATO02(10))
 
@@ -247,6 +248,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "fails validation when greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       withBox(CP83(Some(11)))
       withBox(CATO02(10))
 
@@ -254,6 +256,7 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "fails validation when CATO02 (maxAIA) is the minimum" in new ComputationsTestFixture {
+      withBox(CPQ8(Some(false)))
       withBox(CP83(Some(11)))
       withBox(CATO02(10))
 
@@ -261,22 +264,32 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
     }
 
     "fail validation when trading but no value entered" in new ComputationsTestFixture {
+      withBox(CATO02(2))
+      withBox(CP83(Some(10)))
       withBox(CPQ8(Some(false)))
       CP88(None).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.fieldMustHaveValueIfTrading"))
     }
 
     "validate when ceased trading but no value entered" in new ComputationsTestFixture {
+      withBox(CATO02(2))
       withBox(CPQ8(Some(true)))
+      withBox(CP83(Some(10)))
 
       CP88(None).validate(computationsBoxRetriever) shouldBe Set()
     }
 
     "validate when ceased trading not set" in new ComputationsTestFixture {
+      withBox(CPQ8(None))
+      withBox(CP83(Some(10)))
+      withBox(CATO02(2))
       CP88(None).validate(computationsBoxRetriever) shouldBe Set()
     }
 
     "fails validation when negative" in new ComputationsTestFixture {
       withBox(CPQ8(Some(false)))
+      withBox(CP83(Some(10)))
+      withBox(CATO02(2))
+
       CP88(-1).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
     }
   }
@@ -284,61 +297,88 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers with Mockit
   "CP89 (Writing Down Allowance claimed from Main pool)" should {
 
     "validates correctly when not greater than MAX(0, MainPool% * ( CP78 (Main Pool brought forward) " +
-      "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
-      "+ UnclaimedAIA_FYA (Unclaimed FYA and AIA amounts)) - CATO-2730" in new ComputationsTestFixture {
+    "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
+    "+ UnclaimedAIA_FYA (Unclaimed FYA and AIA amounts)) - CATO-2730" in new ComputationsTestFixture {
+      withBox(CPQ8(None))
       withBox(CP78(Some(2000)))
       withBox(CP79(Some(20)))
       withBox(CP80(Some(30)))
       withBox(CP82(Some(2000)))
       withBox(CP83(Some(50)))
+      withBox(CP87(0))
       withBox(CP87Input(Some(50)))
+      withBox(CP88(0))
       withBox(CP672(Some(1000)))
       withBox(CPAux1(0))
       withBox(CPAux2(0))
       withBox(CATO21(18))
 
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
+
       CP89(549).validate(computationsBoxRetriever) shouldBe Set()
-      CP89(550).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("549"))))
+      CP89(559).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("558"))))
     }
 
     "validates when greater than MAX(0, MainPool% * ( CP78 (Main Pool brought forward) " +
-      "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
-      "+ LEC14 (Unclaimed FYA and AIA amounts)))" in new ComputationsTestFixture {
+    "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
+    "+ LEC14 (Unclaimed FYA and AIA amounts)))" in new ComputationsTestFixture {
+      withBox(CPQ8(None))
       withBox(CP78(Some(100)))
+      withBox(CP79(None))
+      withBox(CP80(None))
       withBox(CP82(Some(100)))
+      withBox(CP83(None))
+      withBox(CP87(0))
+      withBox(CP88(0))
       withBox(CP672(Some(100)))
+      withBox(CPAux1(0))
       withBox(CPAux2(50))
       withBox(CATO21(10))
       withBox(CATO22(50))
+
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
 
       CP89(15).validate(computationsBoxRetriever) shouldBe Set()
       CP89(16).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("15"))))
     }
 
     "validated when CP672 is large enough to make the total -ve and any +ve claim is made" in new ComputationsTestFixture {
+
+      withDefaults()
+
+      withBox(CPQ8(None))
       withBox(CP78(Some(100)))
       withBox(CP82(Some(100)))
       withBox(CP672(Some(1000)))
       withBox(CPAux2(100))
       withBox(CATO21(10))
 
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
+
       CP89(0).validate(computationsBoxRetriever) shouldBe Set()
       CP89(1).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("0"))))
     }
 
     "validate when ceased trading but no value entered" in new ComputationsTestFixture {
+      withDefaults()
       withBox(CPQ8(Some(true)))
+
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
 
       CP89(None).validate(computationsBoxRetriever) shouldBe Set()
     }
 
     "validate when ceased trading not set" in new ComputationsTestFixture {
+      withDefaults()
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
       CP89(None).validate(computationsBoxRetriever) shouldBe Set()
     }
 
     "fails validation when negative" in new ComputationsTestFixture {
+      withDefaults()
       withBox(CPQ8(Some(false)))
 
+      when(computationsBoxRetriever.cp81()).thenCallRealMethod()
       CP89(-1).validate(computationsBoxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mustBeZeroOrPositive"))
     }
   }
