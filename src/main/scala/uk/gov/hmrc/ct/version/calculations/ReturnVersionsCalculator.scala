@@ -25,6 +25,7 @@ import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600e.v2.retriever.{CT600EBoxRetriever => V2CT600EBoxRetriever}
 import uk.gov.hmrc.ct.ct600e.v3.retriever.{CT600EBoxRetriever => V3CT600EBoxRetriever}
 import uk.gov.hmrc.ct.domain.CompanyTypes._
+import uk.gov.hmrc.ct.retriever.BaseComposedBoxRetriever
 import uk.gov.hmrc.ct.version.CoHoAccounts._
 import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105, FRSSE2008}
 import uk.gov.hmrc.ct.version.HmrcReturns._
@@ -36,7 +37,14 @@ object ReturnVersionsCalculator extends ReturnVersionsCalculator
 
 trait ReturnVersionsCalculator {
 
-  def doCalculation[A <: BoxRetriever](boxRetriever: A): Set[Return] = {
+  def doCalculation[A <: BaseComposedBoxRetriever](boxRetriever: A): Set[Return] = {
+    import boxRetriever._
+    (ct600BoxRetriever(), ct600EBoxRetriever(), accountsBoxRetriever(), filingAttributesBoxRetriever()) match {
+      case (None, Some(ct600eRetriever), accountsRetriever, filingAttributesRetriever) =>
+
+    }
+
+
     boxRetriever match {
 
       case br: V3CT600EBoxRetriever with AccountsBoxRetriever with FilingAttributesBoxValueRetriever =>
