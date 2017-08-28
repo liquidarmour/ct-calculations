@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ct.accounts.approval.boxes
 
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
@@ -26,5 +27,5 @@ case class CompaniesHouseAccountsApproval(ac199A: List[AC199A] = List.empty, ac8
 
   override def value = this
 
-  override def approvalEnabled(boxRetriever: FilingAttributesBoxValueRetriever) = boxRetriever.coHoAccountsApprovalRequired().value
+  override def approvalEnabled(boxRetriever: AccountsBoxRetriever) = boxRetriever.coHoAccountsApprovalRequired().value
 }

@@ -19,12 +19,14 @@ package uk.gov.hmrc.ct.accounts.frs102.retriever
 import uk.gov.hmrc.ct.accounts.frs102.boxes._
 import uk.gov.hmrc.ct.accounts.frs102.boxes.loansToDirectors.LoansToDirectors
 import uk.gov.hmrc.ct.accounts.frs102.boxes.relatedPartyTransactions.RelatedPartyTransactions
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait Frs102AccountsBoxRetriever extends Frs10xAccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class Frs102AccountsBoxRetriever(accountsBoxRetriever: AccountsBoxRetriever,
+                                          frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
+                                          frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
+  extends Frs10xAccountsBoxRetriever(accountsBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever) {
 
   def ac16(): AC16
 

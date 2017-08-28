@@ -17,12 +17,14 @@
 package uk.gov.hmrc.ct.accounts.frs105.retriever
 
 import uk.gov.hmrc.ct.accounts.frs105.boxes._
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait Frs105AccountsBoxRetriever extends Frs10xAccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class Frs105AccountsBoxRetriever(accountsBoxRetriever: AccountsBoxRetriever,
+                                          frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
+                                          frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
+  extends Frs10xAccountsBoxRetriever(accountsBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever){
 
   def ac13(): AC13
 
@@ -74,7 +76,7 @@ trait Frs105AccountsBoxRetriever extends Frs10xAccountsBoxRetriever {
 
   def ac426(): AC426
 
-  def ac435(): AC435 = AC435.calculate(this)
+  def ac435(): AC435 = AC435.calculate(this, accountsBoxRetriever)
 
   def ac436(): AC436 = AC436.calculate(this)
 

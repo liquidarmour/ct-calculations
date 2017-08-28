@@ -26,8 +26,6 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 trait StubbedAccountsBoxRetriever extends Frsse2008AccountsBoxRetriever {
 
-  self: FilingAttributesBoxValueRetriever =>
-
   override def companyAddress(): CompanyAddress = ???
 
   override def ac1(): AC1 = ???

@@ -17,10 +17,12 @@
 package uk.gov.hmrc.ct.computations.retriever
 
 import uk.gov.hmrc.ct._
-import uk.gov.hmrc.ct.box.retriever.BoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 import uk.gov.hmrc.ct.computations._
 
-trait ComputationsBoxRetriever extends BoxRetriever {
+abstract class ComputationsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever,
+                                        val accountsBoxRetriever: AccountsBoxRetriever) extends BoxRetriever {
 
   def ap1(): AP1
 

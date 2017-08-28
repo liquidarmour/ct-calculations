@@ -17,28 +17,25 @@
 package uk.gov.hmrc.ct.version.calculations
 
 import org.joda.time.LocalDate
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct._
-import uk.gov.hmrc.ct.accounts.{AC2, AC205, AC206, AC3}
-import uk.gov.hmrc.ct.accounts.frsse2008._
-import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedAccountsBoxRetriever
-import uk.gov.hmrc.ct.box.CtValue
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.{AC2, AC3}
 import uk.gov.hmrc.ct.box.stubs.StubbedFilingAttributesBoxValueRetriever
-import uk.gov.hmrc.ct.computations._
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
-import uk.gov.hmrc.ct.computations.stubs.StubbedComputationsBoxRetriever
 import uk.gov.hmrc.ct.domain.CompanyTypes._
-import uk.gov.hmrc.ct.version.CoHoAccounts._
-import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105, FRSSE2008}
+import uk.gov.hmrc.ct.version.CoHoVersions.FRSSE2008
 import uk.gov.hmrc.ct.version.HmrcReturns._
 import uk.gov.hmrc.ct.version.HmrcVersions._
-import uk.gov.hmrc.ct.version.calculations.ReturnVersionsFixture.coHoOnlyMicroEntityFRSSE2008Returns
 import uk.gov.hmrc.ct.version.{Return, Version}
+import org.mockito.Mockito._
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.computations.{CP1, CP2}
 
-class ReturnVersionsCalculatorSpec extends WordSpec with Matchers {
+class ReturnVersionsCalculatorSpec extends WordSpec with Matchers with MockitoSugar {
 
   import ReturnVersionsFixture._
 
@@ -113,28 +110,28 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers {
 
       "match successfully for AccountsBoxRetriever" in {
 
-        val accountsBoxRetriever = new StubbedAccountsBoxRetriever with StubbedFilingAttributesBoxValueRetriever {
+        val accountsBoxRetriever = mock[AccountsBoxRetriever]
+        val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
 
-          override def abbreviatedAccountsFiling(): AbbreviatedAccountsFiling = AbbreviatedAccountsFiling(false)
-          override def statutoryAccountsFiling(): StatutoryAccountsFiling = StatutoryAccountsFiling(false)
-          override def microEntityFiling(): MicroEntityFiling = MicroEntityFiling(true)
-          override def companyType(): FilingCompanyType = FilingCompanyType(UkTradingCompany)
-          override def abridgedFiling(): AbridgedFiling = AbridgedFiling(false)
-          override def companiesHouseFiling(): CompaniesHouseFiling = CompaniesHouseFiling(true)
-          override def hmrcFiling(): HMRCFiling = HMRCFiling(false)
-          override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration(Some("EW"))
-          override def ac3(): AC3 = AC3(new LocalDate(2015,3,30))
-          override def ac2(): AC2 = AC2(Some("Random company name"))
-        }
+        when(filingAttributesBoxValueRetriever.abbreviatedAccountsFiling()).thenReturn(AbbreviatedAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(UkTradingCompany))
+        when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.countryOfRegistration()).thenReturn(CountryOfRegistration(Some("EW")))
+        when(accountsBoxRetriever.ac3()).thenReturn(AC3(new LocalDate(2015,3,30)))
+        when(accountsBoxRetriever.ac2()).thenReturn(AC2(Some("Random company name")))
 
-        ReturnVersionsCalculator.doCalculation(accountsBoxRetriever) shouldBe coHoOnlyMicroEntityFRSSE2008Returns
+        ReturnVersionsCalculator.doCalculation(filingAttributesBoxValueRetriever, Some(accountsBoxRetriever)) shouldBe coHoOnlyMicroEntityFRSSE2008Returns
       }
 
       "match successfully for ComputationsBoxRetriever" in {
+        val (computationsBoxRetriever, baseBoxRetriever, accountsBoxRetriever) = boxRetrieversForTest
+        when(accountsBoxRetriever.ac3()).thenReturn(AC3(new LocalDate(2015,3,30)))
 
-        ReturnVersionsCalculator.doCalculation(new ComputationsBoxRetrieverForTest with StubbedAccountsBoxRetriever {
-          override def ac3(): AC3 = AC3(new LocalDate(2015,3,30))
-        }) shouldBe jointMicroFRSSE2008V2Returns
+        ReturnVersionsCalculator.doCalculation(baseBoxRetriever, Some(computationsBoxRetriever)) shouldBe jointMicroFRSSE2008V2Returns
       }
     }
 
@@ -1223,9 +1220,38 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers {
       }
     }
   }
+  private def boxRetrieversForTest: (ComputationsBoxRetriever, FilingAttributesBoxValueRetriever, AccountsBoxRetriever) = {
+    val boxRetriever = mock[ComputationsBoxRetriever]
+    val baseBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+    val accountsBoxRetriever = mock[AccountsBoxRetriever]
+
+    when(boxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+
+    when(boxRetriever.cp1()).thenReturn(CP1(LocalDate.parse("2015-03-31")))
+
+    when(boxRetriever.cp2()).thenReturn(CP2(LocalDate.parse("2015-12-31")))
+
+    when(baseBoxRetriever.companyType()).thenReturn(FilingCompanyType(UkTradingCompany))
+
+    when(baseBoxRetriever.abbreviatedAccountsFiling()).thenReturn(AbbreviatedAccountsFiling(false))
+
+    when(baseBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+
+    when(baseBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+
+    when(baseBoxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(false))
+
+    when(baseBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+
+    when(baseBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+
+    when(baseBoxRetriever.hmrcAmendment()).thenReturn(HMRCAmendment(false))
+
+    (boxRetriever, baseBoxRetriever, accountsBoxRetriever)
+  }
 }
 
-class ReturnVersionsCalculatorWithDefaults extends  ReturnVersionsCalculator {
+class ReturnVersionsCalculatorWithDefaults extends ReturnVersionsCalculator {
   override def calculateReturnVersions(
                                         poaStartDate: LocalDate = new LocalDate(2015, 3, 30),
                                         apStartDate: Option[LocalDate] = None,
@@ -1256,36 +1282,11 @@ class ReturnVersionsCalculatorWithDefaults extends  ReturnVersionsCalculator {
     )
   }
 }
-
-class ComputationsBoxRetrieverForTest extends StubbedComputationsBoxRetriever with StubbedFilingAttributesBoxValueRetriever {
-
-  self: Frsse2008AccountsBoxRetriever =>
-
-  override def cp1(): CP1 = CP1(LocalDate.parse("2015-03-31"))
-
-  override def cp2(): CP2 = CP2(LocalDate.parse("2015-12-31"))
-
-  override def companyType(): FilingCompanyType = FilingCompanyType(UkTradingCompany)
-
-  override def abbreviatedAccountsFiling(): AbbreviatedAccountsFiling = AbbreviatedAccountsFiling(false)
-
-  override def statutoryAccountsFiling(): StatutoryAccountsFiling = StatutoryAccountsFiling(false)
-
-  override def microEntityFiling(): MicroEntityFiling = MicroEntityFiling(true)
-
-  override def abridgedFiling(): AbridgedFiling = AbridgedFiling(false)
-
-  override def companiesHouseFiling(): CompaniesHouseFiling = CompaniesHouseFiling(true)
-
-  override def hmrcFiling(): HMRCFiling = HMRCFiling(true)
-
-  override def hmrcAmendment(): HMRCAmendment = HMRCAmendment(false)
-
-  override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration.EnglandWales
-
-  override def ac205(): AC205 = ???
-
-  override def ac206(): AC206 = ???
-
-  override def ac2(): AC2 = ???
-}
+//
+//
+//{
+//
+//  self: Frsse2008AccountsBoxRetriever =>
+//
+//
+//}

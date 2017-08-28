@@ -121,7 +121,7 @@ case class Director(id: String,
   }
 
   def validateAppointmentDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
-    (ac8007, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
+    (ac8007, boxRetriever.accountsBoxRetriever.ac3().value, boxRetriever.accountsBoxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8007.$id", ac8007, ac3, ac4, "ac8007")
       case _ => Set()
     }
@@ -135,7 +135,7 @@ case class Director(id: String,
   }
 
   def validateResignationDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
-    (ac8013, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
+    (ac8013, boxRetriever.accountsBoxRetriever.ac3().value, boxRetriever.accountsBoxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8013.$id", ac8013, ac3, ac4, "ac8013")
       case _ => Set()
     }

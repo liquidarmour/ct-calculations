@@ -22,9 +22,7 @@ import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxR
 import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 import uk.gov.hmrc.ct.ct600j.v3._
 
-trait CT600JBoxRetriever extends BoxRetriever {
-
-  self: AboutThisReturnBoxRetriever =>
+abstract class CT600JBoxRetriever(val aboutThisReturnBoxRetriever: AboutThisReturnBoxRetriever) extends BoxRetriever {
 
   def j1(): J1 = {
     this match {

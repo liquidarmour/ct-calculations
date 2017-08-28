@@ -20,10 +20,10 @@ import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 trait DirectorsReportEnabledCalculator {
-  def calculateDirectorsReportEnabled(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Boolean = {
-    val isCoHoFiling = boxRetriever.companiesHouseFiling().value
-    val isHmrcFiling = boxRetriever.hmrcFiling().value
-    val isMicroEntityFiling = boxRetriever.microEntityFiling().value
+  def calculateDirectorsReportEnabled(boxRetriever: Frs10xDirectorsBoxRetriever): Boolean = {
+    val isCoHoFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling().value
+    val isHmrcFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
+    val isMicroEntityFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.microEntityFiling().value
     val answeredYesToCoHoDirectorsReportQuestion = boxRetriever.ac8021().orFalse
     val answeredYesToHmrcDirectorsReportQuestion = boxRetriever.ac8023().orFalse
 

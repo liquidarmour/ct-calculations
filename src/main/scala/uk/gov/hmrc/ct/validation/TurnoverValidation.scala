@@ -21,6 +21,7 @@ import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.ValidatableBox.{commaForThousands, _}
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.domain.CompanyTypes
 import uk.gov.hmrc.ct.utils.DateImplicits._
 
@@ -69,7 +70,7 @@ trait TurnoverValidation extends Validators {
     val daysInYear = getDaysInYear(boxRetriever, start, end)
 
     val isCharity = boxRetriever match {
-      case fabr: FilingAttributesBoxValueRetriever => CompanyTypes.AllCharityTypes.contains(fabr.companyType().value)
+      case fabr: ComputationsBoxRetriever => CompanyTypes.AllCharityTypes.contains(fabr.filingAttributesBoxValueRetriever.companyType().value)
       case _ => false
     }
 

@@ -20,10 +20,7 @@ import org.joda.time.LocalDate
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.Tables.Table
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.CountryOfRegistration
-import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedAccountsBoxRetriever
-import uk.gov.hmrc.ct.computations.stubs.StubbedComputationsBoxRetriever
+import uk.gov.hmrc.ct.mocks.MockComputationsBoxRetriever
 
 class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
@@ -114,22 +111,22 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = new TestComputationsRetriever(
-            lec01 = lec01,
-            cpq8 = cpq8,
-            cp78 = cp78,
-            cp79 = cp79,
-            cp80 = cp80,
-            cp82 = cp82,
-            cp83 = cp83,
-            cp87Input = cp87_Input,
-            cp88 = cp88,
-            cp89 = cp89,
-            cp666 = cp666,
-            cp667 = cp667,
-            cp668 = cp668,
-            cp672 = cp672
-          ) with StubbedAccountsBoxRetriever
+          val retriever = MockComputationsBoxRetriever(
+            lec01Param = lec01,
+            cpq8Param = cpq8,
+            cp78Param = cp78,
+            cp79Param = cp79,
+            cp80Param = cp80,
+            cp82Param = cp82,
+            cp83Param = cp83,
+            cp87InputParam = cp87_Input,
+            cp88Param = cp88,
+            cp89Param = cp89,
+            cp666Param = cp666,
+            cp667Param = cp667,
+            cp668Param = cp668,
+            cp672Param = cp672
+          )
 
           assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
           assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
@@ -182,19 +179,19 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = new TestComputationsRetriever(
-            lec01 = lec01,
-            cpq8 = cpq8,
-            cp78 = cp78,
-            cp79 = cp79,
-            cp80 = cp80,
-            cp82 = cp82,
-            cp83 = cp83,
-            cp84 = cp84,
-            cp666 = cp666,
-            cp673 = cp673,
-            cp674 = cp674
-          ) with Frsse2008AccountsBoxRetriever
+          val retriever = MockComputationsBoxRetriever(
+            lec01Param = lec01,
+            cpq8Param = cpq8,
+            cp78Param = cp78,
+            cp79Param = cp79,
+            cp80Param = cp80,
+            cp82Param = cp82,
+            cp83Param = cp83,
+            cp84Param = cp84,
+            cp666Param = cp666,
+            cp673Param = cp673,
+            cp674Param = cp674
+          )
 
           assert(retriever.cp90().value equals cp90, clue("CP90", retriever.cp90().value, cp90))
           assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
@@ -209,10 +206,6 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
   }
 
-  def testing(scenario: String, lec01: List[Car], cpq8: Option[Boolean], cp78: Option[Int], cp666: Option[Int], cp81_Input: Option[Int], cp82: Option[Int], cp83: Option[Int], cp667: Option[Int], cp672: Option[Int], cp87_Input: Option[Int], cp668: Option[Int], cp670: Option[Int], cp88: Option[Int], cp89: Option[Int], cp186: Option[Int], cp91: Option[Int], cp671: Option[Int], cp92: Option[Int], cp669: Option[Int]): Unit = {
-
-  }
-
   private def clue(boxId: String, calcValue: Option[Int], expectedValue: Option[Int]) = s"Calculated value $boxId of $calcValue was not equal to expected $expectedValue"
 
   private def fyaRatePoolCar(value: Int) = Car(regNumber = "ABC123Z", isNew = true, price = value, emissions = 110, dateOfPurchase = new LocalDate("2013-03-31"))
@@ -221,61 +214,4 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
   private def specialRatePoolCar(value: Int) = Car(regNumber = "XYZ789C", isNew = true, price = value, emissions = 161, dateOfPurchase = new LocalDate("2013-03-31"))
 
-  class TestComputationsRetriever(lec01: List[Car],
-                                  cpq8: Option[Boolean],
-                                  cp78: Option[Int] = None,
-                                  cp79: Option[Int] = None,
-                                  cp80: Option[Int] = None,
-                                  cp82: Option[Int] = None,
-                                  cp83: Option[Int] = None,
-                                  cp84: Option[Int] = None,
-                                  cp87Input: Option[Int] = None,
-                                  cp88: Option[Int] = None,
-                                  cp89: Option[Int] = None,
-                                  cp666: Option[Int] = None,
-                                  cp667: Option[Int] = None,
-                                  cp668: Option[Int] = None,
-                                  cp672: Option[Int] = None,
-                                  cp673: Option[Int] = None,
-                                  cp674: Option[Int] = None
-                                   ) extends StubbedComputationsBoxRetriever {
-
-    self: Frsse2008AccountsBoxRetriever =>
-
-    override def lec01: LEC01 = LEC01(lec01)
-
-    override def cpQ8: CPQ8 = CPQ8(cpq8)
-
-    override def cp78: CP78 = CP78(cp78)
-
-    override def cp666: CP666 = CP666(cp666)
-
-    override def cp79: CP79 = CP79(cp79)
-
-    override def cp80: CP80 = CP80(cp80)
-
-    override def cp82: CP82 = CP82(cp82)
-
-    override def cp83: CP83 = CP83(cp83)
-
-    override def cp84: CP84 = CP84(cp84)
-
-    override def cp667: CP667 = CP667(cp667)
-
-    override def cp672: CP672 = CP672(cp672)
-
-    override def cp673: CP673 = CP673(cp673)
-
-    override def cp674: CP674 = CP674(cp674)
-
-    override def cp87Input: CP87Input = CP87Input(cp87Input)
-
-    override def cp88: CP88 = CP88(cp88)
-
-    override def cp89: CP89 = CP89(cp89)
-
-    override def cp668: CP668 = CP668(cp668)
-
-    override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration.EnglandWales
-  }
 }

@@ -25,9 +25,9 @@ import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 // was B44
 case class B335(value: Int) extends CtBoxIdentifier("Amount of profit FY1") with CtInteger
 
-object B335 extends CorporationTaxCalculator with Calculated[B335, ComputationsBoxRetriever] {
+object B335 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): B335 = {
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): B335 = {
       calculateApportionedProfitsChargeableFy1(
         CorporationTaxCalculatorParameters(
           fieldValueRetriever.cp295(),

@@ -55,14 +55,16 @@ class CP7Spec extends WordSpec with Matchers with MockitoSugar {
         s"check validation when empty for $companyType" in {
 
           forAll(testTable) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, cp7Value: Option[Int], required: Boolean, message: String) =>
-            val boxRetriever = mock[TestComputationsBoxRetriever]
+            val boxRetriever = mock[ComputationsBoxRetriever]
+            val baseBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+            when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(baseBoxRetriever)
 
             when(boxRetriever.cp1()).thenReturn(CP1(new LocalDate(startDateString)))
             when(boxRetriever.cp2()).thenReturn(CP2(new LocalDate(endDateString)))
-            when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-            when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-            when(boxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-            when(boxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
+            when(baseBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+            when(baseBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+            when(baseBoxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+            when(baseBoxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
             val validationResult = CP7(cp7Value).validate(boxRetriever)
             if (required)
@@ -436,14 +438,15 @@ class CP7Spec extends WordSpec with Matchers with MockitoSugar {
 
       s"testing validation for $companyType" when {
         forAll(table) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, cp7Value: Int, expectedErrorKey: String, message: String) =>
-          val boxRetriever = mock[TestComputationsBoxRetriever]
-
+          val boxRetriever = mock[ComputationsBoxRetriever]
+          val baseBoxRetriever = mock[FilingAttributesBoxValueRetriever]
+          when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(baseBoxRetriever)
           when(boxRetriever.cp1()).thenReturn(CP1(new LocalDate(startDateString)))
           when(boxRetriever.cp2()).thenReturn(CP2(new LocalDate(endDateString)))
-          when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
-          when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
-          when(boxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-          when(boxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
+          when(baseBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
+          when(baseBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
+          when(baseBoxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+          when(baseBoxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
           s"$message : $cp7Value" in {
             val validationResult = CP7(Some(cp7Value)).validate(boxRetriever)
@@ -465,5 +468,3 @@ class CP7Spec extends WordSpec with Matchers with MockitoSugar {
 }
 
 case class CP7Holder(cp7: CP7)
-
-trait TestComputationsBoxRetriever extends ComputationsBoxRetriever with FilingAttributesBoxValueRetriever

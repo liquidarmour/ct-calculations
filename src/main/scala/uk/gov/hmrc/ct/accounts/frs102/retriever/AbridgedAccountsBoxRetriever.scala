@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.ct.accounts.frs102.retriever
 
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 
-trait AbridgedAccountsBoxRetriever extends Frs102AccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
-
-}
+abstract class AbridgedAccountsBoxRetriever(accountsBoxRetriever: AccountsBoxRetriever,
+                                            frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
+                                            frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
+  extends Frs102AccountsBoxRetriever(accountsBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever)

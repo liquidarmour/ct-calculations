@@ -23,9 +23,8 @@ import uk.gov.hmrc.ct.accounts.frsse2008.boxes.micro._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-trait Frsse2008AccountsBoxRetriever extends AccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class Frsse2008AccountsBoxRetriever(filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
+  extends AccountsBoxRetriever(filingAttributesBoxValueRetriever) {
 
   def ac12(): AC12
 
@@ -35,9 +34,9 @@ trait Frsse2008AccountsBoxRetriever extends AccountsBoxRetriever {
 
   def ac15(): AC15
 
-  def ac16(): AC16 = AC16.calculate(this)
+  def ac16(): AC16 = AC16.calculate(this, filingAttributesBoxValueRetriever)
 
-  def ac17(): AC17 = AC17.calculate(this)
+  def ac17(): AC17 = AC17.calculate(this, filingAttributesBoxValueRetriever)
 
   def ac18(): AC18
 
@@ -103,9 +102,9 @@ trait Frsse2008AccountsBoxRetriever extends AccountsBoxRetriever {
 
   def ac426(): AC426
 
-  def ac435(): AC435 = AC435.calculate(this)
+  def ac435(): AC435 = AC435.calculate(this, filingAttributesBoxValueRetriever)
 
-  def ac436(): AC436 = AC436.calculate(this)
+  def ac436(): AC436 = AC436.calculate(this, filingAttributesBoxValueRetriever)
 
   def ac492(): AC492
 

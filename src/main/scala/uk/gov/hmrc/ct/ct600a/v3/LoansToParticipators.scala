@@ -19,6 +19,7 @@ package uk.gov.hmrc.ct.ct600a.v3
 import org.joda.time.LocalDate
 import uk.gov.hmrc.cato.time.DateHelper
 import uk.gov.hmrc.ct.box._
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600a.v3.LoansToParticipators._
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 import uk.gov.hmrc.ct.domain.ValidationConstants._
@@ -61,8 +62,8 @@ case class Loan ( id: String,
     validateLoan(invalidLoanBeforeApril2016Amount, s"loans.$loanIndex.beforeApril2016Amount.value", Some(Seq(amount.getOrElse(0).toString))) ++
     validateLoan(invalidBalancedBeforeApril2016Amount, s"loans.$loanIndex.unbalanced.beforeApril2016Amount", balancedBeforeApril2016AmountArgs) ++
     validateLoan(invalidBalancedAfterApril2016Amount, s"loans.$loanIndex.unbalanced.afterApril2016Amount", balancedAfterApril2016AmountArgs) ++
-    repaymentWithin9Months.map(_.validateWithin9Months(boxRetriever, loanIndex)).getOrElse(Set()) ++
-    otherRepayments.foldRight(Set[CtValidation]())((repayment, tail) => repayment.validateAfter9Months(boxRetriever, loansToParticipators, loanIndex) ++ tail) ++
+    repaymentWithin9Months.map(_.validateWithin9Months(boxRetriever.computationsBoxRetriever, loanIndex)).getOrElse(Set()) ++
+    otherRepayments.foldRight(Set[CtValidation]())((repayment, tail) => repayment.validateAfter9Months(boxRetriever.computationsBoxRetriever, loansToParticipators, loanIndex) ++ tail) ++
     writeOffs.foldRight(Set[CtValidation]())((writeOff, tail) => writeOff.validate(boxRetriever, loansToParticipators, loanIndex) ++ tail)
   }
 
@@ -134,7 +135,7 @@ case class Repayment(id: String, amount: Option[Int], amountBefore06042016: Opti
   val repaymentWithin9monthsErrorCode = "repaymentWithin9Months"
   val repaymentAfter9MonthsErrorCode = "otherRepayments"
 
-  def validateAfter9Months(boxRetriever: CT600ABoxRetriever, loansToParticipators: LoansToParticipators, loanIndex: Int): Set[CtValidation] = {
+  def validateAfter9Months(boxRetriever: ComputationsBoxRetriever, loansToParticipators: LoansToParticipators, loanIndex: Int): Set[CtValidation] = {
     val repaymentIndex = findOtherRepaymentIndex(loanIndex, this, loansToParticipators)
 
     validateRepayment(invalidDateAfter9Months(boxRetriever), s"$repaymentAfter9MonthsErrorCode.$repaymentIndex.date.range", errorArgsOtherRepaymentsDate(boxRetriever), loanIndex) ++
@@ -144,21 +145,21 @@ case class Repayment(id: String, amount: Option[Int], amountBefore06042016: Opti
     validateRepayment(invalidApEndDateRange(boxRetriever), s"$repaymentAfter9MonthsErrorCode.$repaymentIndex.endDateOfAP.range", errorArgsOtherRepaymentsApEndDate(boxRetriever), loanIndex)
   }
 
-  def validateWithin9Months(boxRetriever: CT600ABoxRetriever, loanIndex: Int): Set[CtValidation] = {
+  def validateWithin9Months(boxRetriever: ComputationsBoxRetriever, loanIndex: Int): Set[CtValidation] = {
     validateRepayment(invalidDateWithin9Months(boxRetriever), s"$repaymentWithin9monthsErrorCode.date.range",  errorArgsRepaymentsWith9MonthsDate(boxRetriever), loanIndex) ++
     validateRepayment(invalidRepaymentAmount, s"$repaymentWithin9monthsErrorCode.amount.value", None, loanIndex) ++
     validateRepayment(invalidRepaymentBeforeApril2016AmountWithin9Months, s"$repaymentWithin9monthsErrorCode.beforeApril2016Amount.value", Some(Seq(amount.getOrElse(0).toString)), loanIndex)
   }
 
-  private def invalidDateWithin9Months(boxRetriever: CT600ABoxRetriever): Boolean = !date.exists(_ > currentAPEndDate(boxRetriever)) || date.exists(_ > earlierOfNowAndAPEndDatePlus9Months(boxRetriever)) || date.isEmpty
+  private def invalidDateWithin9Months(boxRetriever: ComputationsBoxRetriever): Boolean = !date.exists(_ > currentAPEndDate(boxRetriever)) || date.exists(_ > earlierOfNowAndAPEndDatePlus9Months(boxRetriever)) || date.isEmpty
 
-  private def invalidDateAfter9Months(boxRetriever: CT600ABoxRetriever): Boolean = {
+  private def invalidDateAfter9Months(boxRetriever: ComputationsBoxRetriever): Boolean = {
     !(date.exists(_ > currentAPEndDatePlus9Months(boxRetriever)) && date.exists(_ <= DateHelper.now().toDateTimeAtStartOfDay.toLocalDate)) || date.isEmpty
   }
 
   private def invalidApEndDateRequired: Boolean = endDateOfAP.isEmpty
 
-  private def invalidApEndDateRange(boxRetriever: CT600ABoxRetriever): Boolean = !endDateOfAP.map(_ > currentAPEndDate(boxRetriever)).getOrElse(true)
+  private def invalidApEndDateRange(boxRetriever: ComputationsBoxRetriever): Boolean = !endDateOfAP.map(_ > currentAPEndDate(boxRetriever)).getOrElse(true)
 
   private def invalidRepaymentAmount: Boolean = amount.exists(_ < MIN_MONEY_AMOUNT_ALLOWED) || amount.exists(_ > MAX_MONEY_AMOUNT_ALLOWED) || amount.isEmpty
 
@@ -173,11 +174,11 @@ case class Repayment(id: String, amount: Option[Int], amountBefore06042016: Opti
     }
   }
 
-  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
+  def currentAPEndDatePlus9Months(boxRetriever: ComputationsBoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
 
-  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value
+  def currentAPEndDate(boxRetriever: ComputationsBoxRetriever): LocalDate = boxRetriever.cp2().value
 
-  def earlierOfNowAndAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = {
+  def earlierOfNowAndAPEndDatePlus9Months(boxRetriever: ComputationsBoxRetriever): LocalDate = {
     currentAPEndDatePlus9Months(boxRetriever) < dateAtStartOfToday match {
       case true => currentAPEndDatePlus9Months(boxRetriever)
       case _ => dateAtStartOfToday
@@ -186,13 +187,13 @@ case class Repayment(id: String, amount: Option[Int], amountBefore06042016: Opti
 
   def dateAtStartOfToday: LocalDate = DateHelper.now().toDateTimeAtStartOfDay.toLocalDate
 
-  def errorArgsRepaymentsWith9MonthsDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
+  def errorArgsRepaymentsWith9MonthsDate(boxRetriever: ComputationsBoxRetriever): Some[Seq[String]] =
     Some(Seq(toErrorArgsFormat(currentAPEndDate(boxRetriever)), toErrorArgsFormat(earlierOfNowAndAPEndDatePlus9Months(boxRetriever))))
 
-  def errorArgsOtherRepaymentsDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
+  def errorArgsOtherRepaymentsDate(boxRetriever: ComputationsBoxRetriever): Some[Seq[String]] =
     Some(Seq(toErrorArgsFormat(currentAPEndDatePlus9Months(boxRetriever).plusDays(1)), toErrorArgsFormat(DateHelper.now())))
 
-  def errorArgsOtherRepaymentsApEndDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
+  def errorArgsOtherRepaymentsApEndDate(boxRetriever: ComputationsBoxRetriever): Some[Seq[String]] =
     Some(Seq(toErrorArgsFormat(currentAPEndDate(boxRetriever))))
 }
 
@@ -203,27 +204,27 @@ case class WriteOff(id: String, amount: Option[Int], amountBefore06042016: Optio
   def validate(boxRetriever: CT600ABoxRetriever, loansToParticipators: LoansToParticipators, loanIndex: Int): Set[CtValidation] = {
     val writeOffIndex = findWriteOffIndex(loanIndex, this, loansToParticipators)
 
-    validateWriteOff(invalidDate(boxRetriever), s"$writeOffErrorCode.$writeOffIndex.date.range", errorArgsWriteOffDate(boxRetriever), loanIndex) ++
+    validateWriteOff(invalidDate(boxRetriever.computationsBoxRetriever), s"$writeOffErrorCode.$writeOffIndex.date.range", errorArgsWriteOffDate(boxRetriever.computationsBoxRetriever), loanIndex) ++
     validateWriteOff(invalidWriteOffAmount, s"$writeOffErrorCode.$writeOffIndex.amount.value", None, loanIndex) ++
     validateWriteOff(invalidWriteOffBeforeApril2016Amount, s"$writeOffErrorCode.$writeOffIndex.beforeApril2016Amount.value", Some(Seq(amount.toString)), loanIndex) ++
-    validateWriteOff(invalidApEndDateRequired(boxRetriever), s"$writeOffErrorCode.$writeOffIndex.endDateOfAP.required", None, loanIndex) ++
-    validateWriteOff(invalidApEndDateRange(boxRetriever), s"$writeOffErrorCode.$writeOffIndex.endDateOfAP.range", errorArgsWriteOffApEndDate(boxRetriever), loanIndex)
+    validateWriteOff(invalidApEndDateRequired(boxRetriever.computationsBoxRetriever), s"$writeOffErrorCode.$writeOffIndex.endDateOfAP.required", None, loanIndex) ++
+    validateWriteOff(invalidApEndDateRange(boxRetriever.computationsBoxRetriever), s"$writeOffErrorCode.$writeOffIndex.endDateOfAP.range", errorArgsWriteOffApEndDate(boxRetriever.computationsBoxRetriever), loanIndex)
   }
 
-  private def invalidDate(boxRetriever: CT600ABoxRetriever): Boolean = !(date.exists(_ > currentAPEndDate(boxRetriever)) && date.exists(_ < DateHelper.now().plusDays(1).toDateTimeAtStartOfDay.toLocalDate)) || date.isEmpty
+  private def invalidDate(boxRetriever: ComputationsBoxRetriever): Boolean = !(date.exists(_ > currentAPEndDate(boxRetriever)) && date.exists(_ < DateHelper.now().plusDays(1).toDateTimeAtStartOfDay.toLocalDate)) || date.isEmpty
 
   private def invalidWriteOffAmount: Boolean = amount.exists(_ < MIN_MONEY_AMOUNT_ALLOWED) || amount.exists(_ > MAX_MONEY_AMOUNT_ALLOWED) || amount.isEmpty
 
   private def invalidWriteOffBeforeApril2016Amount: Boolean = amountBefore06042016.exists(ab => ab < 0 || amount.exists(_ < ab))
 
-  private def invalidApEndDateRequired(boxRetriever: CT600ABoxRetriever): Boolean = {
+  private def invalidApEndDateRequired(boxRetriever: ComputationsBoxRetriever): Boolean = {
     date.exists(_ > currentAPEndDatePlus9Months(boxRetriever)) match {
       case true => endDateOfAP.isEmpty
       case _ => false
     }
   }
 
-  private def invalidApEndDateRange(boxRetriever: CT600ABoxRetriever): Boolean = !endDateOfAP.map(_ > currentAPEndDate(boxRetriever)).getOrElse(true)
+  private def invalidApEndDateRange(boxRetriever: ComputationsBoxRetriever): Boolean = !endDateOfAP.map(_ > currentAPEndDate(boxRetriever)).getOrElse(true)
 
   def validateWriteOff(invalid: Boolean, errorMsg: String, errorArgs: Option[Seq[String]], loanIndex: Int): Set[CtValidation] = {
     invalid match {
@@ -232,14 +233,14 @@ case class WriteOff(id: String, amount: Option[Int], amountBefore06042016: Optio
     }
   }
 
-  def currentAPEndDate(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value
+  def currentAPEndDate(boxRetriever: ComputationsBoxRetriever): LocalDate = boxRetriever.cp2().value
 
-  def currentAPEndDatePlus9Months(boxRetriever: CT600ABoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
+  def currentAPEndDatePlus9Months(boxRetriever: ComputationsBoxRetriever): LocalDate = boxRetriever.cp2().value.plusMonths(9)
 
-  def errorArgsWriteOffApEndDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
+  def errorArgsWriteOffApEndDate(boxRetriever: ComputationsBoxRetriever): Some[Seq[String]] =
     Some(Seq(toErrorArgsFormat(boxRetriever.cp2().value)))
 
-  def errorArgsWriteOffDate(boxRetriever: CT600ABoxRetriever): Some[Seq[String]] =
+  def errorArgsWriteOffDate(boxRetriever: ComputationsBoxRetriever): Some[Seq[String]] =
     Some(Seq(toErrorArgsFormat(boxRetriever.cp2().value.plusDays(1)), toErrorArgsFormat(DateHelper.now())))
 
 }

@@ -19,9 +19,8 @@ package uk.gov.hmrc.ct.accounts.retriever
 import uk.gov.hmrc.ct.accounts._
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait AccountsBoxRetriever extends BoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
+  extends AccountsApprovalRequiredBoxRetriever {
 
   def companyAddress(): CompanyAddress
 

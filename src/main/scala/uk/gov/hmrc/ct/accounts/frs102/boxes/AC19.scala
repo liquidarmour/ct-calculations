@@ -30,7 +30,7 @@ case class AC19(value: Option[Int]) extends CtBoxIdentifier(name = "Distribution
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
-      validateInputAllowed("AC19", boxRetriever.ac205()),
+      validateInputAllowed("AC19", boxRetriever.accountsBoxRetriever.ac205()),
       validateMoney(value)
     )
   }

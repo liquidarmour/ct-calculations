@@ -25,14 +25,16 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 class ProfitAndLossStatementRequiredSpec extends WordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
-  trait MockRetriever extends Frs10xDormancyBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever
+  trait MockRetriever extends Frs10xDormancyBoxRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever
   val mockBoxRetriever: MockRetriever = mock[MockRetriever] (RETURNS_SMART_NULLS)
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+
 
   "NotTradedStatementRequired should" should {
 
     "be false if not dormant" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(mockBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
       ProfitAndLossStatementRequired.calculate(mockBoxRetriever) shouldBe ProfitAndLossStatementRequired(false)
 
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
@@ -42,7 +44,7 @@ class ProfitAndLossStatementRequiredSpec extends WordSpec with Matchers with Moc
     "be false if dormant, coho only and not filing P&L to coho" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(mockBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
       when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
       ProfitAndLossStatementRequired.calculate(mockBoxRetriever) shouldBe ProfitAndLossStatementRequired(false)
     }
@@ -50,11 +52,11 @@ class ProfitAndLossStatementRequiredSpec extends WordSpec with Matchers with Moc
     "be true if dormant and 1) not coho only or 2) filing P&L to coho" in {
       when(mockBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(mockBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
       when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
       ProfitAndLossStatementRequired.calculate(mockBoxRetriever) shouldBe ProfitAndLossStatementRequired(true)
 
-      when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(mockBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
       when(mockBoxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
       ProfitAndLossStatementRequired.calculate(mockBoxRetriever) shouldBe ProfitAndLossStatementRequired(true)
     }

@@ -19,11 +19,9 @@ package uk.gov.hmrc.ct.accounts.frs10x.retriever
 import uk.gov.hmrc.ct.accounts.frs102.helper.DirectorsReportEnabled
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{Directors, _}
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever}
 
-trait Frs10xDirectorsBoxRetriever extends AccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class Frs10xDirectorsBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever) extends BoxRetriever {
 
   def ac8021(): AC8021
 
