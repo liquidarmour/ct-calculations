@@ -17,13 +17,14 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.{MockAbridgedAccountsRetriever, AccountsMoneyValidationFixture}
+import uk.gov.hmrc.ct.accounts.{AccountsMoneyValidationFixture, MockAbridgedAccountsRetriever}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 
 class AC117Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with MockAbridgedAccountsRetriever {
 
-  override def setUpMocks() = {
-    super.setUpMocks()
+  override def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever) = {
+    super.setUpMocks(accountsBoxRetriever)
 
     import boxRetriever._
 
@@ -35,7 +36,7 @@ class AC117Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
   "AC117" should {
 
     "validate successfully if nothing is wrong" in {
-      setUpMocks()
+      setUpMocks(accountsBoxRetriever)
       AC117(Some(10)).validate(boxRetriever) shouldBe Set.empty
     }
 

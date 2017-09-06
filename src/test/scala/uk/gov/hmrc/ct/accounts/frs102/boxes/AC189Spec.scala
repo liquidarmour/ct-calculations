@@ -17,22 +17,22 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.{AccountsMoneyValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.ACQ8999
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDormancyBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AccountsMoneyValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC189Spec extends WordSpec
   with MockitoSugar
   with Matchers
   with MockFrs102AccountsRetriever
-  with AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever with Frs10xDormancyBoxRetriever] {
+  with AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] {
 
-  override def setUpMocks(): Unit = {
-    when(boxRetriever.acq8999()).thenReturn(ACQ8999(None))
+  override def setUpMocks(accountsRetriever: AccountsBoxRetriever): Unit = {
+    when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
     when(boxRetriever.ac76()).thenReturn(AC76(Some(100)))
     when(boxRetriever.ac187()).thenReturn(AC187(Some(true)))
     when(boxRetriever.ac189()).thenReturn(AC189(Some(10)))
@@ -49,21 +49,21 @@ class AC189Spec extends WordSpec
     }
 
     "pass validation when the company is dormant and AC187 is empty and this is empty" in {
-      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.ac187()).thenReturn(AC187(None))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(10)))
       AC189(None).validate(boxRetriever) shouldBe empty
     }
 
     "pass validation when the company is dormant and AC187 is false and this is empty" in {
-      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.ac187()).thenReturn(AC187(Some(false)))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(10)))
       AC189(None).validate(boxRetriever) shouldBe empty
     }
 
     "fail validation when the company is dormant and AC187 is true and this is empty" in {
-      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.ac187()).thenReturn(AC187(Some(true)))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(10)))
       AC189(None).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC189"), "error.AC189.required"))

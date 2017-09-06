@@ -20,12 +20,13 @@ import org.mockito.Mockito._
 import uk.gov.hmrc.ct.accounts.AccountsMoneyValidationFixture
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.MockAbridgedAccountsRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC115AbridgedSpec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with MockAbridgedAccountsRetriever {
 
-  override def setUpMocks() = {
-    super.setUpMocks()
+  override def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever) = {
+    super.setUpMocks(accountsBoxRetriever)
 
     import boxRetriever._
 
@@ -48,20 +49,20 @@ class AC115AbridgedSpec extends AccountsMoneyValidationFixture[Frs102AccountsBox
   "AC115" should {
 
     "throw global error when none of the fields for the note is entered" in {
-      setUpMocks()
+      setUpMocks(accountsBoxRetriever)
       when(boxRetriever.ac5123()).thenReturn(AC5123(None))
       AC115(Some(10)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.balanceSheet.intangibleAssets.atLeastOneEntered"))
     }
 
     "throw global error when one field was entered but not cannot be set" in {
-      setUpMocks()
+      setUpMocks(accountsBoxRetriever)
       when(boxRetriever.ac42()).thenReturn(AC42(None))
       when(boxRetriever.ac43()).thenReturn(AC43(None))
       AC115(Some(10)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.balanceSheet.intangibleAssetsNote.cannot.exist"))
     }
 
     "validate successfully if nothing is wrong" in {
-      setUpMocks()
+      setUpMocks(accountsBoxRetriever)
       AC115(Some(10)).validate(boxRetriever) shouldBe Set.empty
     }
 

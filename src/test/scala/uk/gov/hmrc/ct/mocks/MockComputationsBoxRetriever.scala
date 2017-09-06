@@ -21,14 +21,7 @@ object MockComputationsBoxRetriever {
             cp668Param: Option[Int] = None,
             cp672Param: Option[Int] = None,
             cp673Param: Option[Int] = None,
-            cp674Param: Option[Int] = None,
-            cato02Param: Int = 0,
-            cato20Param: Int = 0,
-            cato21Param: Int = 0,
-            cato22Param: Int = 0,
-            cpAux1Param: Int = 0,
-            cpAux2Param: Int = 0,
-            cpAux3Param: Int = 0): MockComputationsBoxRetriever = {
+            cp674Param: Option[Int] = None): MockComputationsBoxRetriever = {
     val baseBoxRetriever = MockFilingAttributesBoxRetriever()
     new MockComputationsBoxRetriever(lec01Param = lec01Param,
       cpq8Param = cpq8Param,
@@ -46,14 +39,7 @@ object MockComputationsBoxRetriever {
       cp668Param = cp668Param,
       cp672Param = cp672Param,
       cp673Param = cp673Param,
-      cp674Param = cp674Param,
-      cato02Param = cato02Param,
-      cato20Param = cato20Param,
-      cato21Param = cato21Param,
-      cato22Param = cato22Param,
-      cpAux1Param = cpAux1Param,
-      cpAux2Param = cpAux2Param,
-      cpAux3Param = cpAux3Param)(
+      cp674Param = cp674Param)(
       baseBoxRetriever,
       MockAccountsBoxRetriever(baseBoxRetriever)
     )
@@ -76,30 +62,9 @@ class MockComputationsBoxRetriever(lec01Param: List[Car] = List.empty,
                                    cp668Param: Option[Int] = None,
                                    cp672Param: Option[Int] = None,
                                    cp673Param: Option[Int] = None,
-                                   cp674Param: Option[Int] = None,
-                                   cato02Param: Int = 0,
-                                   cato20Param: Int = 0,
-                                   cato21Param: Int = 0,
-                                   cato22Param: Int = 0,
-                                   cpAux1Param: Int = 0,
-                                   cpAux2Param: Int = 0,
-                                   cpAux3Param: Int = 0)(mockFilingAttributesBoxRetriever: MockFilingAttributesBoxRetriever,
+                                   cp674Param: Option[Int] = None)(mockFilingAttributesBoxRetriever: MockFilingAttributesBoxRetriever,
                                    mockAccountsBoxRetriever: MockAccountsBoxRetriever)
-  extends ComputationsBoxRetriever(mockFilingAttributesBoxRetriever, mockAccountsBoxRetriever) {
-
-  override def cato02() = CATO02(cato02Param)
-
-  override def cato20() = CATO20(cato20Param)
-
-  override def cato21() = CATO21(cato21Param)
-
-  override def cato22() = CATO22(cato22Param)
-
-  override def cpAux1() = CPAux1(cpAux1Param)
-
-  override def cpAux2() = CPAux2(cpAux2Param)
-
-  override def cpAux3() = CPAux3(cpAux3Param)
+  extends ComputationsBoxRetriever(mockAccountsBoxRetriever) {
 
   override def ap1() = ???
 

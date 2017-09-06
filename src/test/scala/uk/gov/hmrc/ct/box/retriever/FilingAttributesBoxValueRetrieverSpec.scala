@@ -26,7 +26,7 @@ class FilingAttributesBoxValueRetrieverSpec extends WordSpec with Matchers {
 
   "FilingAttributesBoxValueRetriever" should {
     "have 14 functions" in {
-      BoxValues.boxIdFunctions(classOf[FilingAttributesBoxValueRetriever]).size shouldBe 14
+      BoxValues.boxIdFunctions(classOf[FilingAttributesBoxValueRetriever]).size shouldBe 12
     }
 
     "get ct values" in {
@@ -46,8 +46,6 @@ class FilingAttributesBoxValueRetrieverSpec extends WordSpec with Matchers {
       result("HMRCSubmitted") shouldBe retriever.hmrcSubmitted()
       result("HMRCAmendment") shouldBe retriever.hmrcAmendment()
       result("CountryOfRegistration") shouldBe retriever.countryOfRegistration()
-      result("CoHoAccountsApprovalRequired") shouldBe retriever.coHoAccountsApprovalRequired()
-      result("HmrcAccountsApprovalRequired") shouldBe retriever.hmrcAccountsApprovalRequired()
     }
   }
 }
@@ -79,8 +77,4 @@ class FilingAttributesBoxValueRetrieverForTest extends FilingAttributesBoxValueR
   override def hmrcAmendment(): HMRCAmendment = HMRCAmendment(false)
 
   override def countryOfRegistration(): CountryOfRegistration = CountryOfRegistration.NorthernIreland
-
-  override def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired = CoHoAccountsApprovalRequired(true)
-
-  override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired = HmrcAccountsApprovalRequired(false)
 }

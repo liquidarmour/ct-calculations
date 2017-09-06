@@ -18,7 +18,7 @@ package uk.gov.hmrc.ct.accounts
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks.forAll
 import org.scalatest.prop.TableFor6
 import org.scalatest.prop.Tables.Table
@@ -30,7 +30,7 @@ import uk.gov.hmrc.ct.domain.CompanyTypes
 import uk.gov.hmrc.ct.domain.CompanyTypes.{CompanyType, UkTradingCompany}
 import uk.gov.hmrc.ct.{AbridgedFiling, CompaniesHouseFiling, FilingCompanyType, HMRCFiling}
 
-class AC12Spec extends WordSpec with Matchers with MockitoSugar {
+class AC12Spec extends WordSpec with Matchers with MockitoSugar with MockAccountsRetriever {
 
   "AC12 validation" should {
 
@@ -59,14 +59,12 @@ class AC12Spec extends WordSpec with Matchers with MockitoSugar {
         s"check validation when empty for $companyType" in {
 
           forAll(testTable) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, ac12Value: Option[Int], required: Boolean, message: String) =>
-            val boxRetriever = mock[TestBoxRetriever]
-
             when(boxRetriever.ac3()).thenReturn(AC3(new LocalDate(startDateString)))
             when(boxRetriever.ac4()).thenReturn(AC4(new LocalDate(endDateString)))
-            when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-            when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-            when(boxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-            when(boxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
+            when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+            when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+            when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+            when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
             val validationResult = AC12(ac12Value).validate(boxRetriever)
             if (required)
@@ -86,14 +84,13 @@ class AC12Spec extends WordSpec with Matchers with MockitoSugar {
       )
 
       testValues.foreach { case (ac12Value: Option[Int], message: String) =>
-        val boxRetriever = mock[TestBoxRetriever]
 
         when(boxRetriever.ac3()).thenReturn(AC3(new LocalDate("2017-01-01")))
         when(boxRetriever.ac4()).thenReturn(AC4(new LocalDate("2017-12-31")))
-        when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(boxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(false))
-        when(boxRetriever.companyType()).thenReturn(FilingCompanyType(CompanyTypes.UkTradingCompany))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(false))
+        when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(CompanyTypes.UkTradingCompany))
 
         s"$message" in {
           val validationResult = AC12(ac12Value).validate(boxRetriever)
@@ -605,16 +602,15 @@ class AC12Spec extends WordSpec with Matchers with MockitoSugar {
 
       s"testing validation for $companyType" when {
         forAll(table) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, ac12Value: Int, expectedErrorKey: String, message: String) =>
-          val boxRetriever = mock[TestBoxRetriever]
 
-          when(boxRetriever.ac3()).thenReturn(AC3(new LocalDate(startDateString)))
-          when(boxRetriever.ac4()).thenReturn(AC4(new LocalDate(endDateString)))
-          when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
-          when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
-          when(boxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-          when(boxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
-          s"$message : $ac12Value" in {
+          s"$message : $ac12Value" in new MockAccountsRetriever {
+            when(boxRetriever.ac3()).thenReturn(AC3(new LocalDate(startDateString)))
+            when(boxRetriever.ac4()).thenReturn(AC4(new LocalDate(endDateString)))
+            when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
+            when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
+            when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+            when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
             val validationResult = AC12(Some(ac12Value)).validate(boxRetriever)
             if (expectedErrorKey.isEmpty) {
               withClue(s"HMRC: $isHmrcFiling, CoHo: $isCoHoFiling ::: $message")(validationResult shouldBe empty)
@@ -623,7 +619,7 @@ class AC12Spec extends WordSpec with Matchers with MockitoSugar {
               val error = validationResult.find { error =>
                 error.boxId.contains("AC12") && error.errorMessageKey == expectedErrorKey && error.args.map { args => args.size == 2}.getOrElse(false)
               }
-              withClue(s"HMRC: $isHmrcFiling, CoHo: $isCoHoFiling ::: $message : $validationResult"){error should not be empty}
+              withClue(s"CompanyType: $companyType, HMRC: $isHmrcFiling, CoHo: $isCoHoFiling ::: $message : $validationResult, AC12: $ac12Value, for period: $startDateString to $endDateString"){error should not be empty}
             }
           }
 
@@ -632,5 +628,3 @@ class AC12Spec extends WordSpec with Matchers with MockitoSugar {
     }
   }
 }
-
-trait TestBoxRetriever extends AccountsBoxRetriever with FilingAttributesBoxValueRetriever

@@ -24,10 +24,10 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC8899(value: Option[Boolean]) extends CtBoxIdentifier(name = "Director signing Directors' report")
   with CtOptionalBoolean
   with Input
-  with ValidatableBox[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs10xDirectorsBoxRetriever]
   with DirectorsReportEnabledCalculator {
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] =
+  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] =
     failIf(boxRetriever.directorsReportEnabled().value) (
       validateBooleanAsTrue("AC8899", this)
     )

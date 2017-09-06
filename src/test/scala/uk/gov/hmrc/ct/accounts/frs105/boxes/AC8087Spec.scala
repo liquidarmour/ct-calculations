@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ct.accounts.frs105.boxes
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.MockFrs105AccountsRetriever
 import uk.gov.hmrc.ct.box.CtValidation

@@ -18,18 +18,24 @@ package uk.gov.hmrc.ct.accounts.frs102.boxes.relatedPartyTransactions
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.frs102.boxes.AC7800
 import uk.gov.hmrc.ct.accounts.frs102.retriever.AbridgedAccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.{AC205, AC206}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AC205, AC206, MockAbridgedAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach {
+class RelatedPartyTransactionsSpec
+  extends WordSpec
+    with MockitoSugar
+    with Matchers
+    with BeforeAndAfterEach
+    with MockAbridgedAccountsRetriever{
   import RelatedPartyTransactionsMockSetup._
 
-  val mockBoxRetriever = mock[AbridgedAccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+//  val mockBoxRetriever = mock[AbridgedAccountsBoxRetriever]
 
   val validTransaction = RelatedPartyTransaction(
     uuid = "uuid",
@@ -43,16 +49,16 @@ class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Match
   
   "RelatedPartyTransactions" should {
     "validate successfully when no validation errors are present" in {
-      setupDefaults(mockBoxRetriever)
+      setupDefaults(boxRetriever, accountsBoxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List(validTransaction), ac7806 = AC7806(None))
 
-      transactions.validate(mockBoxRetriever) shouldBe empty
+      transactions.validate(boxRetriever) shouldBe empty
     }
 
     "return error when there are errors but AC7800 not set to true" in {
-      setupDefaults(mockBoxRetriever)
-      when(mockBoxRetriever.ac7800()).thenReturn(AC7800(None))
+      setupDefaults(boxRetriever, accountsBoxRetriever)
+      when(boxRetriever.ac7800()).thenReturn(AC7800(None))
 
       val transaction = RelatedPartyTransaction(
         uuid = "uuid",
@@ -65,11 +71,11 @@ class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Match
       )
       val transactions = RelatedPartyTransactions(transactions = List(transaction), ac7806 = AC7806(None))
 
-      transactions.validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("RelatedPartyTransactions"), "error.RelatedPartyTransactions.cannot.exist"))
+      transactions.validate(boxRetriever) shouldBe Set(CtValidation(Some("RelatedPartyTransactions"), "error.RelatedPartyTransactions.cannot.exist"))
     }
 
     "errors against correct transaction and contextualised #1" in {
-      setupDefaults(mockBoxRetriever)
+      setupDefaults(boxRetriever, accountsBoxRetriever)
 
       val transaction = RelatedPartyTransaction(
         uuid = "uuid",
@@ -82,7 +88,7 @@ class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Match
       )
       val transactions = RelatedPartyTransactions(transactions = List(transaction), ac7806 = AC7806(Some("^^")))
 
-      transactions.validate(mockBoxRetriever) shouldBe Set(
+      transactions.validate(boxRetriever) shouldBe Set(
         CtValidation(Some("RelatedPartyTransactions"), "error.compoundList.transactions.0.AC7801.required", None),
         CtValidation(Some("RelatedPartyTransactions"), "error.compoundList.transactions.0.AC299A.required", None),
         CtValidation(Some("RelatedPartyTransactions"), "error.compoundList.transactions.0.AC300A.required", None),
@@ -92,7 +98,7 @@ class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Match
     }
 
     "errors against correct transaction and contextualised #2" in {
-      setupDefaults(mockBoxRetriever)
+      setupDefaults(boxRetriever, accountsBoxRetriever)
 
       val transaction2 = RelatedPartyTransaction(
         uuid = "uuid",
@@ -105,38 +111,38 @@ class RelatedPartyTransactionsSpec extends WordSpec with MockitoSugar with Match
       )
       val transactions = RelatedPartyTransactions(transactions = List(validTransaction , transaction2), ac7806 = AC7806(None))
 
-      transactions.validate(mockBoxRetriever) shouldBe Set(
+      transactions.validate(boxRetriever) shouldBe Set(
         CtValidation(Some("RelatedPartyTransactions"),"error.compoundList.transactions.1.AC302A.below.min", Some(List("0", "99999999"))),
         CtValidation(Some("RelatedPartyTransactions"),"error.compoundList.transactions.1.AC303A.below.min", Some(List("0", "99999999")))
       )
     }
 
     "range error when no transactions" in {
-      setupDefaults(mockBoxRetriever)
+      setupDefaults(boxRetriever, accountsBoxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List.empty, ac7806 = AC7806(None))
 
-      transactions.validate(mockBoxRetriever) shouldBe Set(CtValidation(None,"error.RelatedPartyTransactions.atLeast1",None))
+      transactions.validate(boxRetriever) shouldBe Set(CtValidation(None,"error.RelatedPartyTransactions.atLeast1",None))
     }
 
     "range error when too many transactions" in {
-      setupDefaults(mockBoxRetriever)
+      setupDefaults(boxRetriever, accountsBoxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List.tabulate(20)(index => validTransaction), ac7806 = AC7806(None))
-      transactions.validate(mockBoxRetriever) shouldBe empty
+      transactions.validate(boxRetriever) shouldBe empty
 
       val tooManyTransactions = RelatedPartyTransactions(transactions = List.tabulate(21)(index => validTransaction), ac7806 = AC7806(None))
-      tooManyTransactions.validate(mockBoxRetriever) shouldBe Set(CtValidation(None,"error.RelatedPartyTransactions.atMost20",None))
+      tooManyTransactions.validate(boxRetriever) shouldBe Set(CtValidation(None,"error.RelatedPartyTransactions.atMost20",None))
     }
   }
 }
 
 object RelatedPartyTransactionsMockSetup extends MockitoSugar {
 
-  def setupDefaults(mockBoxRetriever: AbridgedAccountsBoxRetriever with FilingAttributesBoxValueRetriever) = {
+  def setupDefaults(mockBoxRetriever: AbridgedAccountsBoxRetriever, accountsBoxRetriever: AccountsBoxRetriever) = {
     // previous POA responses
-    when(mockBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
-    when(mockBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
+    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
+    when(accountsBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
 
     when(mockBoxRetriever.ac7800()).thenReturn(AC7800(Some(true)))
   }

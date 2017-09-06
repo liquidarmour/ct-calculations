@@ -18,17 +18,21 @@ package uk.gov.hmrc.ct.accounts
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.box.{CtValidation, ValidatableBox}
 
-trait AccountsFreeTextValidationFixture[T <: AccountsBoxRetriever] extends WordSpec with Matchers with MockitoSugar {
+trait AccountsFreeTextValidationFixture[T <: BoxRetriever] extends WordSpec with Matchers with MockitoSugar {
 
   def boxRetriever: T
 
   //This can be overridden if mock box retriever calls need to be made
   def setUpMocks(): Unit = Unit
 
-  def testTextFieldValidation(boxId: String, builder: (Option[String]) => ValidatableBox[T], testLowerLimit: Option[Int] = None, testUpperLimit: Option[Int] = None, testMandatory: Option[Boolean] = Some(false)) = {
+  def testTextFieldValidation(boxId: String,
+                              builder: (Option[String]) => ValidatableBox[T],
+                              testLowerLimit: Option[Int] = None,
+                              testUpperLimit: Option[Int] = None,
+                              testMandatory: Option[Boolean] = Some(false)) = {
 
     if(testMandatory == Some(true)) {
       "fail validation when empty string" in {

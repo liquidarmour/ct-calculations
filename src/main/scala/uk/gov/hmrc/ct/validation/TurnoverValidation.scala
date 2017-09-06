@@ -33,9 +33,9 @@ trait TurnoverValidation extends Validators {
     Days.daysBetween(start, end).getDays + 1
   }
 
-  protected def isFrs10xHmrcAbridgedReturnWithLongPoA[BR <: AccountsBoxRetriever with FilingAttributesBoxValueRetriever](start: (BR) => StartDate, end: (BR) => EndDate)(boxRetriever: BR): Boolean = {
-    boxRetriever.hmrcFiling().value &&
-      boxRetriever.abridgedFiling().value &&
+  protected def isFrs10xHmrcAbridgedReturnWithLongPoA[BR <: AccountsBoxRetriever](start: (BR) => StartDate, end: (BR) => EndDate)(boxRetriever: BR): Boolean = {
+    boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value &&
+      boxRetriever.filingAttributesBoxValueRetriever.abridgedFiling().value &&
       isFRS10x(boxRetriever) &&
       isLongPoA(boxRetriever, start, end)
   }
@@ -71,6 +71,7 @@ trait TurnoverValidation extends Validators {
 
     val isCharity = boxRetriever match {
       case fabr: ComputationsBoxRetriever => CompanyTypes.AllCharityTypes.contains(fabr.filingAttributesBoxValueRetriever.companyType().value)
+      case fabr: AccountsBoxRetriever => CompanyTypes.AllCharityTypes.contains(fabr.filingAttributesBoxValueRetriever.companyType().value)
       case _ => false
     }
 

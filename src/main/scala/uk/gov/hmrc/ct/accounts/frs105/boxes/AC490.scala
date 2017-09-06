@@ -24,15 +24,16 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC490(value: Option[Int]) extends CtBoxIdentifier(name = "Capital and reserves (current PoA)")
   with CtOptionalInteger
   with Input
-  with SelfValidatableBox[Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever, Option[Int]]
+  with SelfValidatableBox[Frs105AccountsBoxRetriever, Option[Int]]
   with AssetsEqualToSharesValidator {
 
-  override def validate(boxRetriever: Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
 
     collectErrors(
       validateAsMandatory(),
-      validateAssetsEqualToShares("AC490", ac68(), boxRetriever.companyType().isLimitedByGuarantee),
+      validateAssetsEqualToShares("AC490", ac68(),
+        boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee),
       validateMoney(value)
     )
   }

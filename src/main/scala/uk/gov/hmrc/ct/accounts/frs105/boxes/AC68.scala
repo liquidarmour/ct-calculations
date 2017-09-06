@@ -24,11 +24,12 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 case class AC68(value: Option[Int]) extends CtBoxIdentifier(name = "Total net assets or liabilities (current PoA)")
   with CtOptionalInteger
-  with ValidatableBox[Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs105AccountsBoxRetriever]
   with AssetsEqualToSharesValidator {
 
-  override def validate(boxRetriever: Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
-    validateAssetsEqualToShares("AC68", boxRetriever.ac490(), boxRetriever.companyType().isLimitedByGuarantee)
+  override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] = {
+    validateAssetsEqualToShares("AC68", boxRetriever.ac490(),
+      boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
   }
 }
 

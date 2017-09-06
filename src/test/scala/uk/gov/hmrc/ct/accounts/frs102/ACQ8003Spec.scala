@@ -17,46 +17,82 @@
 package uk.gov.hmrc.ct.accounts.frs102
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import uk.gov.hmrc.ct.accounts.MockFrs10xDirectorsRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, AC8023, ACQ8003}
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
 
-class ACQ8003Spec extends WordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
-
-  val mockBoxRetriever = mock[MockableFrs10xBoxretrieverWithFilingAttributes]
-
-  override def beforeEach = {
-    DirectorsMockSetup.setupDefaults(mockBoxRetriever)
-  }
+class ACQ8003Spec
+  extends WordSpec
+    with Matchers
+    with MockitoSugar
+    with BeforeAndAfterEach
+    with MockFrs10xDirectorsRetriever {
 
   "AC8033 should" should {
 
     "validate successfully when no errors present" in {
-
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
       val secretary = ACQ8003(Some(true))
 
-      secretary.validate(mockBoxRetriever) shouldBe empty
+      secretary.validate(boxRetriever) shouldBe empty
     }
 
-    "validate as mandatory" in {
+    "validate as mandatory for CoHo only and want to file to CoHo" in {
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
 
       val secretary = ACQ8003(None)
 
-      secretary.validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("ACQ8003"), "error.ACQ8003.required", None))
+      secretary.validate(boxRetriever) shouldBe Set(CtValidation(Some("ACQ8003"), "error.ACQ8003.required", None))
+    }
+
+    "validate as mandatory for Joint and want to file to CoHo" in {
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(true)))
+
+      val secretary = ACQ8003(None)
+
+      secretary.validate(boxRetriever) shouldBe Set(CtValidation(Some("ACQ8003"), "error.ACQ8003.required", None))
+    }
+
+    "validate as mandatory for Joint and non micro entity filing" in {
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
+
+      val secretary = ACQ8003(None)
+
+      secretary.validate(boxRetriever) shouldBe Set(CtValidation(Some("ACQ8003"), "error.ACQ8003.required", None))
     }
 
     "no validate if no directors report" in {
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
 
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(None))
-      when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(None))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
 
       val secretary = ACQ8003(None)
 
-      secretary.validate(mockBoxRetriever) shouldBe empty
+      secretary.validate(boxRetriever) shouldBe empty
     }
   }
 }

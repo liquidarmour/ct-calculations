@@ -26,12 +26,12 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class Directors(directors: List[Director] = List.empty) extends CtBoxIdentifier(name = "Directors.")
   with CtValue[List[Director]]
   with Input
-  with ValidatableBox[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs10xDirectorsBoxRetriever]
   with DirectorsReportEnabledCalculator {
 
   override def value = directors
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     validateDirectorRequired(boxRetriever) ++
       validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever) ++
       validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever) ++
@@ -41,14 +41,14 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     directors.foldRight(Set[CtValidation]())((dd, tail) => dd.validate(boxRetriever) ++ tail)
   }
 
-  private def validateCannotExist(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateCannotExist(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     failIf(!calculateDirectorsReportEnabled(boxRetriever) && directors.nonEmpty) {
-      val boxId = if (boxRetriever.hmrcFiling().value) "AC8023" else "AC8021"
+      val boxId = if (boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value) "AC8023" else "AC8021"
       Set(CtValidation(None, s"error.Directors.$boxId.cannot.exist"))
     }
   }
 
-  private def validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     failIf (
       calculateDirectorsReportEnabled(boxRetriever) &&
       boxRetriever.acQ8003().value.getOrElse(false) &&
@@ -58,7 +58,7 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     }
   }
 
-  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     failIf (
       calculateDirectorsReportEnabled(boxRetriever) &&
         boxRetriever.acQ8009().value.getOrElse(false) &&
@@ -68,7 +68,7 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     }
   }
 
-  private def validateDirectorRequired(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateDirectorRequired(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
     failIf (calculateDirectorsReportEnabled(boxRetriever) && directors.isEmpty) {
       Set(CtValidation(Some("ac8001"), "error.Directors.ac8001.global.atLeast1", None))
     }

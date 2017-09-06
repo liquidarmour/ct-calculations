@@ -55,7 +55,7 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
 
   "Low Emmission Cars calculations" should {
 
-    "calculate values for Companies Still Trading" in {
+    "calculate values for Companies Still Trading" when {
       val companiesStillTrading =
         Table(
           ("Scenario",
@@ -111,29 +111,42 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = MockComputationsBoxRetriever(
-            lec01Param = lec01,
-            cpq8Param = cpq8,
-            cp78Param = cp78,
-            cp79Param = cp79,
-            cp80Param = cp80,
-            cp82Param = cp82,
-            cp83Param = cp83,
-            cp87InputParam = cp87_Input,
-            cp88Param = cp88,
-            cp89Param = cp89,
-            cp666Param = cp666,
-            cp667Param = cp667,
-            cp668Param = cp668,
-            cp672Param = cp672
-          )
+          s"$scenario" in {
 
-          assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
-          assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
-          assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
-          assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
-          assert(retriever.cp670().value equals cp670, clue("CP670", retriever.cp670().value, cp670))
-          assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+            val retriever = MockComputationsBoxRetriever(
+              lec01Param = lec01,
+              cpq8Param = cpq8,
+              cp78Param = cp78,
+              cp79Param = cp79,
+              cp80Param = cp80,
+              cp82Param = cp82,
+              cp83Param = cp83,
+              cp87InputParam = cp87_Input,
+              cp88Param = cp88,
+              cp89Param = cp89,
+              cp666Param = cp666,
+              cp667Param = cp667,
+              cp668Param = cp668,
+              cp672Param = cp672
+            )
+            /*
+writtenDownValue(cpq8 = boxRetriever.cpQ8(),
+                     cp78 = boxRetriever.cp78(),
+                     cp82 = boxRetriever.cp82(),
+                     cp89 = boxRetriever.cp89(),
+                     cp91 = boxRetriever.cp91(),
+                     cp672 = boxRetriever.cp672(),
+                     cato20 = boxRetriever.cato20(),
+                     cpAux2 = boxRetriever.cpAux2())             */
+
+            assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
+            assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
+            assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
+            assert(retriever.cp670().value equals cp670, clue("CP670", retriever.cp670().value, cp670))
+            assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+
+            assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
+          }
         }
       }
     }
@@ -158,7 +171,7 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
           Some(2175), Some(2175), Some(0), Some(0), Some(0), Some(0))
       )
 
-    "calculate values for Companies No Longer Trading" in {
+    "calculate values for Companies No Longer Trading" when {
       forAll(companiesNoLongerTrading) {
         (scenario: String,
          lec01: List[Car],
@@ -179,26 +192,29 @@ class LowEmissionCarsAcceptanceCriteriaSpec extends WordSpec with Matchers {
          cp92: Option[Int],
          cp669: Option[Int]) => {
 
-          val retriever = MockComputationsBoxRetriever(
-            lec01Param = lec01,
-            cpq8Param = cpq8,
-            cp78Param = cp78,
-            cp79Param = cp79,
-            cp80Param = cp80,
-            cp82Param = cp82,
-            cp83Param = cp83,
-            cp84Param = cp84,
-            cp666Param = cp666,
-            cp673Param = cp673,
-            cp674Param = cp674
-          )
+          s"$scenario" in {
 
-          assert(retriever.cp90().value equals cp90, clue("CP90", retriever.cp90().value, cp90))
-          assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
-          assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
-          assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
-          assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
-          assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+            val retriever = MockComputationsBoxRetriever(
+              lec01Param = lec01,
+              cpq8Param = cpq8,
+              cp78Param = cp78,
+              cp79Param = cp79,
+              cp80Param = cp80,
+              cp82Param = cp82,
+              cp83Param = cp83,
+              cp84Param = cp84,
+              cp666Param = cp666,
+              cp673Param = cp673,
+              cp674Param = cp674
+            )
+
+            assert(retriever.cp90().value equals cp90, clue("CP90", retriever.cp90().value, cp90))
+            assert(retriever.cp91().value equals cp91, clue("CP91", retriever.cp91().value, cp91))
+            assert(retriever.cp92().value equals cp92, clue("CP92", retriever.cp92().value, cp92))
+            assert(retriever.cp186().value equals cp186, clue("CP186", retriever.cp186().value, cp186))
+            assert(retriever.cp669().value equals cp669, clue("CP669", retriever.cp669().value, cp669))
+            assert(retriever.cp671().value equals cp671, clue("CP671", retriever.cp671().value, cp671))
+          }
         }
       }
 

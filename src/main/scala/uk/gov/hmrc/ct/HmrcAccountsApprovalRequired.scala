@@ -27,15 +27,15 @@ case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier(
 
 object HmrcAccountsApprovalRequired
   extends HmrcAccountsApprovalRequiredCalculator(ReturnVersionsCalculator)
-    with Calculated[HmrcAccountsApprovalRequired, AccountsBoxRetriever] {
+    with Calculated[HmrcAccountsApprovalRequired, Frs10xAccountsBoxRetriever] {
 
-  override def calculate(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired =
+  override def calculate(boxRetriever: Frs10xAccountsBoxRetriever): HmrcAccountsApprovalRequired =
     calculateApprovalRequired(boxRetriever)
 }
 
 case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: ReturnVersionsCalculator) {
 
-  def calculateApprovalRequired(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired = {
+  def calculateApprovalRequired(boxRetriever: Frs10xAccountsBoxRetriever): HmrcAccountsApprovalRequired = {
 
     val returns = returnVersionsCalculator.doCalculation(boxRetriever.filingAttributesBoxValueRetriever, None)
     val hmrcAccountsReturn = findHmrcAccountsType(returns)
@@ -56,7 +56,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
     HmrcAccountsApprovalRequired(approvalRequired)
   }
 
-  private def hmrcApprovalRequiredForFRS102(boxRetriever: AccountsBoxRetriever) = {
+  private def hmrcApprovalRequiredForFRS102(boxRetriever: Frs10xAccountsBoxRetriever) = {
 
     val (drToCoHo, plToCoHo) = boxRetriever match {
       case br: Frs10xAccountsBoxRetriever => (br.frs10xDirectorsBoxRetriever.ac8021().orFalse, br.acq8161().orFalse)
@@ -66,7 +66,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
     !drToCoHo || !plToCoHo
   }
 
-  private def hmrcApprovalRequiredForFRS105(boxRetriever: AccountsBoxRetriever) = {
+  private def hmrcApprovalRequiredForFRS105(boxRetriever: Frs10xAccountsBoxRetriever) = {
 
     val (drToHmrc, drToCoHo, plToCoHo) = boxRetriever match {
       case br: Frs10xAccountsBoxRetriever => (br.frs10xDirectorsBoxRetriever.ac8023().orFalse, br.frs10xDirectorsBoxRetriever.ac8021().orFalse, br.acq8161().orFalse)

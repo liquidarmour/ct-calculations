@@ -20,12 +20,14 @@ import org.mockito.Mockito.when
 import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.accounts.frs102.retriever.FullAccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.{AC205, AccountsMoneyValidationFixture, AccountsPreviousPeriodValidationFixture, MockFullAccountsRetriever}
+import uk.gov.hmrc.ct.accounts._
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC13Spec extends AccountsMoneyValidationFixture[AccountsBoxRetriever]
                with AccountsPreviousPeriodValidationFixture[AccountsBoxRetriever]
-               with MockFullAccountsRetriever {
+               with MockAccountsRetriever {
+
+  val accountsBoxRetriever = boxRetriever
 
   testAccountsMoneyValidationWithMin("AC13", 0, AC13.apply, true, false)
 
@@ -40,7 +42,6 @@ class AC13Spec extends AccountsMoneyValidationFixture[AccountsBoxRetriever]
 
     testValues.foreach { case (ac13Value: Option[Int], message: String, shouldError: Boolean) =>
       s"$message" in {
-        val boxRetriever = mock[FullAccountsBoxRetriever]
         when(boxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate("2015-01-01"))))
         val validationResult = AC13(ac13Value).validate(boxRetriever)
         if (shouldError)

@@ -17,14 +17,15 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.{MockFrs102AccountsRetriever, AccountsMoneyValidationFixture, AC205}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AC205, AccountsMoneyValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC107Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with MockFrs102AccountsRetriever {
 
-  override def setUpMocks() = {
-    super.setUpMocks()
+  override def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever) = {
+    super.setUpMocks(accountsBoxRetriever)
     when(boxRetriever.ac7300()).thenReturn(AC7300(Some(true)))
   }
 
@@ -72,7 +73,7 @@ class AC107Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
     }
 
     "validate with should return exist error when AC7300 is true, AC107 has a value and Previous PoA is empty" in {
-      when(boxRetriever.ac205()).thenReturn(AC205(None))
+      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
       when(boxRetriever.ac7300()).thenReturn(AC7300(Some(false)))
 
       AC107(Some(100)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC107"), "error.AC107.cannot.exist"))

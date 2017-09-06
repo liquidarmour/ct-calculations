@@ -18,12 +18,13 @@ package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.ct.accounts.AccountStatementValidationFixture
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDormancyBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AccountStatementValidationFixture, MockFrs10xAccountsRetriever}
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDormancyBoxRetriever}
 
-class ACQ8989Spec extends AccountStatementValidationFixture[Frs10xDormancyBoxRetriever] with BeforeAndAfterEach {
-
-  override val boxRetriever = mock[Frs10xDormancyBoxRetriever] (RETURNS_SMART_NULLS)
+class ACQ8989Spec
+  extends AccountStatementValidationFixture[Frs10xAccountsBoxRetriever]
+    with BeforeAndAfterEach
+    with MockFrs10xAccountsRetriever {
 
   override def setupMocks() = {
     when(boxRetriever.notTradedStatementRequired()).thenReturn(NotTradedStatementRequired(true))

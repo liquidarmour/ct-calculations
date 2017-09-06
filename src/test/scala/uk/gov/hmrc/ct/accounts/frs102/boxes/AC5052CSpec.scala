@@ -35,7 +35,7 @@ class AC5052CSpec extends WordSpec with MockitoSugar with Matchers with MockFrs1
 
   "pass the validation if AC52 and AC205 are set" in {
     when(boxRetriever.ac52()).thenReturn(AC52(Some(123)))
-    when(boxRetriever.ac205()).thenReturn(AC205(Some(LocalDate.parse("2016-01-01"))))
+    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(LocalDate.parse("2016-01-01"))))
     AC5052C(Some(4)).validate(boxRetriever) shouldBe Set.empty
   }
 

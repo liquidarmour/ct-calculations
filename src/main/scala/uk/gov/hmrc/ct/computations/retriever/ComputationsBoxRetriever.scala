@@ -21,8 +21,9 @@ import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 import uk.gov.hmrc.ct.computations._
 
-abstract class ComputationsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever,
-                                        val accountsBoxRetriever: AccountsBoxRetriever) extends BoxRetriever {
+abstract class ComputationsBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever) extends BoxRetriever {
+
+  def filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever = accountsBoxRetriever.filingAttributesBoxValueRetriever
 
   def ap1(): AP1
 

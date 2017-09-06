@@ -18,21 +18,22 @@ package uk.gov.hmrc.ct.accounts.frs102.boxes.loansToDirectors
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.frs102.boxes.AC7500
 import uk.gov.hmrc.ct.accounts.frs102.retriever.AbridgedAccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, Director, Directors}
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
-import uk.gov.hmrc.ct.accounts.{AC205, AC206}
+import uk.gov.hmrc.ct.accounts.{AC205, AC206, MockAbridgedAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach {
-
-  trait TestBoxRetriever extends AbridgedAccountsBoxRetriever with Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever
-
-  val mockBoxRetriever = mock[TestBoxRetriever]
+class LoansToDirectorsSpec
+  extends WordSpec
+    with MockitoSugar
+    with Matchers
+    with BeforeAndAfterEach
+    with MockAbridgedAccountsRetriever {
 
   val validLoan = LoanToDirector(
     uuid = "uuid",
@@ -45,24 +46,24 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
   )
 
   override protected def beforeEach(): Unit = {
-    when(mockBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
-    when(mockBoxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
+    when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+    when(frs10xDirectorsBoxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
 
-    when(mockBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
-    when(mockBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
+    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
+    when(accountsBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
 
-    when(mockBoxRetriever.ac7500()).thenReturn(AC7500(Some(true)))
+    when(boxRetriever.ac7500()).thenReturn(AC7500(Some(true)))
   }
   
   "LoansToDirectors" should {
     "validate successfully when no validation errors are present" in {
       val loans = LoansToDirectors(loans = List(validLoan), ac7501 = AC7501(None))
 
-      loans.validate(mockBoxRetriever) shouldBe empty
+      loans.validate(boxRetriever) shouldBe empty
     }
 
     "return cannot exist error when there are errors but AC7500 not set to true" in {
-      when(mockBoxRetriever.ac7500()).thenReturn(AC7500(None))
+      when(boxRetriever.ac7500()).thenReturn(AC7500(None))
 
       val loan = LoanToDirector(
         uuid = "uuid",
@@ -75,7 +76,7 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
       )
       val loans = LoansToDirectors(loans = List(loan), ac7501 = AC7501(None))
 
-      loans.validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("LoansToDirectors"), "error.LoansToDirectors.cannot.exist"))
+      loans.validate(boxRetriever) shouldBe Set(CtValidation(Some("LoansToDirectors"), "error.LoansToDirectors.cannot.exist"))
     }
 
     "errors against correct loan and contextualised #1" in {
@@ -90,7 +91,7 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
       )
       val loans = LoansToDirectors(loans = List(loan), ac7501 = AC7501(Some("^^")))
 
-      loans.validate(mockBoxRetriever) shouldBe Set(
+      loans.validate(boxRetriever) shouldBe Set(
         CtValidation(Some("LoansToDirectors"), "error.compoundList.loans.0.AC304A.required", None),
         CtValidation(Some("LoansToDirectors"), "error.compoundList.loans.0.AC305A.regexFailure",Some(List("^"))),
         CtValidation(Some("LoansToDirectors"), "error.compoundList.loans.0.AC306A.below.min", Some(List("-99999999", "99999999"))),
@@ -112,7 +113,7 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
       )
       val loans = LoansToDirectors(loans = List(validLoan , transaction2), ac7501 = AC7501(None))
 
-      loans.validate(mockBoxRetriever) shouldBe Set(
+      loans.validate(boxRetriever) shouldBe Set(
         CtValidation(Some("LoansToDirectors"), "error.compoundList.loans.1.AC304A.required", None),
         CtValidation(Some("LoansToDirectors"), "error.compoundList.loans.1.AC305A.required", None),
         CtValidation(None, "error.LoansToDirectors.compoundList.loans.1.one.field.required", None)
@@ -131,7 +132,7 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
       )
       val loans = LoansToDirectors(loans = List(validLoan , transaction2), ac7501 = AC7501(None))
 
-      loans.validate(mockBoxRetriever) shouldBe Set(
+      loans.validate(boxRetriever) shouldBe Set(
         CtValidation(None, "error.LoansToDirectors.compoundList.loans.1.one.field.required", None)
       )
     }
@@ -139,15 +140,15 @@ class LoansToDirectorsSpec extends WordSpec with MockitoSugar with Matchers with
     "range error when no loans" in {
       val loans = LoansToDirectors(loans = List.empty, ac7501 = AC7501(None))
 
-      loans.validate(mockBoxRetriever) shouldBe Set(CtValidation(None,"error.LoansToDirectors.atLeast1",None))
+      loans.validate(boxRetriever) shouldBe Set(CtValidation(None,"error.LoansToDirectors.atLeast1",None))
     }
 
     "range error when too many loans" in {
       val loans = LoansToDirectors(loans = List.tabulate(20)(index => validLoan), ac7501 = AC7501(None))
-      loans.validate(mockBoxRetriever) shouldBe empty
+      loans.validate(boxRetriever) shouldBe empty
 
       val tooManyTransactions = LoansToDirectors(loans = List.tabulate(21)(index => validLoan), ac7501 = AC7501(None))
-      tooManyTransactions.validate(mockBoxRetriever) shouldBe Set(CtValidation(None,"error.LoansToDirectors.atMost20",None))
+      tooManyTransactions.validate(boxRetriever) shouldBe Set(CtValidation(None,"error.LoansToDirectors.atMost20",None))
     }
   }
 

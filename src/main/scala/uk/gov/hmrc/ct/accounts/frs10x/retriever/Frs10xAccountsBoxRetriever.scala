@@ -44,7 +44,7 @@ abstract class Frs10xAccountsBoxRetriever(val accountsBoxRetriever: AccountsBoxR
     CoHoAccountsApprovalRequired(accountsBoxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling())
 
   override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
-    HmrcAccountsApprovalRequired.calculate(accountsBoxRetriever)
+    HmrcAccountsApprovalRequired.calculate(this)
 
   override def filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever = accountsBoxRetriever.filingAttributesBoxValueRetriever
 }

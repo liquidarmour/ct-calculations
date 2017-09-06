@@ -18,11 +18,12 @@ package uk.gov.hmrc.ct.computations
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks.forAll
 import org.scalatest.prop.TableFor6
 import org.scalatest.prop.Tables.Table
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.ct.accounts.MockComputationsRetriever
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
@@ -52,19 +53,15 @@ class CP7Spec extends WordSpec with Matchers with MockitoSugar {
 
       (CompanyTypes.AllCompanyTypes -- CompanyTypes.AllCharityTypes).foreach { companyType =>
 
-        s"check validation when empty for $companyType" in {
+        s"check validation when empty for $companyType" in new MockComputationsRetriever {
 
           forAll(testTable) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, cp7Value: Option[Int], required: Boolean, message: String) =>
-            val boxRetriever = mock[ComputationsBoxRetriever]
-            val baseBoxRetriever = mock[FilingAttributesBoxValueRetriever]
-            when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(baseBoxRetriever)
-
             when(boxRetriever.cp1()).thenReturn(CP1(new LocalDate(startDateString)))
             when(boxRetriever.cp2()).thenReturn(CP2(new LocalDate(endDateString)))
-            when(baseBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-            when(baseBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-            when(baseBoxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-            when(baseBoxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
+            when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+            when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+            when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+            when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
             val validationResult = CP7(cp7Value).validate(boxRetriever)
             if (required)
@@ -438,20 +435,17 @@ class CP7Spec extends WordSpec with Matchers with MockitoSugar {
 
       s"testing validation for $companyType" when {
         forAll(table) { (startDateString: String, endDateString: String, abridgedFiling: Boolean, cp7Value: Int, expectedErrorKey: String, message: String) =>
-          val boxRetriever = mock[ComputationsBoxRetriever]
-          val baseBoxRetriever = mock[FilingAttributesBoxValueRetriever]
-          when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(baseBoxRetriever)
-          when(boxRetriever.cp1()).thenReturn(CP1(new LocalDate(startDateString)))
-          when(boxRetriever.cp2()).thenReturn(CP2(new LocalDate(endDateString)))
-          when(baseBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
-          when(baseBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
-          when(baseBoxRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
-          when(baseBoxRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
 
-          s"$message : $cp7Value" in {
+          s"$message : $cp7Value" in new MockComputationsRetriever {
+            when(boxRetriever.cp1()).thenReturn(CP1(new LocalDate(startDateString)))
+            when(boxRetriever.cp2()).thenReturn(CP2(new LocalDate(endDateString)))
+            when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(isHmrcFiling))
+            when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(isCoHoFiling))
+            when(filingAttributesBoxValueRetriever.abridgedFiling()).thenReturn(AbridgedFiling(abridgedFiling))
+            when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
             val validationResult = CP7(Some(cp7Value)).validate(boxRetriever)
             if (expectedErrorKey.isEmpty) {
-              withClue(s"HMRC: $isHmrcFiling, CoHo: $isCoHoFiling ::: $message")(validationResult shouldBe empty)
+              withClue(s"HMRC: $isHmrcFiling, CoHo: $isCoHoFiling ::: $message, cp7 = $cp7Value")(validationResult shouldBe empty)
             }
             else {
               val error = validationResult.find { error =>

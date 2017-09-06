@@ -17,8 +17,11 @@
 package uk.gov.hmrc.ct.computations
 
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.ct.accounts.MockComputationsRetriever
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.mocks.MockComputationsBoxRetriever
+import org.mockito.Mockito._
+import uk.gov.hmrc.ct.{CATO02, CATO20, CATO21, CATO22}
 
 class MachineryAndPlantValidationSpec extends WordSpec with Matchers {
   val stubBoxRetriever = MockComputationsBoxRetriever()
@@ -129,32 +132,36 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers {
   }
 
   "CP87Input, given is non-negative" should {
-    "validate correctly when not greater than CP81  CPaux1" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cpq8Param = Some(false),
-        cp79Param = Some(20),
-        cp80Param = Some(29),
-        cpAux1Param = 51)
+    "validate correctly when not greater than CP81 CPaux1" in new MockComputationsRetriever {
+      when(boxRetriever.cp81).thenReturn(CP81(100))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(100))
 
-      CP87Input(Some(100)).validate(stubTestComputationsRetriever) shouldBe Set()
+      when(boxRetriever.cp80).thenReturn(CP80(Some(29)))
+      when(boxRetriever.cp79()).thenReturn(CP79(Some(20)))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
+
+      CP87Input(Some(100)).validate(boxRetriever) shouldBe Set()
     }
 
-    "fail validation when greater than CP81  CPaux1" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cpq8Param = Some(false),
-        cp79Param = Some(20),
-        cp80Param = Some(29),
-        cpAux1Param = 51)
+    "fail validation when greater than CP81+ CPaux1" in new MockComputationsRetriever {
+      when(boxRetriever.cp81).thenReturn(CP81(50))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(50))
 
-      CP87Input(Some(101)).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.firstYearAllowanceClaimExceedsAllowance", args = Some(Seq("100"))))
+      when(boxRetriever.cp80).thenReturn(CP80(Some(29)))
+      when(boxRetriever.cp79()).thenReturn(CP79(Some(20)))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
+
+      CP87Input(Some(101)).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP87Input"), errorMessageKey = "error.CP87Input.firstYearAllowanceClaimExceedsAllowance", args = Some(Seq("100"))))
     }
 
     "validate because FYA defaults to 0 when not entered" in {
       val stubTestComputationsRetriever = MockComputationsBoxRetriever(
         cpq8Param = Some(true),
         cp79Param = Some(20),
-        cp80Param = Some(29),
-        cpAux1Param = 51)
+        cp80Param = Some(29)
+//        ,
+//        cpAux1Param = 51
+           )
 
       CP87Input(None).validate(stubTestComputationsRetriever) shouldBe Set()
     }
@@ -183,58 +190,70 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers {
 
   "CP88(annual investment allowance claimed)" should {
 
-    "fail to validate when negative" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever()
-
-      CP88(Some(-1)).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
+    "fail to validate when negative" in new MockComputationsRetriever {
+//      val stubTestComputationsRetriever = MockComputationsBoxRetriever()
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cato02()).thenReturn(CATO02(0))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
+      CP88(Some(-1)).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
     }
 
-    "validate correctly when not greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp83Param = Some(11),
-        cato02Param = 10
-      )
+    "validate correctly when not greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in new MockComputationsRetriever {
+//      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
+//        cp83Param = Some(11)
+////        ,
+////        cato02Param = 10
+//      )
+      when(boxRetriever.cp83).thenReturn(CP83(Some(11)))
+      when(boxRetriever.cato02()).thenReturn(CATO02(10))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
 
-      CP88(Some(10)).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP88(Some(10)).validate(boxRetriever) shouldBe Set()
     }
 
-    "fails validation when greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp83Param = Some(11),
-        cato02Param = 10
-      )
+    "fails validation when greater than the minimum of CATO02 (maxAIA) and CP83 (expenditureQualifyingAnnualInvestmentAllowance)" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(Some(11)))
+      when(boxRetriever.cato02()).thenReturn(CATO02(10))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
 
-      CP88(Some(11)).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.annualInvestmentAllowanceExceeded", args = Some(Seq("10"))))
+      CP88(Some(11)).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.annualInvestmentAllowanceExceeded", args = Some(Seq("10"))))
     }
 
-    "fails validation when CATO02 (maxAIA) is the minimum" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp83Param = Some(10),
-        cato02Param = 11
-      )
+    "fails validation when CATO02 (maxAIA) is the minimum" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(Some(10)))
+      when(boxRetriever.cato02()).thenReturn(CATO02(11))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
 
-      CP88(Some(11)).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.annualInvestmentAllowanceExceeded", args = Some(Seq("10"))))
+      CP88(Some(11)).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.annualInvestmentAllowanceExceeded", args = Some(Seq("10"))))
     }
 
-    "fail validation when trading but no value entered" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(false))
+    "fail validation when trading but no value entered" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(Some(11)))
+      when(boxRetriever.cato02()).thenReturn(CATO02(10))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
 
-      CP88(None).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.fieldMustHaveValueIfTrading"))
+      CP88(None).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.fieldMustHaveValueIfTrading"))
     }
-    "validate when ceased trading but no value entered" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(true))
+    "validate when ceased trading but no value entered" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(Some(11)))
+      when(boxRetriever.cato02()).thenReturn(CATO02(10))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(true)))
 
-      CP88(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP88(None).validate(boxRetriever) shouldBe Set()
     }
-    "validate when ceased trading not set" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever()
+    "validate when ceased trading not set" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cato02()).thenReturn(CATO02(0))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
 
-      CP88(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP88(None).validate(boxRetriever) shouldBe Set()
     }
-    "fails validation when negative" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(false))
+    "fails validation when negative" in new MockComputationsRetriever {
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cato02()).thenReturn(CATO02(0))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
 
-      CP88(-1).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
+      CP88(-1).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP88"), errorMessageKey = "error.CP88.mustBeZeroOrPositive"))
     }
   }
 
@@ -242,107 +261,173 @@ class MachineryAndPlantValidationSpec extends WordSpec with Matchers {
 
     "validates correctly when not greater than MAX(0, MainPool% * ( CP78 (Main Pool brought forward) " +
       "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
-      "+ UnclaimedAIA_FYA (Unclaimed FYA and AIA amounts)) - CATO-2730" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp78Param = Some(2000),    // writtenDownValueBroughtForward
-        cp79Param = Some(20),
-        cp80Param = Some(30),
-        // CP81 - calculated  // (sum of cp79 and cp80) expenditureQualifyingForFirstYearAllowanceInput
-        cp82Param = Some(2000),    // additionsQualifyingWritingDownAllowanceMainPool
-        cp83Param = Some(50),      // expenditureQualifyingAnnualInvestmentAllowance
-        cp87InputParam = Some(50), // firstYearAllowanceClaimedInput
-        cp672Param = Some(1000),   // proceedsFromDisposalsFromMainPool
-        cpAux1Param = 0,
-        cpAux2Param = 0,
-        cato21Param = 18
-      )
+      "+ UnclaimedAIA_FYA (Unclaimed FYA and AIA amounts)) - CATO-2730" in new MockComputationsRetriever {
+      when(boxRetriever.cp78).thenReturn(CP78(Some(2000)))
+      when(boxRetriever.cp79).thenReturn(CP79(Some(20)))
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+      when(boxRetriever.cp81).thenReturn(CP81(50))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(2000)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(1000)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(0))
+      when(boxRetriever.cato21()).thenReturn(CATO21(18))
 
-      CP89(549).validate(stubTestComputationsRetriever) shouldBe Set()
-      CP89(550).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("549"))))
+      CP89(549).validate(boxRetriever) shouldBe Set()
+      CP89(550).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("549"))))
     }
 
     "validates when greater than MAX(0, MainPool% * ( CP78 (Main Pool brought forward) " +
       "+ CP82 (Additions Qualifying for Main Pool) + MainRatePool - CP672 (Proceed from Disposals from Main Pool) " +
-      "+ LEC14 (Unclaimed FYA and AIA amounts)))" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp78Param = Some(100),   // writtenDownValueBroughtForward
-        cp82Param = Some(100),   // additionsQualifyingWritingDownAllowanceMainPool
-        cp672Param = Some(100),  // proceedsFromDisposalsFromMainPool
-        cpAux2Param = 50,
-        cato21Param = 10,
-        cato20Param = 50
-      )
+      "+ LEC14 (Unclaimed FYA and AIA amounts)))" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+      when(boxRetriever.cp78).thenReturn(CP78(Some(100)))
+      when(boxRetriever.cp79).thenReturn(CP79(None))
+      when(boxRetriever.cp80).thenReturn(CP80(None))
+      when(boxRetriever.cp81).thenReturn(CP81(0))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(100)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(100)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(50))
+      when(boxRetriever.cato20()).thenReturn(CATO20(50))
+      when(boxRetriever.cato21()).thenReturn(CATO21(10))
 
-      CP89(15).validate(stubTestComputationsRetriever) shouldBe Set()
-      CP89(16).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("15"))))
+      CP89(15).validate(boxRetriever) shouldBe Set()
+      CP89(16).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("15"))))
     }
 
-    "validated when CP672 is large enough to make the total -ve and any +ve claim is made" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp78Param = Some(100),   // writtenDownValueBroughtForward
-        cp82Param = Some(100),   // additionsQualifyingWritingDownAllowanceMainPool
-        cp672Param = Some(1000), // proceedsFromDisposalsFromMainPool
-        cpAux2Param = 100,
-        cato21Param = 10
-      )
+    "validated when CP672 is large enough to make the total -ve and any +ve claim is made" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+      when(boxRetriever.cp78).thenReturn(CP78(Some(100)))
+      when(boxRetriever.cp79).thenReturn(CP79(None))
+      when(boxRetriever.cp80).thenReturn(CP80(None))
+      when(boxRetriever.cp81).thenReturn(CP81(0))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(100)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(1000)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(100))
+      when(boxRetriever.cato20()).thenReturn(CATO20(50))
+      when(boxRetriever.cato21()).thenReturn(CATO21(10))
 
-      CP89(0).validate(stubTestComputationsRetriever) shouldBe Set()
-      CP89(1).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("0"))))
+
+      CP89(0).validate(boxRetriever) shouldBe Set()
+      CP89(1).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mainPoolAllowanceExceeded", Some(Seq("0"))))
     }
 
-    "validate when ceased trading but no value entered" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(true))
+    "validate when ceased trading but no value entered" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(true)))
+      when(boxRetriever.cp78).thenReturn(CP78(Some(100)))
+      when(boxRetriever.cp79).thenReturn(CP79(None))
+      when(boxRetriever.cp80).thenReturn(CP80(None))
+      when(boxRetriever.cp81).thenReturn(CP81(0))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(100)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(1000)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(100))
+      when(boxRetriever.cato20()).thenReturn(CATO20(50))
+      when(boxRetriever.cato21()).thenReturn(CATO21(10))
 
-      CP89(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP89(None).validate(boxRetriever) shouldBe Set()
     }
 
-    "validate when ceased trading not set" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever()
+    "validate when ceased trading not set" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(true)))
+      when(boxRetriever.cp78).thenReturn(CP78(Some(100)))
+      when(boxRetriever.cp79).thenReturn(CP79(None))
+      when(boxRetriever.cp80).thenReturn(CP80(None))
+      when(boxRetriever.cp81).thenReturn(CP81(0))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(100)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(1000)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(100))
+      when(boxRetriever.cato20()).thenReturn(CATO20(50))
+      when(boxRetriever.cato21()).thenReturn(CATO21(10))
 
-      CP89(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP89(None).validate(boxRetriever) shouldBe Set()
     }
 
-    "fails validation when negative" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(false))
+    "fails validation when negative" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(false)))
+      when(boxRetriever.cp78).thenReturn(CP78(Some(100)))
+      when(boxRetriever.cp79).thenReturn(CP79(None))
+      when(boxRetriever.cp80).thenReturn(CP80(None))
+      when(boxRetriever.cp81).thenReturn(CP81(0))
+      when(boxRetriever.cp82).thenReturn(CP82(Some(100)))
+      when(boxRetriever.cp83).thenReturn(CP83(None))
+      when(boxRetriever.cp87).thenReturn(CP87(0))
+      when(boxRetriever.cp88).thenReturn(CP88(None))
+      when(boxRetriever.cp87Input()).thenReturn(CP87Input(Some(50)))
+      when(boxRetriever.cp672()).thenReturn(CP672(Some(1000)))
+      when(boxRetriever.cpAux1()).thenReturn(CPAux1(0))
+      when(boxRetriever.cpAux2()).thenReturn(CPAux2(100))
+      when(boxRetriever.cato20()).thenReturn(CATO20(50))
+      when(boxRetriever.cato21()).thenReturn(CATO21(10))
 
-      CP89(-1).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mustBeZeroOrPositive"))
+      CP89(-1).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP89"), errorMessageKey = "error.CP89.mustBeZeroOrPositive"))
     }
   }
 
   "(CP668) Writing Down Allowance claimed from Special rate pool" should {
-     "validates correctly when not greater than MAX( 0, SpecialPool% * ( CP666 + CPaux3 - CP667) )" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-        cp666Param = Some(100), // writtenDownValueOfSpecialRatePoolBroughtForward
-        cp667Param = Some(100), // proceedsFromDisposalsFromSpecialRatePool
-        cpAux3Param = 100,
-        cato22Param = 10
-      )
+     "validates correctly when not greater than MAX( 0, SpecialPool% * ( CP666 + CPaux3 - CP667) )" in new MockComputationsRetriever {
+       when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+       when(boxRetriever.cp666()).thenReturn(CP666(Some(100)))
+       when(boxRetriever.cp667()).thenReturn(CP667(Some(100)))
+       when(boxRetriever.cpAux3()).thenReturn(CPAux3(100))
+       when(boxRetriever.cato22()).thenReturn(CATO22(10))
 
-      CP668(10).validate(stubTestComputationsRetriever) shouldBe Set()
-      CP668(11).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP668"), errorMessageKey = "error.CP668.specialRatePoolAllowanceExceeded", Some(Seq("10"))))
+       CP668(10).validate(boxRetriever) shouldBe Set()
+       CP668(11).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP668"), errorMessageKey = "error.CP668.specialRatePoolAllowanceExceeded", Some(Seq("10"))))
      }
 
-    "fails validation when CP667 is large enough to make the total -ve and any +ve claim is made" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever(
-          cp666Param = Some(100),  // writtenDownValueOfSpecialRatePoolBroughtForward
-          cp667Param = Some(1000), // proceedsFromDisposalsFromSpecialRatePool
-          cpAux3Param = 100,
-          cato22Param = 10
-      )
+    "fails validation when CP667 is large enough to make the total -ve and any +ve claim is made" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+      when(boxRetriever.cp666()).thenReturn(CP666(Some(100)))
+      when(boxRetriever.cp667()).thenReturn(CP667(Some(1000)))
+      when(boxRetriever.cpAux3()).thenReturn(CPAux3(100))
+      when(boxRetriever.cato22()).thenReturn(CATO22(10))
 
-      CP668(0).validate(stubTestComputationsRetriever) shouldBe Set()
-      CP668(1).validate(stubTestComputationsRetriever) shouldBe Set(CtValidation(boxId = Some("CP668"), errorMessageKey = "error.CP668.specialRatePoolAllowanceExceeded", Some(Seq("0"))))
+      CP668(0).validate(boxRetriever) shouldBe Set()
+      CP668(1).validate(boxRetriever) shouldBe Set(CtValidation(boxId = Some("CP668"), errorMessageKey = "error.CP668.specialRatePoolAllowanceExceeded", Some(Seq("0"))))
     }
 
-    "validate when ceased trading but no value entered" in {
+    "validate when ceased trading but no value entered" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(Some(true)))
+      when(boxRetriever.cp666()).thenReturn(CP666(Some(100)))
+      when(boxRetriever.cp667()).thenReturn(CP667(Some(1000)))
+      when(boxRetriever.cpAux3()).thenReturn(CPAux3(100))
+      when(boxRetriever.cato22()).thenReturn(CATO22(10))
+
       val stubTestComputationsRetriever = MockComputationsBoxRetriever(cpq8Param = Some(true))
 
-      CP668(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP668(None).validate(boxRetriever) shouldBe Set()
     }
-    "validate when ceased trading not set" in {
-      val stubTestComputationsRetriever = MockComputationsBoxRetriever()
+    "validate when ceased trading not set" in new MockComputationsRetriever {
+      when(boxRetriever.cpQ8()).thenReturn(CPQ8(None))
+      when(boxRetriever.cp666()).thenReturn(CP666(Some(100)))
+      when(boxRetriever.cp667()).thenReturn(CP667(Some(1000)))
+      when(boxRetriever.cpAux3()).thenReturn(CPAux3(100))
+      when(boxRetriever.cato22()).thenReturn(CATO22(10))
 
-      CP668(None).validate(stubTestComputationsRetriever) shouldBe Set()
+      CP668(None).validate(boxRetriever) shouldBe Set()
     }
   }
 }
