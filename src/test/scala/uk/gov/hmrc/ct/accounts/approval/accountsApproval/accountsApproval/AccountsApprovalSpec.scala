@@ -21,11 +21,11 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.approval.boxes._
-import uk.gov.hmrc.ct.accounts.{AC4, MockAccountsRetriever}
+import uk.gov.hmrc.ct.accounts.{AC4, MockAccountsRetriever, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
 
-class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with MockAccountsRetriever {
+class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with MockFrs10xAccountsRetriever {
 
   val Date = Some(new LocalDate())
   val True = Some(true)
@@ -198,7 +198,7 @@ class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with
 
   "HmrcAccountsApproval" should {
     val emptyApproval = HmrcAccountsApproval(List.empty, List.empty, AC8091(None), AC198A(None))
-    when(boxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
+    when(accountsBoxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
     val enabled = {
       (b: Boolean) =>
         when(boxRetriever.hmrcAccountsApprovalRequired()).thenReturn(HmrcAccountsApprovalRequired(b))
@@ -211,7 +211,7 @@ class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with
 
   "CompaniesHouseAccountsApproval" should {
     val emptyApproval = CompaniesHouseAccountsApproval(List.empty, List.empty, AC8091(None), AC198A(None))
-    when(boxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
+    when(accountsBoxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
     val enabled = {
       b: Boolean =>
         when(boxRetriever.coHoAccountsApprovalRequired).thenReturn(CoHoAccountsApprovalRequired(b))

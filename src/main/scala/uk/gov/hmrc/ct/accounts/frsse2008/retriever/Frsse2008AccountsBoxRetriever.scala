@@ -16,17 +16,14 @@
 
 package uk.gov.hmrc.ct.accounts.frsse2008.retriever
 
-import uk.gov.hmrc.ct.accounts.AC12
 import uk.gov.hmrc.ct.accounts.frsse2008._
 import uk.gov.hmrc.ct.accounts.frsse2008.boxes._
 import uk.gov.hmrc.ct.accounts.frsse2008.boxes.micro._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 
-abstract class Frsse2008AccountsBoxRetriever(filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
-  extends AccountsBoxRetriever(filingAttributesBoxValueRetriever) {
-
-  def ac12(): AC12
+abstract class Frsse2008AccountsBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever)
+  extends BoxRetriever {
 
   def ac13(): AC13
 
@@ -34,9 +31,9 @@ abstract class Frsse2008AccountsBoxRetriever(filingAttributesBoxValueRetriever: 
 
   def ac15(): AC15
 
-  def ac16(): AC16 = AC16.calculate(this, filingAttributesBoxValueRetriever)
+  def ac16(): AC16 = AC16.calculate(this)
 
-  def ac17(): AC17 = AC17.calculate(this, filingAttributesBoxValueRetriever)
+  def ac17(): AC17 = AC17.calculate(this)
 
   def ac18(): AC18
 
@@ -102,9 +99,9 @@ abstract class Frsse2008AccountsBoxRetriever(filingAttributesBoxValueRetriever: 
 
   def ac426(): AC426
 
-  def ac435(): AC435 = AC435.calculate(this, filingAttributesBoxValueRetriever)
+  def ac435(): AC435 = AC435.calculate(this)
 
-  def ac436(): AC436 = AC436.calculate(this, filingAttributesBoxValueRetriever)
+  def ac436(): AC436 = AC436.calculate(this)
 
   def ac492(): AC492
 

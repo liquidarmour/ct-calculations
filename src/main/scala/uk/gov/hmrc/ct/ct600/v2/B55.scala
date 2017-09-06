@@ -27,7 +27,7 @@ object B55 extends CorporationTaxCalculator with Calculated[B55, CT600BoxRetriev
 
 
   override def calculate(fieldValueRetriever: CT600BoxRetriever): B55 =
-    B55(rateOfTaxFy2(HmrcAccountingPeriod(fieldValueRetriever.cp1(), fieldValueRetriever.cp2()),
+    B55(rateOfTaxFy2(HmrcAccountingPeriod(fieldValueRetriever.computationsBoxRetriever.cp1(), fieldValueRetriever.computationsBoxRetriever.cp2()),
                  fieldValueRetriever.b37(),
                  fieldValueRetriever.b42(),
                  fieldValueRetriever.b39(),

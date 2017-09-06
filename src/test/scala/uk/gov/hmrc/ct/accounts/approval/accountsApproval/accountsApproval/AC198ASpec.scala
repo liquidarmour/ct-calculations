@@ -21,21 +21,21 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import uk.gov.hmrc.cato.time.DateHelper
 import uk.gov.hmrc.ct.accounts.approval.boxes.AC198A
-import uk.gov.hmrc.ct.accounts.{AC4, AccountsDatesValidationFixture, MockAccountsRetriever, MockFrs102AccountsRetriever}
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AC4, AccountsDatesValidationFixture, MockAccountsRetriever, MockFrs10xAccountsRetriever}
 
 class AC198ASpec extends WordSpec
   with MockitoSugar
   with Matchers
-  with MockAccountsRetriever
+  with MockFrs10xAccountsRetriever
   with BeforeAndAfter
-  with AccountsDatesValidationFixture[AccountsBoxRetriever] {
+  with AccountsDatesValidationFixture[Frs10xAccountsBoxRetriever] {
 
   val NOW = DateHelper.now()
   val APEnd = NOW.minusMonths(1)
 
   before{
-    when(boxRetriever.ac4()).thenReturn(AC4(APEnd))
+    when(accountsBoxRetriever.ac4()).thenReturn(AC4(APEnd))
   }
 
   testDateIsMandatory("AC198A", AC198A)

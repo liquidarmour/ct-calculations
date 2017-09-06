@@ -24,10 +24,10 @@ import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
 case class AC436(value: Option[Int]) extends CtBoxIdentifier(name = "Previous Profit or loss") with CtOptionalInteger
 
 object AC436 extends ProfitOrLossCalculator {
-  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever, filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever): AC436 = {
+  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever): AC436 = {
     calculatePreviousProfitOrLoss(ac13 = boxRetriever.ac13(), ac406 = boxRetriever.ac406(),
                                   ac411 = boxRetriever.ac411(), ac416 = boxRetriever.ac416(),
                                   ac421 = boxRetriever.ac421(), ac426 = boxRetriever.ac426(),
-                                  ac35 = boxRetriever.ac35(), filingAttributesBoxValueRetriever.microEntityFiling())
+                                  ac35 = boxRetriever.ac35(), boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.microEntityFiling())
   }
 }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ct.accounts.approval.boxes
 
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
 
 case class HmrcAccountsApproval(ac199A: List[AC199A] = List.empty, ac8092: List[AC8092] = List.empty, ac8091: AC8091, ac198A: AC198A)
@@ -26,6 +26,6 @@ case class HmrcAccountsApproval(ac199A: List[AC199A] = List.empty, ac8092: List[
 
   override def value = this
 
-  override def approvalEnabled(boxRetriever: AccountsBoxRetriever) =
+  override def approvalEnabled(boxRetriever: Frs10xAccountsBoxRetriever) =
     boxRetriever.hmrcAccountsApprovalRequired().value
 }

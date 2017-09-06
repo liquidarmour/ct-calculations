@@ -18,15 +18,14 @@ package uk.gov.hmrc.ct.accounts.frsse2008
 
 import uk.gov.hmrc.ct.accounts.frsse2008.calculations.ProfitOrLossCalculator
 import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
-import uk.gov.hmrc.ct.box.{Calculated, CtBoxIdentifier, CtOptionalInteger}
+import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtOptionalInteger}
 
 case class AC16(value: Option[Int]) extends CtBoxIdentifier(name = "Current Gross profit or loss") with CtOptionalInteger
 
 object AC16 extends ProfitOrLossCalculator {
-  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever, filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever): AC16 = {
-    calculateCurrentGrossProfitOrLoss(ac12 = boxRetriever.ac12(),
+  def calculate(boxRetriever: Frsse2008AccountsBoxRetriever): AC16 = {
+    calculateCurrentGrossProfitOrLoss(ac12 = boxRetriever.accountsBoxRetriever.ac12(),
                                       ac14 = boxRetriever.ac14(),
-                                      statutoryAccountsFiling = filingAttributesBoxValueRetriever.statutoryAccountsFiling())
+                                      statutoryAccountsFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.statutoryAccountsFiling())
   }
 }

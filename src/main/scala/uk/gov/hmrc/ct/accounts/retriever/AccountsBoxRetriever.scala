@@ -20,7 +20,7 @@ import uk.gov.hmrc.ct.accounts._
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
 abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
-  extends AccountsApprovalRequiredBoxRetriever {
+  extends BoxRetriever {
 
   def companyAddress(): CompanyAddress
 

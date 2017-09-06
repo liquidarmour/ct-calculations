@@ -66,6 +66,14 @@ trait MockFrs102AccountsRetriever extends MockitoSugar {
   when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
 }
 
+trait MockFrsse2008AccountsRetriever extends MockitoSugar {
+  val boxRetriever = mock[MockFrsse2008AccountsRetriever]
+  val accountsBoxRetriever = mock[AccountsBoxRetriever]
+  when(boxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(accountsBoxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
+}
+
 trait MockFrs105AccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[Frs105AccountsBoxRetriever](RETURNS_SMART_NULLS)
   val accountsBoxRetriever = mock[AccountsBoxRetriever]

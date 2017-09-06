@@ -17,23 +17,21 @@
 package uk.gov.hmrc.ct.version.calculations
 
 import org.joda.time.LocalDate
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct._
-import uk.gov.hmrc.ct.accounts.frsse2008.stubs.StubbedAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AC2, AC3}
-import uk.gov.hmrc.ct.box.stubs.StubbedFilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
+import uk.gov.hmrc.ct.computations.{CP1, CP2}
 import uk.gov.hmrc.ct.domain.CompanyTypes._
 import uk.gov.hmrc.ct.version.CoHoVersions.FRSSE2008
 import uk.gov.hmrc.ct.version.HmrcReturns._
 import uk.gov.hmrc.ct.version.HmrcVersions._
 import uk.gov.hmrc.ct.version.{Return, Version}
-import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
-import uk.gov.hmrc.ct.computations.{CP1, CP2}
 
 class ReturnVersionsCalculatorSpec extends WordSpec with Matchers with MockitoSugar {
 

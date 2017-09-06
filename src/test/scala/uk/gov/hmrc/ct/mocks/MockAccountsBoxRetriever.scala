@@ -20,8 +20,4 @@ case class MockAccountsBoxRetriever(baseBoxRetriever: MockFilingAttributesBoxRet
   override def ac206() = ???
 
   override def generateValues = ???
-
-  override def coHoAccountsApprovalRequired() = ???
-
-  override def hmrcAccountsApprovalRequired() = ???
 }
