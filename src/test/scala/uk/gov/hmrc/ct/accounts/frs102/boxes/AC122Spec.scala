@@ -36,7 +36,7 @@ class AC122Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
   "AC122" should {
 
     "throw error when is different than AC42" in {
-      setUpMocks(accountsBoxRetriever)
+      setUpMocks(boxRetriever)
       AC122(Some(10)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.intangible.assets.note.currentNetBookValue.notEqualToAssets"))
     }
 
@@ -59,7 +59,7 @@ class AC122Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
     }
 
     "validate successfully if nothing is wrong" in {
-      setUpMocks(accountsBoxRetriever)
+      setUpMocks(boxRetriever)
       AC122(Some(100)).validate(boxRetriever) shouldBe Set.empty
     }
 

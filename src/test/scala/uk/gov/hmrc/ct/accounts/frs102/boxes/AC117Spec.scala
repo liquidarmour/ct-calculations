@@ -36,7 +36,7 @@ class AC117Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
   "AC117" should {
 
     "validate successfully if nothing is wrong" in {
-      setUpMocks(accountsBoxRetriever)
+      setUpMocks(boxRetriever)
       AC117(Some(10)).validate(boxRetriever) shouldBe Set.empty
     }
 

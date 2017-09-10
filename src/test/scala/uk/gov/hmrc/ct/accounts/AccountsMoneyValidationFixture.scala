@@ -24,13 +24,12 @@ import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.box.{CtValidation, ValidatableBox}
 
-trait AccountsMoneyValidationFixture[T <: BoxRetriever]
+trait AccountsMoneyValidationFixture[T <: AccountsBoxRetriever]
   extends WordSpec
     with Matchers
     with MockitoSugar {
 
   def boxRetriever: T
-  def accountsBoxRetriever: AccountsBoxRetriever
 
   val STANDARD_MIN = -99999999
   val STANDARD_MAX = 99999999
@@ -58,7 +57,7 @@ trait AccountsMoneyValidationFixture[T <: BoxRetriever]
                       builder: (Option[Int]) => ValidatableBox[T],
                       testEmpty: Boolean,
                       testMin: Boolean = true): Unit = {
-    setUpMocks(accountsBoxRetriever)
+    setUpMocks(boxRetriever)
     s"$boxId" should {
       "be valid when minimum" in {
         builder(Some(minValue)).validate(boxRetriever) shouldBe empty

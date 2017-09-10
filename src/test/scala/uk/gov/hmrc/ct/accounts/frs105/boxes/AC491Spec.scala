@@ -30,42 +30,40 @@ class AC491Spec
   extends ValidateAssetsEqualSharesSpec[Frs105AccountsBoxRetriever]
     with MockitoSugar {
 
-  val STANDARD_MIN = -99999999
-  val STANDARD_MAX = 99999999
+  val STANDARD_MIN: Int = -99999999
+  val STANDARD_MAX: Int = 99999999
   
-  override def addOtherBoxValue100Mock(mockRetriever: Frs105AccountsBoxRetriever) =
+  override def addOtherBoxValue100Mock(mockRetriever: Frs105AccountsBoxRetriever): Unit =
     when(mockRetriever.ac69()).thenReturn(AC69(Some(100)))
 
-  override def addOtherBoxValueNoneMock(mockRetriever: Frs105AccountsBoxRetriever) =
+  override def addOtherBoxValueNoneMock(mockRetriever: Frs105AccountsBoxRetriever): Unit =
     when(mockRetriever.ac69()).thenReturn(AC69(None))
 
   new MockFrs105AccountsRetriever {
-    when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+    when(boxRetriever.ac205()).thenReturn(AC205(None))
     testAssetsEqualToSharesValidation(boxRetriever, filingAttributesBoxValueRetriever)("AC491", AC491.apply)
   }
 
   CompanyTypes.AllCompanyTypes.foreach { companyType =>
     s"be valid when is empty and there's no PY for company type: $companyType" in new MockFrs105AccountsRetriever {
-      val value = None
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate())))
-      when(boxRetriever.ac69()).thenReturn(AC69(value))
+      when(boxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate())))
+      when(boxRetriever.ac69()).thenReturn(AC69(None))
 
-      AC491(value).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC491"), "error.AC491.required"))
+      AC491(None).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC491"), "error.AC491.required"))
     }
 
     s"be invalid when is empty and there's PY for company type: $companyType" in new MockFrs105AccountsRetriever {
-      val value = None
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
-      when(boxRetriever.ac69()).thenReturn(AC69(value))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac69()).thenReturn(AC69(None))
 
-      AC491(value).validate(boxRetriever) shouldBe empty
+      AC491(None).validate(boxRetriever) shouldBe empty
     }
 
     s"be valid when minimum for companyType: $companyType" in new MockFrs105AccountsRetriever {
       val value = Some(STANDARD_MIN)
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
       when(boxRetriever.ac69()).thenReturn(AC69(value))
 
@@ -73,7 +71,7 @@ class AC491Spec
     }
     s"be valid when greater then min for companyType: $companyType" in new MockFrs105AccountsRetriever {
       val value = Some(STANDARD_MIN + 1)
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
       when(boxRetriever.ac69()).thenReturn(AC69(value))
 
@@ -81,7 +79,7 @@ class AC491Spec
     }
     s"be valid when positive but equals upper limit for companyType: $companyType" in new MockFrs105AccountsRetriever {
       val value = Some(STANDARD_MAX)
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
       when(boxRetriever.ac69()).thenReturn(AC69(value))
 
@@ -89,7 +87,7 @@ class AC491Spec
     }
     s"fail validation when less then min lower limit for companyType: $companyType" in new MockFrs105AccountsRetriever {
       val value = Some(STANDARD_MIN - 1)
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
       when(boxRetriever.ac69()).thenReturn(AC69(value))
 
@@ -97,7 +95,7 @@ class AC491Spec
     }
     s"fail validation when positive but above upper limit for companyType: $companyType" in new MockFrs105AccountsRetriever {
       val value = Some(STANDARD_MAX + 1)
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
       when(boxRetriever.ac69()).thenReturn(AC69(value))
 
@@ -105,10 +103,9 @@ class AC491Spec
     }
 
     s"pass validation when previous year has no value and box is empty for companyType: $companyType" in new MockFrs105AccountsRetriever {
-      val value = None
       when(filingAttributesBoxValueRetriever.companyType()).thenReturn(FilingCompanyType(companyType))
-      when(boxRetriever.ac69()).thenReturn(AC69(value))
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac69()).thenReturn(AC69(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
 
       AC491(None).validate(boxRetriever) shouldBe empty
     }

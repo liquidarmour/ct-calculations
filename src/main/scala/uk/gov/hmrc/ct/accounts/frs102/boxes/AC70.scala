@@ -27,7 +27,7 @@ case class AC70(value: Option[Int]) extends CtBoxIdentifier(name = "Called up sh
   with Validators {
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
-    val limitedByGuarantee = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee
+    val limitedByGuarantee = boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee
     collectErrors(
       failIf(limitedByGuarantee) {
         cannotExistErrorIf(value.nonEmpty)

@@ -29,7 +29,7 @@ case class AC107(value: Option[Int]) extends CtBoxIdentifier(name = "Average num
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
     val noteSelectedForInclusion = ac7300().orFalse
-    val havePreviousPoA = accountsBoxRetriever.ac205.hasValue
+    val havePreviousPoA = ac205.hasValue
 
     collectErrors(
       cannotExistErrorIf((!havePreviousPoA || !noteSelectedForInclusion) && value.nonEmpty),

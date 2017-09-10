@@ -27,6 +27,6 @@ object A9Inverse extends Calculated[A9Inverse, CT600ABoxRetriever] with LoansToP
 
   override def calculate(fieldValueRetriever: CT600ABoxRetriever): A9Inverse = {
     import fieldValueRetriever._
-    calculateA9Inverse(cp2(), lp03(), lpq07())
+    calculateA9Inverse(computationsBoxRetriever.cp2(), lp03(), lpq07())
   }
 }

@@ -25,7 +25,7 @@ object ProfitAndLossStatementRequired extends Calculated[ProfitAndLossStatementR
 
   override def calculate(fieldValueRetriever: Frs10xAccountsBoxRetriever): ProfitAndLossStatementRequired = {
     val dormant = fieldValueRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
-    val cohoOnly = !fieldValueRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
+    val cohoOnly = !fieldValueRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
 
     val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse)
     ProfitAndLossStatementRequired(result)

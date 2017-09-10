@@ -33,7 +33,7 @@ class AC302ASpec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriev
 
   "AC301A" should {
     "always pass if no previous POA" in {
-      when(accountsBoxRetriever.ac206()).thenReturn(AC206(None))
+      when(boxRetriever.ac206()).thenReturn(AC206(None))
       AC302A(Some(-99)).validate(boxRetriever) shouldBe Set()
     }
   }

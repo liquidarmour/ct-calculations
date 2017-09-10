@@ -135,7 +135,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(Some(12)))
+        when(boxRetriever.ac12()).thenReturn(AC12(Some(12)))
         when(boxRetriever.ac14()).thenReturn(AC14(Some(14)))
         when(boxRetriever.ac18()).thenReturn(AC18(Some(18)))
         when(boxRetriever.ac20()).thenReturn(AC20(Some(20)))
@@ -150,7 +150,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(Some(12)))
+        when(boxRetriever.ac12()).thenReturn(AC12(Some(12)))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
         when(boxRetriever.ac20()).thenReturn(AC20(None))
@@ -165,7 +165,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac18()).thenReturn(AC18(Some(18)))
         when(boxRetriever.ac20()).thenReturn(AC20(None))
@@ -180,7 +180,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
         when(boxRetriever.ac20()).thenReturn(AC20(None))
@@ -196,7 +196,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac16()).thenReturn(AC16(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
@@ -213,7 +213,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac16()).thenReturn(AC16(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
@@ -230,7 +230,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac16()).thenReturn(AC16(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
@@ -247,7 +247,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac16()).thenReturn(AC16(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))
@@ -265,7 +265,7 @@ class AC36Spec extends WordSpec with Matchers with MockitoSugar  {
         when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
         when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
-        when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+        when(boxRetriever.ac12()).thenReturn(AC12(None))
         when(boxRetriever.ac14()).thenReturn(AC14(None))
         when(boxRetriever.ac16()).thenReturn(AC16(None))
         when(boxRetriever.ac18()).thenReturn(AC18(None))

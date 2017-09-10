@@ -20,8 +20,8 @@ import org.joda.time.LocalDate
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.{MockFrs102AccountsRetriever, AccountsMoneyValidationFixture, AC205}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AC205, AccountsMoneyValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC5052CSpec extends WordSpec with MockitoSugar with Matchers with MockFrs102AccountsRetriever with AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with BeforeAndAfter {
@@ -35,7 +35,7 @@ class AC5052CSpec extends WordSpec with MockitoSugar with Matchers with MockFrs1
 
   "pass the validation if AC52 and AC205 are set" in {
     when(boxRetriever.ac52()).thenReturn(AC52(Some(123)))
-    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(LocalDate.parse("2016-01-01"))))
+    when(boxRetriever.ac205()).thenReturn(AC205(Some(LocalDate.parse("2016-01-01"))))
     AC5052C(Some(4)).validate(boxRetriever) shouldBe Set.empty
   }
 

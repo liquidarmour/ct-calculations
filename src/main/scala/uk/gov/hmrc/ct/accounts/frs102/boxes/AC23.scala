@@ -29,7 +29,7 @@ case class AC23(value: Option[Int]) extends CtBoxIdentifier(name = "Turnover (cu
 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
-      validateInputAllowed("AC23", boxRetriever.accountsBoxRetriever.ac205()),
+      validateInputAllowed("AC23", boxRetriever.ac205()),
       validateMoney(value)
     )
   }

@@ -31,7 +31,7 @@ case class AC69(value: Option[Int]) extends CtBoxIdentifier(name = "Total net as
 
     validateAssetsEqualToShares("AC69",
       boxRetriever.ac491(),
-      boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
+      boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
   }
 }
 

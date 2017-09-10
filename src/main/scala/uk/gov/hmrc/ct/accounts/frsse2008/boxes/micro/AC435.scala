@@ -25,13 +25,13 @@ case class AC435(value: Option[Int]) extends CtBoxIdentifier(name = "Current Pro
 
 object AC435 extends ProfitOrLossCalculator {
   def calculate(boxRetriever: Frsse2008AccountsBoxRetriever): AC435 = {
-    calculateCurrentProfitOrLoss(ac12 = boxRetriever.accountsBoxRetriever.ac12(),
+    calculateCurrentProfitOrLoss(ac12 = boxRetriever.ac12(),
                                  ac405 = boxRetriever.ac405(),
                                  ac410 = boxRetriever.ac410(),
                                  ac415 = boxRetriever.ac415(),
                                  ac420 = boxRetriever.ac420(),
                                  ac425 = boxRetriever.ac425(),
                                  ac34 = boxRetriever.ac34(),
-                                 microEntityFiling =  boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.microEntityFiling())
+                                 microEntityFiling = boxRetriever.filingAttributesBoxValueRetriever.microEntityFiling())
   }
 }

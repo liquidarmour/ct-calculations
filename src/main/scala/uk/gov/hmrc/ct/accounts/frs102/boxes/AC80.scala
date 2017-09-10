@@ -27,7 +27,7 @@ case class AC80(value: Option[Int]) extends CtBoxIdentifier(name = "Total Shareh
  
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     validateAssetsEqualToShares("AC80", boxRetriever.ac68(),
-      boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
+      boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
   }
 }
 

@@ -21,10 +21,12 @@ import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.accounts.retriever.{AccountsApprovalRequiredBoxRetriever, AccountsBoxRetriever}
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-abstract class Frs10xAccountsBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever,
+abstract class Frs10xAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever,
                                           val frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
                                           val frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
-  extends BoxRetriever with AccountsApprovalRequiredBoxRetriever {
+  extends AccountsBoxRetriever(filingAttributesBoxRetriever)
+    with BoxRetriever
+    with AccountsApprovalRequiredBoxRetriever {
 
   def acq8161(): ACQ8161
 
@@ -41,10 +43,8 @@ abstract class Frs10xAccountsBoxRetriever(val accountsBoxRetriever: AccountsBoxR
   def profitAndLossStatementRequired(): ProfitAndLossStatementRequired = ProfitAndLossStatementRequired.calculate(this)
 
   override def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired =
-    CoHoAccountsApprovalRequired(accountsBoxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling())
+    CoHoAccountsApprovalRequired(filingAttributesBoxValueRetriever.companiesHouseFiling())
 
   override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
     HmrcAccountsApprovalRequired.calculate(this)
-
-  override def filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever = accountsBoxRetriever.filingAttributesBoxValueRetriever
 }

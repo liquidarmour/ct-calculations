@@ -28,6 +28,6 @@ object AC436 extends ProfitOrLossCalculator {
     calculatePreviousProfitOrLoss(ac13 = boxRetriever.ac13(), ac406 = boxRetriever.ac406(),
                                   ac411 = boxRetriever.ac411(), ac416 = boxRetriever.ac416(),
                                   ac421 = boxRetriever.ac421(), ac426 = boxRetriever.ac426(),
-                                  ac35 = boxRetriever.ac35(), boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.microEntityFiling())
+                                  ac35 = boxRetriever.ac35(), boxRetriever.filingAttributesBoxValueRetriever.microEntityFiling())
   }
 }

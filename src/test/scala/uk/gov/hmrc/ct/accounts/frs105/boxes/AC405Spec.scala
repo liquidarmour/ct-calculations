@@ -27,7 +27,7 @@ import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling}
 class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetriever] with MockFrs105AccountsRetriever {
 
   def setupCurrentYearMocks(ac12: AC12, ac405: AC405, ac410: AC410, ac415: AC415, ac420: AC420, ac425: AC425, ac34: AC34) = {
-    when(boxRetriever.accountsBoxRetriever.ac12()).thenReturn(ac12)
+    when(boxRetriever.ac12()).thenReturn(ac12)
     when(boxRetriever.ac405()).thenReturn(ac405)
     when(boxRetriever.ac410()).thenReturn(ac410)
     when(boxRetriever.ac415()).thenReturn(ac415)

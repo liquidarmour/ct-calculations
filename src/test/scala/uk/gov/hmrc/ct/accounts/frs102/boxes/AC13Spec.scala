@@ -42,8 +42,7 @@ class AC13Spec extends AccountsMoneyValidationFixture[FullAccountsBoxRetriever]
     testValues.foreach { case (ac13Value: Option[Int], message: String, shouldError: Boolean) =>
       s"$message" in {
         val boxRetriever = mock[FullAccountsBoxRetriever]
-        when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate("2015-01-01"))))
-        when(boxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+        when(boxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate("2015-01-01"))))
         val validationResult = AC13(ac13Value).validate(boxRetriever)
         if (shouldError)
           validationResult shouldBe Set(CtValidation(Some("AC13"), "error.AC13.mustBeZeroOrPositive"))

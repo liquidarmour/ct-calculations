@@ -73,7 +73,7 @@ class AC107Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
     }
 
     "validate with should return exist error when AC7300 is true, AC107 has a value and Previous PoA is empty" in {
-      when(accountsBoxRetriever.ac205()).thenReturn(AC205(None))
+      when(boxRetriever.ac205()).thenReturn(AC205(None))
       when(boxRetriever.ac7300()).thenReturn(AC7300(Some(false)))
 
       AC107(Some(100)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC107"), "error.AC107.cannot.exist"))

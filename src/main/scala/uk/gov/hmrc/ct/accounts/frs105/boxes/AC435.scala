@@ -25,8 +25,8 @@ case class AC435(value: Option[Int]) extends CtBoxIdentifier(name = "Current Pro
 
 object AC435 extends ProfitOrLossFinancialYearCalculator {
 
-  def calculate(boxRetriever: Frs105AccountsBoxRetriever, accountsBoxRetriever: AccountsBoxRetriever): AC435 = {
-    calculateAC435(accountsBoxRetriever.ac12,
+  def calculate(boxRetriever: Frs105AccountsBoxRetriever): AC435 = {
+    calculateAC435(boxRetriever.ac12,
       boxRetriever.ac405,
       boxRetriever.ac410,
       boxRetriever.ac415,

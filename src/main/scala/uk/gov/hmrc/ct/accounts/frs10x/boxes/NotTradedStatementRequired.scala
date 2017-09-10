@@ -26,7 +26,7 @@ object NotTradedStatementRequired extends Calculated[NotTradedStatementRequired,
 
   override def calculate(fieldValueRetriever: Frs10xAccountsBoxRetriever): NotTradedStatementRequired = {
     val dormant = fieldValueRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
-    val cohoOnly = !fieldValueRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
+    val cohoOnly = !fieldValueRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
 
     val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse && !fieldValueRetriever.frs10xDirectorsBoxRetriever.ac8021().orFalse)
     NotTradedStatementRequired(result)

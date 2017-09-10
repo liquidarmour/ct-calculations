@@ -26,7 +26,7 @@ case class AC405(value: Option[Int]) extends CtBoxIdentifier(name = "Other incom
 
   override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] = {
     failIf(!boxRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse &&
-      (boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value || boxRetriever.acq8161().orFalse)) (
+      (boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value || boxRetriever.acq8161().orFalse)) (
       collectErrors(
         validateMoney(value),
         validateAtLeastOneCurrentYearFieldPopulated(boxRetriever)
@@ -37,7 +37,7 @@ case class AC405(value: Option[Int]) extends CtBoxIdentifier(name = "Other incom
   def validateAtLeastOneCurrentYearFieldPopulated(boxRetriever: Frs105AccountsBoxRetriever)(): Set[CtValidation] = {
 
     val anyCurrentYearFieldHasAValue = (
-        boxRetriever.accountsBoxRetriever.ac12().value orElse
+        boxRetriever.ac12().value orElse
         boxRetriever.ac405().value orElse
         boxRetriever.ac410().value orElse
         boxRetriever.ac415().value orElse

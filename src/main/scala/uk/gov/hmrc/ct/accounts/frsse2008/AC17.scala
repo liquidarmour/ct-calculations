@@ -26,6 +26,6 @@ object AC17 extends ProfitOrLossCalculator {
   def calculate(boxRetriever: Frsse2008AccountsBoxRetriever): AC17 = {
     calculatePreviousGrossProfitOrLoss(ac13 = boxRetriever.ac13(),
                                        ac15 = boxRetriever.ac15(),
-                                       statutoryAccountsFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.statutoryAccountsFiling())
+                                       statutoryAccountsFiling = boxRetriever.filingAttributesBoxValueRetriever.statutoryAccountsFiling())
   }
 }

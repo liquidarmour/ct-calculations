@@ -18,8 +18,9 @@ package uk.gov.hmrc.ct.accounts.frs102.retriever
 
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-abstract class AbridgedAccountsBoxRetriever(accountsBoxRetriever: AccountsBoxRetriever,
+abstract class AbridgedAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever,
                                             frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
                                             frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
-  extends Frs102AccountsBoxRetriever(accountsBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever)
+  extends Frs102AccountsBoxRetriever(filingAttributesBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever)

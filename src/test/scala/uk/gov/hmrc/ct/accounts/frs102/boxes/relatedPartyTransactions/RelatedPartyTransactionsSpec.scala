@@ -49,7 +49,7 @@ class RelatedPartyTransactionsSpec
   
   "RelatedPartyTransactions" should {
     "validate successfully when no validation errors are present" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List(validTransaction), ac7806 = AC7806(None))
 
@@ -57,7 +57,7 @@ class RelatedPartyTransactionsSpec
     }
 
     "return error when there are errors but AC7800 not set to true" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
       when(boxRetriever.ac7800()).thenReturn(AC7800(None))
 
       val transaction = RelatedPartyTransaction(
@@ -75,7 +75,7 @@ class RelatedPartyTransactionsSpec
     }
 
     "errors against correct transaction and contextualised #1" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
 
       val transaction = RelatedPartyTransaction(
         uuid = "uuid",
@@ -98,7 +98,7 @@ class RelatedPartyTransactionsSpec
     }
 
     "errors against correct transaction and contextualised #2" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
 
       val transaction2 = RelatedPartyTransaction(
         uuid = "uuid",
@@ -118,7 +118,7 @@ class RelatedPartyTransactionsSpec
     }
 
     "range error when no transactions" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List.empty, ac7806 = AC7806(None))
 
@@ -126,7 +126,7 @@ class RelatedPartyTransactionsSpec
     }
 
     "range error when too many transactions" in {
-      setupDefaults(boxRetriever, accountsBoxRetriever)
+      setupDefaults(boxRetriever)
 
       val transactions = RelatedPartyTransactions(transactions = List.tabulate(20)(index => validTransaction), ac7806 = AC7806(None))
       transactions.validate(boxRetriever) shouldBe empty
@@ -139,10 +139,10 @@ class RelatedPartyTransactionsSpec
 
 object RelatedPartyTransactionsMockSetup extends MockitoSugar {
 
-  def setupDefaults(mockBoxRetriever: AbridgedAccountsBoxRetriever, accountsBoxRetriever: AccountsBoxRetriever) = {
+  def setupDefaults(mockBoxRetriever: AbridgedAccountsBoxRetriever) = {
     // previous POA responses
-    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
-    when(accountsBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
+    when(mockBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
+    when(mockBoxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))
 
     when(mockBoxRetriever.ac7800()).thenReturn(AC7800(Some(true)))
   }

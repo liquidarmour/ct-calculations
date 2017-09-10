@@ -36,7 +36,7 @@ class ACQ8161Spec
     super.beforeEach()
 
     when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-    when(accountsBoxRetriever.ac12()).thenReturn(AC12(Some(10)))
+    when(boxRetriever.ac12()).thenReturn(AC12(Some(10)))
     when(boxRetriever.ac13()).thenReturn(AC13(Some(10)))
     when(boxRetriever.ac405()).thenReturn(AC405(Some(10)))
     when(boxRetriever.ac406()).thenReturn(AC406(Some(10)))
@@ -80,7 +80,7 @@ class ACQ8161Spec
     "not return errors when filing is CoHo only and ACQ8161 is false (frs105 variant) " in {
       when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(accountsBoxRetriever.ac12()).thenReturn(AC12(None))
+      when(boxRetriever.ac12()).thenReturn(AC12(None))
       when(boxRetriever.ac13()).thenReturn(AC13(None))
       when(boxRetriever.ac405()).thenReturn(AC405(None))
       when(boxRetriever.ac406()).thenReturn(AC406(None))

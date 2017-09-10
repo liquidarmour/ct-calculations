@@ -31,10 +31,10 @@ case class ACQ8161(value: Option[Boolean]) extends CtBoxIdentifier(name = "Do yo
 
   override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
-      failIf(boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling().value)(
+      failIf(boxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling().value)(
         validateBooleanAsMandatory("ACQ8161", this)
       ),
-      passIf(boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value)(
+      passIf(boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value)(
         boxRetriever match {
           case boxRetriever: FullAccountsBoxRetriever => validateFull(boxRetriever)
           case boxRetriever: Frs102AccountsBoxRetriever => validateAbridged(boxRetriever)
@@ -52,12 +52,12 @@ case class ACQ8161(value: Option[Boolean]) extends CtBoxIdentifier(name = "Do yo
 
   private def validateFull(boxRetriever: FullAccountsBoxRetriever)(): Set[CtValidation] = {
     import boxRetriever._
-    ensureIsEmpty(boxRetriever.accountsBoxRetriever.ac12, boxRetriever.ac13, ac14, ac15, ac22, ac23) ++ validateAbridged(boxRetriever)
+    ensureIsEmpty(ac12, boxRetriever.ac13, ac14, ac15, ac22, ac23) ++ validateAbridged(boxRetriever)
   }
 
   private def validateMicro(boxRetriever: Frs105AccountsBoxRetriever)(): Set[CtValidation] = {
     import boxRetriever._
-    ensureIsEmpty(boxRetriever.accountsBoxRetriever.ac12, ac13, ac405, ac406, ac410, ac411, ac415, ac416, ac420, ac421, ac425, ac426, ac34, ac35)
+    ensureIsEmpty(ac12, ac13, ac405, ac406, ac410, ac411, ac415, ac416, ac420, ac421, ac425, ac426, ac34, ac35)
   }
 
   private def ensureIsEmpty(values: OptionalCtValue[_]*): Set[CtValidation] = {

@@ -37,7 +37,7 @@ class AbridgedACQ8161Spec
     super.beforeEach()
 
     when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-    when(accountsBoxRetriever.ac12()).thenReturn(AC12(Some(10)))
+    when(boxRetriever.ac12()).thenReturn(AC12(Some(10)))
     when(boxRetriever.ac34()).thenReturn(frs102.boxes.AC34(Some(10)))
     when(boxRetriever.ac35()).thenReturn(frs102.boxes.AC35(Some(10)))
 

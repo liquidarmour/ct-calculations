@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.ct.accounts.approval.accountsApproval.accountsApproval
 
+import org.joda.time.LocalDate
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import uk.gov.hmrc.cato.time.DateHelper
 import uk.gov.hmrc.ct.accounts.approval.boxes.AC198A
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.{AC4, AccountsDatesValidationFixture, MockAccountsRetriever, MockFrs10xAccountsRetriever}
+import uk.gov.hmrc.ct.accounts.{AC4, AccountsDatesValidationFixture, MockFrs10xAccountsRetriever}
 
 class AC198ASpec extends WordSpec
   with MockitoSugar
@@ -31,11 +32,11 @@ class AC198ASpec extends WordSpec
   with BeforeAndAfter
   with AccountsDatesValidationFixture[Frs10xAccountsBoxRetriever] {
 
-  val NOW = DateHelper.now()
-  val APEnd = NOW.minusMonths(1)
+  val NOW: LocalDate = DateHelper.now()
+  val APEnd: LocalDate = NOW.minusMonths(1)
 
   before{
-    when(accountsBoxRetriever.ac4()).thenReturn(AC4(APEnd))
+    when(boxRetriever.ac4()).thenReturn(AC4(APEnd))
   }
 
   testDateIsMandatory("AC198A", AC198A)

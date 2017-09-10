@@ -20,10 +20,11 @@ import uk.gov.hmrc.ct.accounts.frsse2008._
 import uk.gov.hmrc.ct.accounts.frsse2008.boxes._
 import uk.gov.hmrc.ct.accounts.frsse2008.boxes.micro._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.BoxRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-abstract class Frsse2008AccountsBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever)
-  extends BoxRetriever {
+abstract class Frsse2008AccountsBoxRetriever(filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
+  extends AccountsBoxRetriever(filingAttributesBoxValueRetriever)
+  with BoxRetriever {
 
   def ac13(): AC13
 

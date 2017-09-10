@@ -19,7 +19,6 @@ package uk.gov.hmrc.ct.accounts.frs105.boxes
 import uk.gov.hmrc.ct.accounts.frs105.retriever.Frs105AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.validation.AssetsEqualToSharesValidator
 import uk.gov.hmrc.ct.box._
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 case class AC491(value: Option[Int]) extends CtBoxIdentifier(name = "Capital and reserves (previous PoA)")
   with CtOptionalInteger
@@ -29,11 +28,11 @@ case class AC491(value: Option[Int]) extends CtBoxIdentifier(name = "Capital and
 
   override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] =
     collectErrors(
-      failIf(boxRetriever.accountsBoxRetriever.ac205().hasValue)(
+      failIf(boxRetriever.ac205().hasValue)(
         validateAsMandatory()
       ),
       validateAssetsEqualToShares("AC491", boxRetriever.ac69(),
-        boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee),
+        boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee),
       validateMoney(value)
     )
 }

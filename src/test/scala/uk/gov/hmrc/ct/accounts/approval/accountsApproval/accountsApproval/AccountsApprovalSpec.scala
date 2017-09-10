@@ -198,7 +198,7 @@ class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with
 
   "HmrcAccountsApproval" should {
     val emptyApproval = HmrcAccountsApproval(List.empty, List.empty, AC8091(None), AC198A(None))
-    when(accountsBoxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
+    when(boxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
     val enabled = {
       (b: Boolean) =>
         when(boxRetriever.hmrcAccountsApprovalRequired()).thenReturn(HmrcAccountsApprovalRequired(b))
@@ -211,7 +211,7 @@ class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with
 
   "CompaniesHouseAccountsApproval" should {
     val emptyApproval = CompaniesHouseAccountsApproval(List.empty, List.empty, AC8091(None), AC198A(None))
-    when(accountsBoxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
+    when(boxRetriever.ac4()).thenReturn(AC4(Date.get.minusDays(1)))
     val enabled = {
       b: Boolean =>
         when(boxRetriever.coHoAccountsApprovalRequired).thenReturn(CoHoAccountsApprovalRequired(b))
