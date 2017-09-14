@@ -18,7 +18,7 @@ package uk.gov.hmrc.ct.ct600j.v3
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.ct600.v3.retriever.AboutThisReturnBoxRetriever
@@ -32,7 +32,7 @@ class J5ASpec extends WordSpec with MockitoSugar with Matchers {
       val mockBoxRetriever = mock[AboutThisReturnBoxRetriever]
       when(mockBoxRetriever.b140()).thenReturn(B140(Some(false)))
       val ct600JBoxRetriever = mock[CT600JBoxRetriever]
-      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(mockBoxRetriever)
+      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(mockBoxRetriever))
 
       J5A(None).validate(ct600JBoxRetriever) shouldBe Set()
     }
@@ -41,7 +41,7 @@ class J5ASpec extends WordSpec with MockitoSugar with Matchers {
       val mockBoxRetriever = mock[AboutThisReturnBoxRetriever]
       when(mockBoxRetriever.b140()).thenReturn(B140(Some(true)))
       val ct600JBoxRetriever = mock[CT600JBoxRetriever]
-      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(mockBoxRetriever)
+      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(mockBoxRetriever))
 
       J5A(Some(LocalDate.parse("2014-02-01"))).validate(ct600JBoxRetriever) shouldBe Set()
     }
@@ -50,7 +50,7 @@ class J5ASpec extends WordSpec with MockitoSugar with Matchers {
       val mockBoxRetriever = mock[AboutThisReturnBoxRetriever]
       when(mockBoxRetriever.b140()).thenReturn(B140(Some(true)))
       val ct600JBoxRetriever = mock[CT600JBoxRetriever]
-      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(mockBoxRetriever)
+      when(ct600JBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(mockBoxRetriever))
 
       J5A(None).validate(ct600JBoxRetriever) shouldBe Set(CtValidation(Some("J5A"), "error.J5A.required", None))
     }

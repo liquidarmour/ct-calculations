@@ -30,7 +30,7 @@ class J5Spec extends WordSpec with MockitoSugar with Matchers {
     "not return errors when B140 is false" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(false)))
 
       J5(None).validate(mockBoxRetriever) shouldBe Set()
@@ -39,7 +39,7 @@ class J5Spec extends WordSpec with MockitoSugar with Matchers {
     "not return errors when B140 is true and J5 is valid" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
 
       J5(Some("12345678")).validate(mockBoxRetriever) shouldBe Set()
@@ -48,7 +48,7 @@ class J5Spec extends WordSpec with MockitoSugar with Matchers {
     "return required error when B140 is true and J5 is blank" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
 
       J5(None).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("J5"), "error.J5.required", None))
@@ -57,7 +57,7 @@ class J5Spec extends WordSpec with MockitoSugar with Matchers {
     "return regex error when B140 is true and J5 is invalid" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
 
       J5(Some("xyz")).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("J5"), "error.J5.regexFailure", None))

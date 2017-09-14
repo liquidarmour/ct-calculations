@@ -18,7 +18,7 @@ package uk.gov.hmrc.ct.ct600j.v3
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.ct600.v3.retriever.AboutThisReturnBoxRetriever
@@ -31,7 +31,7 @@ class J10ASpec extends WordSpec with MockitoSugar with Matchers {
     "not return errors when B140 is false" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(false)))
       when(mockBoxRetriever.j5()).thenReturn(J5(None))
       when(mockBoxRetriever.j5A()).thenReturn(J5A(None))
@@ -43,7 +43,7 @@ class J10ASpec extends WordSpec with MockitoSugar with Matchers {
     "return nonBlank errors when B140 is true and J5 and J5A are blank" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
       when(mockBoxRetriever.j5()).thenReturn(J5(None))
       when(mockBoxRetriever.j5A()).thenReturn(J5A(None))
@@ -56,7 +56,7 @@ class J10ASpec extends WordSpec with MockitoSugar with Matchers {
     "not return errors when B140 is true and J5 and J5A are present and J10 is valid" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
       when(mockBoxRetriever.j5()).thenReturn(J5(Some("12345678")))
       when(mockBoxRetriever.j5A()).thenReturn(J5A(Some(LocalDate.parse("2013-02-01"))))
@@ -68,7 +68,7 @@ class J10ASpec extends WordSpec with MockitoSugar with Matchers {
     "return required error when B140 is true and J10A is blank" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
       when(mockBoxRetriever.j5()).thenReturn(J5(Some("12345678")))
       when(mockBoxRetriever.j5A()).thenReturn(J5A(Some(LocalDate.parse("2013-02-01"))))
@@ -80,7 +80,7 @@ class J10ASpec extends WordSpec with MockitoSugar with Matchers {
     "return not after error when B140 is true and J10A is before 18/03/2004" in {
       val mockBoxRetriever = mock[CT600JBoxRetriever]
       val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
-      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
+      when(mockBoxRetriever.aboutThisReturnBoxRetriever).thenReturn(Some(aboutThisReturnBoxRetriever))
       when(aboutThisReturnBoxRetriever.b140()).thenReturn(B140(Some(true)))
       when(mockBoxRetriever.j5()).thenReturn(J5(Some("12345678")))
       when(mockBoxRetriever.j5A()).thenReturn(J5A(Some(LocalDate.parse("2013-02-01"))))

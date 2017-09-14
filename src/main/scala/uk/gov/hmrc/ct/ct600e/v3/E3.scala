@@ -20,3 +20,7 @@ import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.box.{CtBoxIdentifier, Input, StartDate}
 
 case class E3(value: LocalDate) extends CtBoxIdentifier("Accounting Period start date") with StartDate with Input
+
+object E3 {
+  def startDate(startDate: StartDate): E3 = new E3(startDate.value)
+}

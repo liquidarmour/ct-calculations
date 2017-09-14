@@ -19,23 +19,13 @@ package uk.gov.hmrc.ct.ct600.v3.retriever
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.ct600.v3._
 
-trait RepaymentsBoxRetriever extends BoxRetriever {
+abstract class RepaymentsBoxRetriever(ct600BoxRetriever: Option[CT600BoxRetriever]) extends BoxRetriever {
 
   def b860(): B860
 
-  def b865(): B865 = {
-    this match {
-      case br: CT600BoxRetriever => B865(br.b605())
-      case _ => B865(None)
-    }
-  }
+  def b865(): B865 = B865(ct600BoxRetriever.flatMap( br => br.b605().value))
 
-  def b870(): B870 = {
-    this match {
-      case br: CT600BoxRetriever => B870(br.b520())
-      case _ => B870(None)
-    }
-  }
+  def b870(): B870 = B870(ct600BoxRetriever.flatMap( br => br.b520().value))
 
   def b920(): B920
 

@@ -25,25 +25,19 @@ import uk.gov.hmrc.ct.ct600e.v3.B115
 import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 import uk.gov.hmrc.ct.ct600j.v3.B140
 
-trait AboutThisReturnBoxRetriever extends BoxRetriever {
+abstract class AboutThisReturnBoxRetriever(val computationsBoxRetriever: Option[ComputationsBoxRetriever],
+                                           val ct600EBoxRetriever: Option[CT600EBoxRetriever],
+                                           val ct600ABoxRetriever: Option[CT600ABoxRetriever]) extends BoxRetriever {
 
   self: AccountsBoxRetriever =>
 
-  def b30(): B30 = {
-    this match {
-      case computationsBoxRetriever: ComputationsBoxRetriever => B30(computationsBoxRetriever.cp1())
-      case charityRetriever: CT600EBoxRetriever => B30(charityRetriever.e3())
-      case _ => throw new IllegalStateException(s"This box retriever [$this] does not have an AP start date.")
-    }
-  }
+  def b30(): B30 = (computationsBoxRetriever.map ( br => B30(br.cp1()) ) orElse
+                    ct600EBoxRetriever.map ( br => B30(br.e3())))
+                    .getOrElse(throw new IllegalStateException(s"This box retriever [$this] does not have an AP start date."))
 
-  def b35(): B35 = {
-    this match {
-      case compsRet : ComputationsBoxRetriever => B35(compsRet.cp2())
-      case charityRetriever: CT600EBoxRetriever => B35(charityRetriever.e4())
-      case _ => throw new IllegalStateException(s"This box retriever [$this] does not have an AP start date.")
-    }
-  }
+  def b35(): B35 = (computationsBoxRetriever.map ( br => B35(br.cp2()) ) orElse
+                    ct600EBoxRetriever.map ( br => B35(br.e4())))
+                    .getOrElse(throw new IllegalStateException(s"This box retriever [$this] does not have an AP end date."))
 
   def b40(): B40
 
@@ -63,19 +57,9 @@ trait AboutThisReturnBoxRetriever extends BoxRetriever {
 
   def b90A(): B90A
 
-  def b95(): B95 = {
-    this match {
-      case r: CT600ABoxRetriever => B95(r.lpq01)
-      case _ => B95(false)
-    }
-  }
+  def b95(): B95 = ct600ABoxRetriever.map ( br => B95(br.lpq01())).getOrElse(B95(false))
 
-  def b115(): B115 = {
-    this match {
-      case r: CT600EBoxRetriever => B115(true)
-      case _ => B115(false)
-    }
-  }
+  def b115(): B115 = B115(ct600EBoxRetriever.nonEmpty)
 
   def b140(): B140 = B140(b65())
 }
