@@ -20,7 +20,7 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.ct.accounts.frs102.retriever._
 import uk.gov.hmrc.ct.accounts.frs105.retriever.Frs105AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
@@ -46,20 +46,12 @@ trait MockFrs10xAccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[Frs10xAccountsBoxRetriever]
   val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
   when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
-  val frs10xDormancyBoxRetriever = mock[Frs10xDormancyBoxRetriever]
-  when(boxRetriever.frs10xDormancyBoxRetriever).thenReturn(frs10xDormancyBoxRetriever)
-  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
 }
 
 trait MockFrs102AccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[Frs102AccountsBoxRetriever]
   val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
   when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
-  val frs10xDormancyBoxRetriever = mock[Frs10xDormancyBoxRetriever]
-  when(boxRetriever.frs10xDormancyBoxRetriever).thenReturn(frs10xDormancyBoxRetriever)
-  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
 }
 
 trait MockFrsse2008AccountsRetriever extends MockitoSugar {
@@ -72,36 +64,16 @@ trait MockFrs105AccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[Frs105AccountsBoxRetriever](RETURNS_SMART_NULLS)
   val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
   when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
-  val frs10xDormancyBoxRetriever = mock[Frs10xDormancyBoxRetriever]
-  when(boxRetriever.frs10xDormancyBoxRetriever).thenReturn(frs10xDormancyBoxRetriever)
-  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
 }
 
 trait MockAbridgedAccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[AbridgedAccountsBoxRetriever]
   val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
   when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
-  val frs10xDormancyBoxRetriever = mock[Frs10xDormancyBoxRetriever]
-  when(boxRetriever.frs10xDormancyBoxRetriever).thenReturn(frs10xDormancyBoxRetriever)
-  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
 }
 
 trait MockFullAccountsRetriever extends MockitoSugar {
   val boxRetriever = mock[FullAccountsBoxRetriever]
   val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
   when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
-  val frs10xDormancyBoxRetriever = mock[Frs10xDormancyBoxRetriever]
-  when(boxRetriever.frs10xDormancyBoxRetriever).thenReturn(frs10xDormancyBoxRetriever)
-  val frs10xDirectorsBoxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  when(boxRetriever.frs10xDirectorsBoxRetriever).thenReturn(frs10xDirectorsBoxRetriever)
-}
-
-trait MockFrs10xDirectorsRetriever extends MockitoSugar {
-  val boxRetriever = mock[Frs10xDirectorsBoxRetriever]
-  val accountsBoxRetriever = mock[AccountsBoxRetriever]
-  when(boxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
-  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
-  when(accountsBoxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }

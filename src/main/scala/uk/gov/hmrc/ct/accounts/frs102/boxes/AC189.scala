@@ -29,7 +29,7 @@ case class AC189(value: Option[Int]) extends CtBoxIdentifier(name = "Surplus or 
   override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     import boxRetriever._
     val hasReserve = anyHaveValue(ac76(), ac77())
-    val dormant = boxRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
+    val dormant = boxRetriever.acq8999().orFalse
 
     collectErrors (
       failIf(hasReserve && (!dormant || boxRetriever.ac187()))(validateIntegerAsMandatory("AC189", this)),

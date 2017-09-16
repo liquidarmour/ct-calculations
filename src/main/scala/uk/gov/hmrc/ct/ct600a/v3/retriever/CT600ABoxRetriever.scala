@@ -22,8 +22,7 @@ import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxR
 import uk.gov.hmrc.ct.ct600a.v3._
 
 abstract class CT600ABoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever,
-                                  val ct600BoxRetriever: CT600BoxRetriever,
-                                  val aboutThisReturnBoxRetriever: AboutThisReturnBoxRetriever) extends BoxRetriever {
+                                  val ct600BoxRetriever: CT600BoxRetriever) extends BoxRetriever {
 
   def lp04(): LP04
 
@@ -45,9 +44,9 @@ abstract class CT600ABoxRetriever(val computationsBoxRetriever: ComputationsBoxR
 
   def a2(): A2 = A2(ct600BoxRetriever.b3())
 
-  def a3(): A3 = A3(aboutThisReturnBoxRetriever.b30())
+  def a3(): A3 = A3(computationsBoxRetriever.cp1())
 
-  def a4(): A4 = A4(aboutThisReturnBoxRetriever.b35())
+  def a4(): A4 = A4(computationsBoxRetriever.cp2())
 
   def a5(): A5
 

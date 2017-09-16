@@ -24,7 +24,7 @@ case class ProfitAndLossStatementRequired(value: Boolean) extends CtBoxIdentifie
 object ProfitAndLossStatementRequired extends Calculated[ProfitAndLossStatementRequired, Frs10xAccountsBoxRetriever] {
 
   override def calculate(fieldValueRetriever: Frs10xAccountsBoxRetriever): ProfitAndLossStatementRequired = {
-    val dormant = fieldValueRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
+    val dormant = fieldValueRetriever.acq8999().orFalse
     val cohoOnly = !fieldValueRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
 
     val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse)

@@ -22,11 +22,11 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.Tables.Table
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.{AC3, AC4, MockFrs10xDirectorsRetriever}
+import uk.gov.hmrc.ct.accounts.{AC3, AC4, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling, StatutoryAccountsFiling}
 
-class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach with MockFrs10xDirectorsRetriever {
+class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach with MockFrs10xAccountsRetriever {
 
   "Directors" should {
 
@@ -333,8 +333,8 @@ class DirectorsSpec extends WordSpec with MockitoSugar with Matchers with Before
   }
 
   override protected def beforeEach(): Unit = {
-    when (accountsBoxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
-    when (accountsBoxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
+    when (boxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
+    when (boxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
 
     // directors report enabled responses
     when (filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn (CompaniesHouseFiling (true) )

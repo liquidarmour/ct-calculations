@@ -19,13 +19,13 @@ package uk.gov.hmrc.ct.ct600.accounts
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.MockFrs10xDirectorsRetriever
+import uk.gov.hmrc.ct.accounts.MockFrs10xAccountsRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{Directors, _}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling, StatutoryAccountsFiling}
 
 
-class AC8021Spec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach with MockFrs10xDirectorsRetriever {
+class AC8021Spec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfterEach with MockFrs10xAccountsRetriever {
 
   override def beforeEach(): Unit = {
     super.beforeEach()

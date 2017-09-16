@@ -146,7 +146,8 @@ trait ReturnVersionsCalculator {
 
 
   protected def calculateReturnVersions(poaStartDate: LocalDate,
-                                        apStartDate: Option[LocalDate], apEndDate: Option[LocalDate],
+                                        apStartDate: Option[LocalDate],
+                                        apEndDate: Option[LocalDate],
                                         coHoFiling: CompaniesHouseFiling,
                                         hmrcFiling: HMRCFiling,
                                         microEntityFiling: MicroEntityFiling,

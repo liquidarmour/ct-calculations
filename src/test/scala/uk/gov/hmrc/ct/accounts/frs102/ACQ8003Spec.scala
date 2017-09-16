@@ -19,11 +19,9 @@ package uk.gov.hmrc.ct.accounts.frs102
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.MockFrs10xDirectorsRetriever
+import uk.gov.hmrc.ct.accounts.MockFrs10xAccountsRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, AC8023, ACQ8003}
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValidation
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
 
 class ACQ8003Spec
@@ -31,7 +29,7 @@ class ACQ8003Spec
     with Matchers
     with MockitoSugar
     with BeforeAndAfterEach
-    with MockFrs10xDirectorsRetriever {
+    with MockFrs10xAccountsRetriever {
 
   "AC8033 should" should {
 

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import uk.gov.hmrc.ct.accounts.frs102.validation.DirectorsReportExistenceValidation
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever}
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
@@ -25,12 +25,12 @@ case class AC8023(value: Option[Boolean])
   extends CtBoxIdentifier(name = "Do you want to file a directors' report to HMRC?")
   with CtOptionalBoolean
   with Input
-  with SelfValidatableBox[Frs10xDirectorsBoxRetriever, Option[Boolean]]
+  with SelfValidatableBox[Frs10xAccountsBoxRetriever, Option[Boolean]]
   with DirectorsReportExistenceValidation {
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
-    val isMicroHmrcFiling = boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value &&
-                            boxRetriever.accountsBoxRetriever.filingAttributesBoxValueRetriever.microEntityFiling().value
+  override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
+    val isMicroHmrcFiling = boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value &&
+                            boxRetriever.filingAttributesBoxValueRetriever.microEntityFiling().value
 
       collectErrors(
         failIf(isMicroHmrcFiling) {

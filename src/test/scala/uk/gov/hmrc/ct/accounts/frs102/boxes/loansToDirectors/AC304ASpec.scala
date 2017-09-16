@@ -33,8 +33,8 @@ class AC304ASpec extends WordSpec
   with BeforeAndAfterEach {
 
   override protected def beforeEach(): Unit = {
-    when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
-    when(frs10xDirectorsBoxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
+    when(boxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+    when(boxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
   }
 
   testTextFieldValidation("AC304A", AC304A,
@@ -56,12 +56,12 @@ class AC304ASpec extends WordSpec
     }
 
     "fail validation when using custom director name and directors' report is attached" in {
-      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
       AC304A(Some("custom name")).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC304A"), "error.loansToDirectors.invalidDirectorName"))
     }
 
     "pass validation when using existing director and directors' report is attached" in {
-      when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(Some(true)))
       AC304A(Some("Test dude one")).validate(boxRetriever) shouldBe Set.empty
       AC304A(Some("Test dude two")).validate(boxRetriever) shouldBe Set.empty
     }

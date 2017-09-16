@@ -25,10 +25,10 @@ case class NotTradedStatementRequired(value: Boolean) extends CtBoxIdentifier(na
 object NotTradedStatementRequired extends Calculated[NotTradedStatementRequired, Frs10xAccountsBoxRetriever] {
 
   override def calculate(fieldValueRetriever: Frs10xAccountsBoxRetriever): NotTradedStatementRequired = {
-    val dormant = fieldValueRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
+    val dormant = fieldValueRetriever.acq8999().orFalse
     val cohoOnly = !fieldValueRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
 
-    val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse && !fieldValueRetriever.frs10xDirectorsBoxRetriever.ac8021().orFalse)
+    val result = dormant && !(cohoOnly && !fieldValueRetriever.acq8161().orFalse && !fieldValueRetriever.ac8021().orFalse)
     NotTradedStatementRequired(result)
   }
 }

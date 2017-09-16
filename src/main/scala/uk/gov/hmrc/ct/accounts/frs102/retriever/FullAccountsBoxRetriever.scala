@@ -21,10 +21,8 @@ import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDirectorsBoxRetriever, Fr
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-abstract class FullAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever,
-                                        frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
-                                        frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
-  extends Frs102AccountsBoxRetriever(filingAttributesBoxRetriever, frs10xDirectorsBoxRetriever, frs10xDormancyBoxRetriever) {
+abstract class FullAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever)
+  extends Frs102AccountsBoxRetriever(filingAttributesBoxRetriever) {
 
   def ac13(): AC13
 

@@ -25,7 +25,7 @@ case class AC405(value: Option[Int]) extends CtBoxIdentifier(name = "Other incom
   with ValidatableBox[Frs105AccountsBoxRetriever] {
 
   override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] = {
-    failIf(!boxRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse &&
+    failIf(!boxRetriever.acq8999().orFalse &&
       (boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value || boxRetriever.acq8161().orFalse)) (
       collectErrors(
         validateMoney(value),

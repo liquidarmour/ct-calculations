@@ -25,11 +25,10 @@ import uk.gov.hmrc.ct.ct600e.v3.B115
 import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 import uk.gov.hmrc.ct.ct600j.v3.B140
 
-abstract class AboutThisReturnBoxRetriever(val computationsBoxRetriever: Option[ComputationsBoxRetriever],
+abstract class AboutThisReturnBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever,
+                                           val computationsBoxRetriever: Option[ComputationsBoxRetriever],
                                            val ct600EBoxRetriever: Option[CT600EBoxRetriever],
                                            val ct600ABoxRetriever: Option[CT600ABoxRetriever]) extends BoxRetriever {
-
-  self: AccountsBoxRetriever =>
 
   def b30(): B30 = (computationsBoxRetriever.map ( br => B30(br.cp1()) ) orElse
                     ct600EBoxRetriever.map ( br => B30(br.e3())))
@@ -45,7 +44,7 @@ abstract class AboutThisReturnBoxRetriever(val computationsBoxRetriever: Option[
 
   def b45Input(): B45Input
 
-  def b50(): B50 = B50.calculate(this)
+  def b50(): B50 = B50.calculate(accountsBoxRetriever)
 
   def b55(): B55
 

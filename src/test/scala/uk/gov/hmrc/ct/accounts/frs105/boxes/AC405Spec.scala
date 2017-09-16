@@ -40,7 +40,7 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     super.setUpMocks(accountsRetriever)
     setupCurrentYearMocks(AC12(None), AC405(None), AC410(Some(1)), AC415(None), AC420(None), AC425(None), AC34(None))
     when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-    when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
+    when(boxRetriever.acq8999()).thenReturn(ACQ8999(None))
   }
 
   testAccountsMoneyValidation("AC405", AC405.apply)
@@ -123,7 +123,7 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     "pass validation if dormant where there would otherwise be an error" in {
       when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
       when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))

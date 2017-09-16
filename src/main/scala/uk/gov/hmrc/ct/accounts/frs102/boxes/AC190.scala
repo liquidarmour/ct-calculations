@@ -39,7 +39,7 @@ case class AC190(value: Option[Int]) extends CtBoxIdentifier(name = "Balance at 
   def validateTotalEqualToCurrentAmount(boxRetriever: Frs102AccountsBoxRetriever)() = {
     val ac76 = boxRetriever.ac76()
 
-    val dormant = boxRetriever.frs10xDormancyBoxRetriever.acq8999().orFalse
+    val dormant = boxRetriever.acq8999().orFalse
 
     val notEqualToAC76 = ac76.value.getOrElse(0) != this.value.getOrElse(0)
 

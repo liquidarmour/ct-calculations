@@ -17,7 +17,6 @@
 package uk.gov.hmrc.ct
 
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105}
 import uk.gov.hmrc.ct.version.calculations.ReturnVersionsCalculator
@@ -59,7 +58,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
   private def hmrcApprovalRequiredForFRS102(boxRetriever: Frs10xAccountsBoxRetriever) = {
 
     val (drToCoHo, plToCoHo) = boxRetriever match {
-      case br: Frs10xAccountsBoxRetriever => (br.frs10xDirectorsBoxRetriever.ac8021().orFalse, br.acq8161().orFalse)
+      case br: Frs10xAccountsBoxRetriever => (br.ac8021().orFalse, br.acq8161().orFalse)
       case _ => (true, true)
     }
 
@@ -69,7 +68,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
   private def hmrcApprovalRequiredForFRS105(boxRetriever: Frs10xAccountsBoxRetriever) = {
 
     val (drToHmrc, drToCoHo, plToCoHo) = boxRetriever match {
-      case br: Frs10xAccountsBoxRetriever => (br.frs10xDirectorsBoxRetriever.ac8023().orFalse, br.frs10xDirectorsBoxRetriever.ac8021().orFalse, br.acq8161().orFalse)
+      case br: Frs10xAccountsBoxRetriever => (br.ac8023().orFalse, br.ac8021().orFalse, br.acq8161().orFalse)
       case _ => (true, true, true)
     }
 

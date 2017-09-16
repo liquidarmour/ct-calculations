@@ -21,12 +21,12 @@ import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.accounts.retriever.{AccountsApprovalRequiredBoxRetriever, AccountsBoxRetriever}
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-abstract class Frs10xAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever,
-                                          val frs10xDirectorsBoxRetriever: Frs10xDirectorsBoxRetriever,
-                                          val frs10xDormancyBoxRetriever: Frs10xDormancyBoxRetriever)
+abstract class Frs10xAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever)
   extends AccountsBoxRetriever(filingAttributesBoxRetriever)
     with BoxRetriever
-    with AccountsApprovalRequiredBoxRetriever {
+    with AccountsApprovalRequiredBoxRetriever
+    with Frs10xDirectorsBoxRetriever
+    with Frs10xDormancyBoxRetriever {
 
   def acq8161(): ACQ8161
 

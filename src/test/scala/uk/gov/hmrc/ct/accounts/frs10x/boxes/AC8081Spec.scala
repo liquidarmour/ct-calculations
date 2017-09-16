@@ -27,14 +27,14 @@ class AC8081Spec
     with MockFrs10xAccountsRetriever{
 
   override def setupMocks = {
-    when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(None))
+    when(boxRetriever.acq8999()).thenReturn(ACQ8999(None))
   }
 
   doStatementValidationTests("AC8081", AC8081.apply)
 
 
   "validation disabled if dormant" in {
-    when(boxRetriever.frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+    when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
 
     AC8081(None).validate(boxRetriever) shouldBe Set.empty
     AC8081(Some(true)).validate(boxRetriever) shouldBe Set.empty

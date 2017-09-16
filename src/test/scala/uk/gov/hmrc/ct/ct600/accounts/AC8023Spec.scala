@@ -19,13 +19,13 @@ package uk.gov.hmrc.ct.ct600.accounts
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.MockFrs10xDirectorsRetriever
+import uk.gov.hmrc.ct.accounts.MockFrs10xAccountsRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling, StatutoryAccountsFiling}
 
 
-class AC8023Spec extends WordSpec with MockitoSugar with Matchers with MockFrs10xDirectorsRetriever {
+class AC8023Spec extends WordSpec with MockitoSugar with Matchers with MockFrs10xAccountsRetriever {
 
   "AC8023 validate" should {
     "for HMRC Only micro entity filing" when {

@@ -20,7 +20,10 @@ import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-abstract class Frs10xDormancyBoxRetriever(val accountsBoxRetriever: AccountsBoxRetriever) extends BoxRetriever {
+trait Frs10xDormancyBoxRetriever
+  extends BoxRetriever {
+
+  self: Frs10xAccountsBoxRetriever =>
 
   def acq8999(): ACQ8999
 

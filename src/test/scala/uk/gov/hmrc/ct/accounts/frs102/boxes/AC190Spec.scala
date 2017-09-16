@@ -30,28 +30,28 @@ class AC190Spec extends WordSpec
 
   "AC190" should {
     "fail validation when calculated value is not equal to AC76" in {
-      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
+      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
       when(boxRetriever.ac187()).thenReturn(AC187(Some(true)))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(123)))
       AC190(Some(125)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.AC190.mustEqual.AC76"))
     }
 
     "pass validation when AC190 is None but the company is dormant" in {
-      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.ac187()).thenReturn(AC187(None))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(123)))
       AC190(Some(125)).validate(boxRetriever) shouldBe empty
     }
 
     "fail validation when the company is dormant but a note is added and AC190 doesn't equal AC76" in {
-      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
+      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.ac187()).thenReturn(AC187(Some(true)))
       when(boxRetriever.ac76()).thenReturn(AC76(Some(123)))
       AC190(Some(125)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.AC190.mustEqual.AC76"))
     }
 
     "fail validation when calculated value is not equal to empty AC76 and AC77 is present" in {
-      when(frs10xDormancyBoxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
+      when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(false)))
       when(boxRetriever.ac187()).thenReturn(AC187(Some(true)))
       when(boxRetriever.ac76()).thenReturn(AC76(None))
       when(boxRetriever.ac77()).thenReturn(AC77(Some(1)))

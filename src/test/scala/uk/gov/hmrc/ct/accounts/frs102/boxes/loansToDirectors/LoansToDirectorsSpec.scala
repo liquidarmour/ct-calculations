@@ -46,8 +46,8 @@ class LoansToDirectorsSpec
   )
 
   override protected def beforeEach(): Unit = {
-    when(frs10xDirectorsBoxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
-    when(frs10xDirectorsBoxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
+    when(boxRetriever.ac8021()).thenReturn(AC8021(Some(false)))
+    when(boxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
 
     when(boxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate(2014, 4, 6))))
     when(boxRetriever.ac206()).thenReturn(AC206(Some(new LocalDate(2015, 4, 5))))

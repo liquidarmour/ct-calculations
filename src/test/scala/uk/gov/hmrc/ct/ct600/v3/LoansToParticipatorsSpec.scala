@@ -34,12 +34,10 @@ class LoansToParticipatorsSpec extends WordSpec with Matchers with MockitoSugar 
 
   val computationsBoxRetriever = mock[ComputationsBoxRetriever]
   val ct600BoxRetriever = mock[CT600BoxRetriever]
-  val aboutThisReturnBoxRetriever = mock[AboutThisReturnBoxRetriever]
   when(computationsBoxRetriever.cp2()).thenReturn(CP2(currentAPEndDate))
   val boxRetriever = mock[CT600ABoxRetriever]
   when(boxRetriever.computationsBoxRetriever).thenReturn(computationsBoxRetriever)
   when(boxRetriever.ct600BoxRetriever).thenReturn(ct600BoxRetriever)
-  when(boxRetriever.aboutThisReturnBoxRetriever).thenReturn(aboutThisReturnBoxRetriever)
   when(boxRetriever.lpq03()).thenReturn(LPQ03(Some(true)))
 
   val validLoan = Loan(id = "1",
