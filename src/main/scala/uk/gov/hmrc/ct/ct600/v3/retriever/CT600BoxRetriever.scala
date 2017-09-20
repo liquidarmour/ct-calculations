@@ -21,7 +21,7 @@ import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v3._
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
-abstract class CT600BoxRetriever(computationsBoxRetriever: ComputationsBoxRetriever) extends BoxRetriever {
+abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever) extends BoxRetriever {
 
   def b1(): B1
 
