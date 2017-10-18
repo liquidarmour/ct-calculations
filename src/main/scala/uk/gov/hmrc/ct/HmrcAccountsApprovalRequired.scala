@@ -17,6 +17,7 @@
 package uk.gov.hmrc.ct
 
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
 import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105}
 import uk.gov.hmrc.ct.version.calculations.ReturnVersionsCalculator
@@ -26,15 +27,15 @@ case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier(
 
 object HmrcAccountsApprovalRequired
   extends HmrcAccountsApprovalRequiredCalculator(ReturnVersionsCalculator)
-    with Calculated[HmrcAccountsApprovalRequired, Frs10xAccountsBoxRetriever] {
+    with Calculated[HmrcAccountsApprovalRequired, AccountsBoxRetriever] {
 
-  override def calculate(boxRetriever: Frs10xAccountsBoxRetriever): HmrcAccountsApprovalRequired =
+  override def calculate(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired =
     calculateApprovalRequired(boxRetriever)
 }
 
 case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: ReturnVersionsCalculator) {
 
-  def calculateApprovalRequired(boxRetriever: Frs10xAccountsBoxRetriever): HmrcAccountsApprovalRequired = {
+  def calculateApprovalRequired(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired = {
 
     val returns = returnVersionsCalculator.doCalculation(boxRetriever.filingAttributesBoxValueRetriever, None)
     val hmrcAccountsReturn = findHmrcAccountsType(returns)
@@ -55,7 +56,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
     HmrcAccountsApprovalRequired(approvalRequired)
   }
 
-  private def hmrcApprovalRequiredForFRS102(boxRetriever: Frs10xAccountsBoxRetriever) = {
+  private def hmrcApprovalRequiredForFRS102(boxRetriever: AccountsBoxRetriever) = {
 
     val (drToCoHo, plToCoHo) = boxRetriever match {
       case br: Frs10xAccountsBoxRetriever => (br.ac8021().orFalse, br.acq8161().orFalse)
@@ -65,7 +66,7 @@ case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: Retu
     !drToCoHo || !plToCoHo
   }
 
-  private def hmrcApprovalRequiredForFRS105(boxRetriever: Frs10xAccountsBoxRetriever) = {
+  private def hmrcApprovalRequiredForFRS105(boxRetriever: AccountsBoxRetriever) = {
 
     val (drToHmrc, drToCoHo, plToCoHo) = boxRetriever match {
       case br: Frs10xAccountsBoxRetriever => (br.ac8023().orFalse, br.ac8021().orFalse, br.acq8161().orFalse)

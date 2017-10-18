@@ -20,6 +20,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.approval.boxes.AC8091
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AccountsFreeTextValidationFixture, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 
@@ -27,7 +28,7 @@ class AC8091Spec extends WordSpec
   with MockitoSugar
   with Matchers
   with MockFrs10xAccountsRetriever
-  with AccountsFreeTextValidationFixture[Frs10xAccountsBoxRetriever] {
+  with AccountsFreeTextValidationFixture[AccountsBoxRetriever] {
 
 
   "AC8091 validate" should {

@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.ct.accounts.retriever
 
+import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
 import uk.gov.hmrc.ct.accounts._
+import uk.gov.hmrc.ct.accounts.approval.boxes.{CompaniesHouseAccountsApproval, HmrcAccountsApproval}
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
 abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
@@ -37,4 +39,14 @@ abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: Filin
   def ac205(): AC205
 
   def ac206(): AC206
+
+  def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired =
+    CoHoAccountsApprovalRequired(filingAttributesBoxValueRetriever.companiesHouseFiling())
+
+  def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
+    HmrcAccountsApprovalRequired.calculate(this)
+
+  def companiesHouseAccountsApproval(): CompaniesHouseAccountsApproval
+
+  def hmrcAccountsApproval(): HmrcAccountsApproval
 }

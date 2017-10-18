@@ -22,7 +22,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import uk.gov.hmrc.cato.time.DateHelper
 import uk.gov.hmrc.ct.accounts.approval.boxes.AC198A
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AC4, AccountsDatesValidationFixture, MockFrs10xAccountsRetriever}
 
 class AC198ASpec extends WordSpec
@@ -30,7 +30,7 @@ class AC198ASpec extends WordSpec
   with Matchers
   with MockFrs10xAccountsRetriever
   with BeforeAndAfter
-  with AccountsDatesValidationFixture[Frs10xAccountsBoxRetriever] {
+  with AccountsDatesValidationFixture[AccountsBoxRetriever] {
 
   val NOW: LocalDate = DateHelper.now()
   val APEnd: LocalDate = NOW.minusMonths(1)

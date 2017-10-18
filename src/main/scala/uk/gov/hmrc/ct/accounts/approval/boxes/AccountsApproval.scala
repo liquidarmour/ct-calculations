@@ -16,26 +16,24 @@
 
 package uk.gov.hmrc.ct.accounts.approval.boxes
 
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.retriever.{AccountsApprovalRequiredBoxRetriever, AccountsBoxRetriever}
-import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{CtValidation, Input, ValidatableBox}
 
 import scala.collection.immutable.Seq
 
-trait AccountsApproval extends Input with ValidatableBox[Frs10xAccountsBoxRetriever]{
+trait AccountsApproval extends Input with ValidatableBox[AccountsBoxRetriever]{
 
   val ac199A: List[AC199A]
   val ac8092: List[AC8092]
   val ac8091: AC8091
   val ac198A: AC198A
 
-  def approvalEnabled(boxRetriever: Frs10xAccountsBoxRetriever): Boolean
+  def approvalEnabled(boxRetriever: AccountsBoxRetriever): Boolean
 
   private def filteredApprovers: Seq[String] = ac199A.map(ac199A => ac199A.value)
   private def filteredOtherApprovers: Seq[String] = ac8092.flatMap(ac8092 => ac8092.value)
 
-  override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: AccountsBoxRetriever): Set[CtValidation] = {
     collectWithBoxId(boxId) {
       collectErrors(
         failIf(!approvalEnabled(boxRetriever)) {
@@ -60,28 +58,28 @@ trait AccountsApproval extends Input with ValidatableBox[Frs10xAccountsBoxRetrie
     ac199A.nonEmpty || ac8092.nonEmpty || ac8091.value.nonEmpty || ac198A.value.nonEmpty
   }
 
-  private def validateApproverRequired(boxRetriever: Frs10xAccountsBoxRetriever)(): Set[CtValidation] = {
+  private def validateApproverRequired(boxRetriever: AccountsBoxRetriever)(): Set[CtValidation] = {
 
     failIf(ac199A.isEmpty && filteredOtherApprovers.isEmpty) {
       Set(CtValidation(None, s"error.$boxId.atLeast1", None))
     }
   }
 
-  private def validateAtMost12Approvers(boxRetriever: Frs10xAccountsBoxRetriever)(): Set[CtValidation] = {
+  private def validateAtMost12Approvers(boxRetriever: AccountsBoxRetriever)(): Set[CtValidation] = {
 
     failIf(filteredApprovers.length > 12) {
       Set(CtValidation(None, s"error.$boxId.approvers.atMost12", None))
     }
   }
 
-  private def validateAtMost12OtherApprovers(boxRetriever: Frs10xAccountsBoxRetriever)(): Set[CtValidation] = {
+  private def validateAtMost12OtherApprovers(boxRetriever: AccountsBoxRetriever)(): Set[CtValidation] = {
 
     failIf(filteredOtherApprovers.length > 12) {
       Set(CtValidation(None, s"error.$boxId.otherApprovers.atMost12", None))
     }
   }
 
-  private def validateApprovers(boxRetriever: Frs10xAccountsBoxRetriever)(): Set[CtValidation] = {
+  private def validateApprovers(boxRetriever: AccountsBoxRetriever)(): Set[CtValidation] = {
 
     val approversErrorList = for ((approver, index) <- ac199A.zipWithIndex) yield {
       val errors = approver.validate(boxRetriever)
@@ -90,7 +88,7 @@ trait AccountsApproval extends Input with ValidatableBox[Frs10xAccountsBoxRetrie
     approversErrorList.flatten.toSet
   }
 
-  private def validateOtherApprovers(boxRetriever: Frs10xAccountsBoxRetriever)(): Set[CtValidation] = {
+  private def validateOtherApprovers(boxRetriever: AccountsBoxRetriever)(): Set[CtValidation] = {
 
     val otherApproversErrorList = for ((otherApprover, index) <- ac8092.zipWithIndex) yield {
       val errors = otherApprover.validate(boxRetriever)

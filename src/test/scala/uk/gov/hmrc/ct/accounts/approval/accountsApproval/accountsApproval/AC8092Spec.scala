@@ -19,12 +19,12 @@ package uk.gov.hmrc.ct.accounts.approval.accountsApproval.accountsApproval
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import uk.gov.hmrc.ct.accounts.approval.boxes.AC8092
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AccountsFreeTextValidationFixture, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.ValidatableBox._
 
 class AC8092Spec extends WordSpec with MockitoSugar with Matchers with BeforeAndAfter
-  with MockFrs10xAccountsRetriever with AccountsFreeTextValidationFixture[Frs10xAccountsBoxRetriever] {
+  with MockFrs10xAccountsRetriever with AccountsFreeTextValidationFixture[AccountsBoxRetriever] {
 
   testTextFieldValidation("AC8092", AC8092, testUpperLimit = Some(StandardCohoNameFieldLimit))
   testTextFieldIllegalCharactersValidation("AC8092", AC8092)

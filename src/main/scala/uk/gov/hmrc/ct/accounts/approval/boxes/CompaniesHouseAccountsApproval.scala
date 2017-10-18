@@ -29,5 +29,5 @@ case class CompaniesHouseAccountsApproval(ac199A: List[AC199A] = List.empty, ac8
 
   override def value = this
 
-  override def approvalEnabled(boxRetriever: Frs10xAccountsBoxRetriever) = boxRetriever.coHoAccountsApprovalRequired().value
+  override def approvalEnabled(boxRetriever: AccountsBoxRetriever) = boxRetriever.coHoAccountsApprovalRequired().value
 }

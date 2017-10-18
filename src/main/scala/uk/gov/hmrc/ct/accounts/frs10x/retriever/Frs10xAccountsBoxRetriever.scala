@@ -41,10 +41,4 @@ abstract class Frs10xAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAt
   def notTradedStatementRequired(): NotTradedStatementRequired = NotTradedStatementRequired.calculate(this)
 
   def profitAndLossStatementRequired(): ProfitAndLossStatementRequired = ProfitAndLossStatementRequired.calculate(this)
-
-  override def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired =
-    CoHoAccountsApprovalRequired(filingAttributesBoxValueRetriever.companiesHouseFiling())
-
-  override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
-    HmrcAccountsApprovalRequired.calculate(this)
 }
