@@ -78,5 +78,7 @@ object CompanyTypes {
   private val allCompanyTypesSerializable: Set[CompanyType with Product with Serializable] = AllCompanyTypes.asInstanceOf[Set[CompanyType with Product with Serializable]]
   private val registeredTypes: Map[String, CompanyType] = allCompanyTypesSerializable.map(t => t.productPrefix -> t).toMap
 
+  def fromName(name: String): CompanyType = registeredTypes(name)
+
   val LimitedByGuaranteeCompanyTypes: Set[CompanyType] = Set(CompanyLimitedByGuarantee, LimitedByGuaranteeCASC, LimitedByGuaranteeCharity)
 }
