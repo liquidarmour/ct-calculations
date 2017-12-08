@@ -235,4 +235,18 @@ class MockComputationsBoxRetriever(lec01Param: List[Car] = List.empty,
   override def lec01() = LEC01(lec01Param)
 
   override def generateValues = ???
+
+  override def cp281a() = ???
+
+  override def cp281b() = ???
+
+  override def cp283a() = ???
+
+  override def cp283b() = ???
+
+  override def cp288a() = ???
+
+  override def cp288b() = ???
+
+  override def cp997() = ???
 }

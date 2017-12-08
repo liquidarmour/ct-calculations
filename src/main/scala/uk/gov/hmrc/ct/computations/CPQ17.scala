@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.ct.computations
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.computations.Validators.TradingLossesValidation
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
@@ -37,4 +38,8 @@ case class CPQ17(value: Option[Boolean]) extends CtBoxIdentifier(name = "Trading
       }
     )
   }
+}
+
+object CPQ17 {
+  val lossReform2017 = LocalDate.parse("2017-04-01")
 }

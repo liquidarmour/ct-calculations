@@ -53,7 +53,9 @@ abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRe
 
   def b280(): B280 = B280.calculate(computationsBoxRetriever)
 
-  def b295(): B295 = B295(computationsBoxRetriever.cp264())
+  def b285(): B285 = B285(computationsBoxRetriever.cp263())
+
+  def b295(): B295 = B295.calculate(this)
 
   def b300(): B300 = B300.calculate(this)
 
