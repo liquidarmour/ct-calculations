@@ -19,6 +19,7 @@ package uk.gov.hmrc.ct
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
+import uk.gov.hmrc.ct.computations.HmrcAccountingPeriod
 import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105}
 import uk.gov.hmrc.ct.version.calculations.ReturnVersionsCalculator
 import uk.gov.hmrc.ct.version.{CoHoEquivalent, HmrcAccounts, Return}
@@ -26,18 +27,26 @@ import uk.gov.hmrc.ct.version.{CoHoEquivalent, HmrcAccounts, Return}
 case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier("True if approval required for HMRC version of accounts requires") with CtBoolean
 
 object HmrcAccountsApprovalRequired
-  extends HmrcAccountsApprovalRequiredCalculator(ReturnVersionsCalculator)
-    with Calculated[HmrcAccountsApprovalRequired, AccountsBoxRetriever] {
+  extends HmrcAccountsApprovalRequiredCalculator(ReturnVersionsCalculator) {
 
-  override def calculate(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired =
-    calculateApprovalRequired(boxRetriever)
+  def calculate(boxRetriever: AccountsBoxRetriever,
+                         hmrcAccountingPeriod: Option[HmrcAccountingPeriod],
+                         charityAllExempt: Option[Boolean],
+                         charityNoIncome: Option[Boolean]): HmrcAccountsApprovalRequired =
+    calculateApprovalRequired(boxRetriever = boxRetriever,
+                              hmrcAccountingPeriod = hmrcAccountingPeriod,
+                              charityAllExempt = charityAllExempt,
+                              charityNoIncome = charityNoIncome)
 }
 
 case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: ReturnVersionsCalculator) {
 
-  def calculateApprovalRequired(boxRetriever: AccountsBoxRetriever): HmrcAccountsApprovalRequired = {
+  def calculateApprovalRequired(boxRetriever: AccountsBoxRetriever,
+                                hmrcAccountingPeriod: Option[HmrcAccountingPeriod],
+                                charityAllExempt: Option[Boolean],
+                                charityNoIncome: Option[Boolean]): HmrcAccountsApprovalRequired = {
 
-    val returns = returnVersionsCalculator.doCalculation(boxRetriever.filingAttributesBoxValueRetriever, None)
+    val returns = returnVersionsCalculator.returns(boxRetriever, hmrcAccountingPeriod, charityAllExempt, charityNoIncome)
     val hmrcAccountsReturn = findHmrcAccountsType(returns)
     val coHoAccountReturn = hmrcAccountsReturn.flatMap { hmrc =>
       findMatchingCohoAccounts(returns, hmrc)

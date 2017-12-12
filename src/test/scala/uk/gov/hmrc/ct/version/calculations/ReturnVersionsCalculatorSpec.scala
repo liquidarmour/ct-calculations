@@ -26,7 +26,7 @@ import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AC2, AC3}
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
-import uk.gov.hmrc.ct.computations.{CP1, CP2}
+import uk.gov.hmrc.ct.computations.{CP1, CP2, HmrcAccountingPeriod}
 import uk.gov.hmrc.ct.domain.CompanyTypes._
 import uk.gov.hmrc.ct.version.CoHoVersions.FRSSE2008
 import uk.gov.hmrc.ct.version.HmrcReturns._
@@ -111,6 +111,7 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers with MockitoSu
         val accountsBoxRetriever = mock[AccountsBoxRetriever]
         val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
 
+        when(accountsBoxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
         when(filingAttributesBoxValueRetriever.abbreviatedAccountsFiling()).thenReturn(AbbreviatedAccountsFiling(false))
         when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
         when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
@@ -122,14 +123,16 @@ class ReturnVersionsCalculatorSpec extends WordSpec with Matchers with MockitoSu
         when(accountsBoxRetriever.ac3()).thenReturn(AC3(new LocalDate(2015,3,30)))
         when(accountsBoxRetriever.ac2()).thenReturn(AC2(Some("Random company name")))
 
-        ReturnVersionsCalculator.doCalculation(filingAttributesBoxValueRetriever, Some(accountsBoxRetriever)) shouldBe coHoOnlyMicroEntityFRSSE2008Returns
+        ReturnVersionsCalculator.returns(accountsBoxRetriever, None, None, None) shouldBe coHoOnlyMicroEntityFRSSE2008Returns
       }
 
       "match successfully for ComputationsBoxRetriever" in {
-        val (computationsBoxRetriever, baseBoxRetriever, accountsBoxRetriever) = boxRetrieversForTest
+        val (computationsBoxRetriever, filingAttributesBoxValueRetriever, accountsBoxRetriever) = boxRetrieversForTest
         when(accountsBoxRetriever.ac3()).thenReturn(AC3(new LocalDate(2015,3,30)))
 
-        ReturnVersionsCalculator.doCalculation(baseBoxRetriever, Some(computationsBoxRetriever)) shouldBe jointMicroFRSSE2008V2Returns
+        when(accountsBoxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
+
+        ReturnVersionsCalculator.returns(accountsBoxRetriever, Some(HmrcAccountingPeriod(computationsBoxRetriever.cp1(), computationsBoxRetriever.cp2)), None, None) shouldBe jointMicroFRSSE2008V2Returns
       }
     }
 
