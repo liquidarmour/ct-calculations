@@ -22,7 +22,8 @@ import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v2._
 import uk.gov.hmrc.ct.ct600a.v2.retriever.CT600ABoxRetriever
 
-abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever) extends BoxRetriever {
+abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever,
+                                 val ct600ABoxRetriever: Option[CT600ABoxRetriever]) extends BoxRetriever {
 
   def b38(): B38
 
@@ -92,20 +93,13 @@ abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRe
 
   def b78(): B78 = B78(b65())
 
-  def b79(): B79 = {
-    this match {
-      case r: CT600ABoxRetriever => B79(r.a13())
-      case _ => B79(None)
-    }
-  }
+  def b79(): B79 = ct600ABoxRetriever.map { retriever =>
+    B79(retriever.a13())
+  }.getOrElse(B79(None))
 
-  def b80(): B80 = {
-    this match {
-      case r: CT600ABoxRetriever => B80.calculate(r)
-      case _ => B80(None)
-    }
-
-  }
+  def b80(): B80 = ct600ABoxRetriever.map { retriever =>
+    B80.calculate(retriever)
+  }.getOrElse(B80(None))
 
   def b85(): B85 = B85.calculate(this)
 

@@ -23,7 +23,7 @@ import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.computations.CP2
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
-import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxRetriever}
+import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxRetriever, HmrcCompanyNameRetriever}
 import uk.gov.hmrc.ct.ct600a.v3._
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
@@ -33,11 +33,11 @@ class LoansToParticipatorsSpec extends WordSpec with Matchers with MockitoSugar 
   val currentAPEndDate = new LocalDate(2014, 6, 1)
 
   val computationsBoxRetriever = mock[ComputationsBoxRetriever]
-  val ct600BoxRetriever = mock[CT600BoxRetriever]
+  val hmrcCompanyNameRetriever = mock[HmrcCompanyNameRetriever]
   when(computationsBoxRetriever.cp2()).thenReturn(CP2(currentAPEndDate))
   val boxRetriever = mock[CT600ABoxRetriever]
   when(boxRetriever.computationsBoxRetriever).thenReturn(computationsBoxRetriever)
-  when(boxRetriever.ct600BoxRetriever).thenReturn(ct600BoxRetriever)
+  when(boxRetriever.hmrcCompanyNameRetriever).thenReturn(hmrcCompanyNameRetriever)
   when(boxRetriever.lpq03()).thenReturn(LPQ03(Some(true)))
 
   val validLoan = Loan(id = "1",

@@ -21,9 +21,11 @@ import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600.v3._
 import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
-abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever) extends BoxRetriever {
+abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever,
+                                 val ct600ABoxRetriever: Option[CT600ABoxRetriever],
+                                 val hmrcCompanyNameRetriever: HmrcCompanyNameRetriever) extends BoxRetriever {
 
-  def b1(): B1
+  def b1(): B1 = B1(hmrcCompanyNameRetriever.companyName)
 
   def b2(): B2 = B2(computationsBoxRetriever.accountsBoxRetriever.ac1())
 
@@ -85,20 +87,14 @@ abstract class CT600BoxRetriever(val computationsBoxRetriever: ComputationsBoxRe
 
   def b475(): B475 = B475(b440())
 
-  def b480(): B480 = {
-    this match {
-      case r: CT600ABoxRetriever => B480(r.a80())
-      case _ => B480(None)
-    }
+  def b480(): B480 = ct600ABoxRetriever.map { br =>
+      B480(br.a80())
+    }.getOrElse(B480(None))
 
-  }
+  def b485(): B485 = ct600ABoxRetriever.map { br =>
+    B485.calculate(br)
+  }.getOrElse(B485(false))
 
-  def b485(): B485 = {
-    this match {
-      case r: CT600ABoxRetriever => B485.calculate(r)
-      case _ => B485(false)
-    }
-  }
 
   def b510(): B510 = B510.calculate(this)
 

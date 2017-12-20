@@ -18,8 +18,9 @@ package uk.gov.hmrc.ct.ct600.v3.retriever
 
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.ct600.v3._
+import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 
-abstract class RepaymentsBoxRetriever(ct600BoxRetriever: Option[CT600BoxRetriever]) extends BoxRetriever {
+abstract class RepaymentsBoxRetriever(ct600BoxRetriever: Option[CT600BoxRetriever], ct600EBoxRetriever: Option[CT600EBoxRetriever]) extends BoxRetriever {
 
   def b860(): B860
 
@@ -39,7 +40,9 @@ abstract class RepaymentsBoxRetriever(ct600BoxRetriever: Option[CT600BoxRetrieve
 
   def b945(): B945
 
-  def b950(): B950 = B950.calculate(this)
+  def b950(): B950 = (ct600BoxRetriever orElse ct600EBoxRetriever).map { retriever =>
+    B950.calculate(retriever)
+  }.getOrElse(throw new IllegalStateException("To have a repayment box retriever you must have a ct600 or a ct600E retriever. "))
 
   def b955(): B955
 

@@ -18,11 +18,11 @@ package uk.gov.hmrc.ct.ct600a.v3.retriever
 
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
-import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxRetriever}
+import uk.gov.hmrc.ct.ct600.v3.retriever.HmrcCompanyNameRetriever
 import uk.gov.hmrc.ct.ct600a.v3._
 
 abstract class CT600ABoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever,
-                                  val ct600BoxRetriever: CT600BoxRetriever) extends BoxRetriever {
+                                  val hmrcCompanyNameRetriever: HmrcCompanyNameRetriever) extends BoxRetriever {
 
   def lp04(): LP04
 
@@ -40,9 +40,9 @@ abstract class CT600ABoxRetriever(val computationsBoxRetriever: ComputationsBoxR
 
   def loansToParticipators(): LoansToParticipators
 
-  def a1(): A1 = A1(ct600BoxRetriever.b1())
+  def a1(): A1 = A1(hmrcCompanyNameRetriever.companyName)
 
-  def a2(): A2 = A2(ct600BoxRetriever.b3())
+  def a2(): A2 = A2(computationsBoxRetriever.filingAttributesBoxValueRetriever.utr())
 
   def a3(): A3 = A3(computationsBoxRetriever.cp1())
 

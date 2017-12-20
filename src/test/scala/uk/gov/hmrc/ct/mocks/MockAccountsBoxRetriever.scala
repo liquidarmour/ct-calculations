@@ -25,9 +25,9 @@ case class MockAccountsBoxRetriever(baseBoxRetriever: MockFilingAttributesBoxRet
 
   override def hmrcAccountsApproval() = ???
 
-  override protected def accountingPeriod() = ???
+  override def accountingPeriod() = ???
 
-  override protected def charityAllExempt() = ???
+  override def charityAllExempt() = ???
 
-  override protected def charityNoIncome() = ???
+  override def charityNoIncome() = ???
 }

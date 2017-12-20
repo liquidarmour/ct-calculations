@@ -44,11 +44,11 @@ abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: Filin
   def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired =
     CoHoAccountsApprovalRequired(filingAttributesBoxValueRetriever.companiesHouseFiling())
 
-  protected def accountingPeriod(): Option[HmrcAccountingPeriod]
+  def accountingPeriod(): Option[HmrcAccountingPeriod]
 
-  protected def charityAllExempt(): Option[Boolean]
+  def charityAllExempt(): Option[Boolean]
 
-  protected def charityNoIncome(): Option[Boolean]
+  def charityNoIncome(): Option[Boolean]
 
   def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
     HmrcAccountsApprovalRequired.calculate(this,
