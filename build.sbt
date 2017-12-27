@@ -1,6 +1,6 @@
 import sbtrelease.ReleaseStateTransformations._
 
-resolvers += Resolver.bintrayRepo("liquid-armour", "maven")
+resolvers += Resolver.bintrayRepo("liquid-armour-software", "maven")
 
 lazy val root = (project in file(".")).
 settings(
@@ -11,7 +11,7 @@ settings(
     name := "ct-calculations",
     libraryDependencies ++= Seq(
       "joda-time" % "joda-time" % "2.9.9",
-      "liquidarmour" %% "play-time" % "1.0.41",
+      "liquidarmour" %% "play-time" % "1.0.45",
       "org.scalatest" %% "scalatest" % "3.0.1" % Test,
       "org.mockito" % "mockito-all" % "1.9.5" % Test,
       "org.pegdown" % "pegdown" % "1.5.0" % Test,
