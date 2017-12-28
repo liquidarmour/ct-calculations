@@ -1,6 +1,6 @@
 import sbtrelease.ReleaseStateTransformations._
 
-resolvers += Resolver.bintrayRepo("liquid-armour-software", "maven")
+resolvers += Resolver.bintrayRepo("liquid-armour", "maven")
 
 lazy val root = (project in file(".")).
 settings(
@@ -18,6 +18,10 @@ settings(
       "org.hamcrest" % "hamcrest-all" % "1.3" % Test
     )
 )
+
+releaseCommitMessage := "Setting version to " +
+  s"${if (releaseUseGlobalVersion.value) (version in ThisBuild).value else version.value}" +
+  s"${if (releaseUseGlobalVersion.value && version.value.endsWith("-SNAPSHOT")) " [ci skip]" else ""}"
 
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,              // : ReleaseStep
