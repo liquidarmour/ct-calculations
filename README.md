@@ -1,6 +1,6 @@
 # ct-calculations
 
-[![Build Status](https://travis-ci.org/hmrc/ct-calculations.svg?branch=master)](https://travis-ci.org/hmrc/ct-calculations) [ ![Download](https://api.bintray.com/packages/hmrc/releases/ct-calculations/images/download.svg) ](https://bintray.com/hmrc/releases/ct-calculations/_latestVersion)
+[![Build Status](https://travis-ci.org/liquidarmour/ct-calculations.svg?branch=master)](https://travis-ci.org/liquidarmour/ct-calculations) [ ![Download](https://api.bintray.com/packages/liquid-armour/maven/ct-calculations/images/download.svg) ](https://bintray.com/liquid-armour/maven/ct-calculations/_latestVersion)
 
 
 CT Calculations is a library that contains the domain needed to create a Corporations Tax return for HMRC. This includes implementations of Boxes and calculations required to produce a CT600, including CT600J, CT600A and Computations. 
@@ -9,14 +9,10 @@ At the moment this library supports a subset of Boxes and calculations but we ar
 
 # Download ct-calculations
 ```scala
-resolvers += Resolver.bintrayRepo("hmrc", "releases")
+resolvers += Resolver.bintrayRepo("liquid-armour", "maven")
 
-libraryDependencies += "uk.gov.hmrc" %% "ct-calculations" % "x.x.x"
+libraryDependencies += "liquidarmour" %% "ct-calculations" % "x.x.x"
 ```
-
-# Future Enhancements
-* Support for V3 of CT600
-* Support for Accounts Boxes
 
 # License
  
