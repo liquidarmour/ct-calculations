@@ -17,18 +17,19 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.{MockFullAccountsRetriever, AccountsMoneyValidationFixture}
+import uk.gov.hmrc.ct.accounts.{AccountsMoneyValidationFixture, MockFullAccountsRetriever}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC125FullSpec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with MockFullAccountsRetriever {
 
-  override def setUpMocks() = {
+  override def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever) = {
     when(boxRetriever.ac44()).thenReturn(AC44(Some(99)))
 
     clearMockTangibleAssetsFields()
     when(boxRetriever.ac125()).thenReturn(AC125(Some(99)))
-    super.setUpMocks()
+    super.setUpMocks(accountsBoxRetriever)
   }
 
   private def clearMockTangibleAssetsFields() = {

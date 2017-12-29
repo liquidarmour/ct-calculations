@@ -17,21 +17,28 @@
 package uk.gov.hmrc.ct.ct600.v3
 
 import org.joda.time.LocalDate
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.computations.CP2
-import uk.gov.hmrc.ct.ct600.v3.stubs.StubbedCT600BoxRetriever
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
+import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxRetriever, HmrcCompanyNameRetriever}
 import uk.gov.hmrc.ct.ct600a.v3._
+import uk.gov.hmrc.ct.ct600a.v3.retriever.CT600ABoxRetriever
 
-class LoansToParticipatorsSpec extends WordSpec with Matchers {
+class LoansToParticipatorsSpec extends WordSpec with Matchers with MockitoSugar {
 
   //Know this isn't a V3 date but required so our +9 months date aren't before the current date
   val currentAPEndDate = new LocalDate(2014, 6, 1)
 
-  val boxRetriever = new StubbedCT600BoxRetriever {
-    override def cp2(): CP2 = CP2(currentAPEndDate)
-    override def lpq03(): LPQ03 = LPQ03(Some(true))
-  }
+  val computationsBoxRetriever = mock[ComputationsBoxRetriever]
+  val hmrcCompanyNameRetriever = mock[HmrcCompanyNameRetriever]
+  when(computationsBoxRetriever.cp2()).thenReturn(CP2(currentAPEndDate))
+  val boxRetriever = mock[CT600ABoxRetriever]
+  when(boxRetriever.computationsBoxRetriever).thenReturn(computationsBoxRetriever)
+  when(boxRetriever.hmrcCompanyNameRetriever).thenReturn(hmrcCompanyNameRetriever)
+  when(boxRetriever.lpq03()).thenReturn(LPQ03(Some(true)))
 
   val validLoan = Loan(id = "1",
     name = Some("Smurfette"),
@@ -696,11 +703,9 @@ class LoansToParticipatorsSpec extends WordSpec with Matchers {
     "not return an error if there is no loans and LPQ01 is false" in {
       val l2pBox = LoansToParticipators(List.empty)
 
-      val testRetriever = new StubbedCT600BoxRetriever {
-        override def lpq03(): LPQ03 = LPQ03(Some(false))
-      }
+      when(boxRetriever.lpq03()).thenReturn(LPQ03(Some(false)))
 
-      val errors = l2pBox.validate(testRetriever)
+      val errors = l2pBox.validate(boxRetriever)
       errors shouldBe empty
     }
   }

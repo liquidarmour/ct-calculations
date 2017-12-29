@@ -25,11 +25,11 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class RelatedPartyTransactions(transactions: List[RelatedPartyTransaction] = List.empty, ac7806: AC7806) extends CtBoxIdentifier(name = "Related party transactions")
   with CtValue[RelatedPartyTransactions]
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever] {
+  with ValidatableBox[Frs102AccountsBoxRetriever] {
 
   override def value = this
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors (
       cannotExistErrorIf(!boxRetriever.ac7800().orFalse && (transactions.nonEmpty || ac7806.value.nonEmpty)),
 

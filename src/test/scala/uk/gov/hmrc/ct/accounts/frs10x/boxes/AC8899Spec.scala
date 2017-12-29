@@ -17,15 +17,11 @@
 package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.AccountStatementValidationFixture
 import uk.gov.hmrc.ct.accounts.frs102.helper.DirectorsReportEnabled
 import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.{AccountStatementValidationFixture, MockFrs10xAccountsRetriever}
 
-class AC8899Spec extends AccountStatementValidationFixture[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever] {
-
-  trait MockRetriever extends Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever
-  override val boxRetriever: MockRetriever = mock[MockRetriever] (RETURNS_SMART_NULLS)
+class AC8899Spec extends AccountStatementValidationFixture[Frs10xDirectorsBoxRetriever] with MockFrs10xAccountsRetriever {
 
   override def setupMocks() = {
     when(boxRetriever.directorsReportEnabled()).thenReturn(DirectorsReportEnabled(true))

@@ -18,24 +18,15 @@ package uk.gov.hmrc.ct.ct600.v3.retriever
 
 import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.ct600.v3._
+import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 
-trait RepaymentsBoxRetriever extends BoxRetriever {
+abstract class RepaymentsBoxRetriever(ct600BoxRetriever: Option[CT600BoxRetriever], ct600EBoxRetriever: Option[CT600EBoxRetriever]) extends BoxRetriever {
 
   def b860(): B860
 
-  def b865(): B865 = {
-    this match {
-      case br: CT600BoxRetriever => B865(br.b605())
-      case _ => B865(None)
-    }
-  }
+  def b865(): B865 = B865(ct600BoxRetriever.flatMap( br => br.b605().value))
 
-  def b870(): B870 = {
-    this match {
-      case br: CT600BoxRetriever => B870(br.b520())
-      case _ => B870(None)
-    }
-  }
+  def b870(): B870 = B870(ct600BoxRetriever.flatMap( br => br.b520().value))
 
   def b920(): B920
 
@@ -49,7 +40,9 @@ trait RepaymentsBoxRetriever extends BoxRetriever {
 
   def b945(): B945
 
-  def b950(): B950 = B950.calculate(this)
+  def b950(): B950 = (ct600BoxRetriever orElse ct600EBoxRetriever).map { retriever =>
+    B950.calculate(retriever)
+  }.getOrElse(throw new IllegalStateException("To have a repayment box retriever you must have a ct600 or a ct600E retriever. "))
 
   def b955(): B955
 

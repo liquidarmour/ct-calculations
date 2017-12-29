@@ -17,15 +17,14 @@
 package uk.gov.hmrc.ct.accounts.frs105.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.frs10x.boxes.{ACQ8161, ACQ8999}
-import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling}
 import uk.gov.hmrc.ct.accounts.frs105.retriever.Frs105AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDormancyBoxRetriever, Frs10xFilingQuestionsBoxRetriever}
+import uk.gov.hmrc.ct.accounts.frs10x.boxes.{ACQ8161, ACQ8999}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.{AC12, AccountsMoneyValidationFixture, MockFrs105AccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling}
 
-class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDormancyBoxRetriever] with  MockFrs105AccountsRetriever {
+class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetriever] with MockFrs105AccountsRetriever {
 
   def setupCurrentYearMocks(ac12: AC12, ac405: AC405, ac410: AC410, ac415: AC415, ac420: AC420, ac425: AC425, ac34: AC34) = {
     when(boxRetriever.ac12()).thenReturn(ac12)
@@ -37,18 +36,18 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     when(boxRetriever.ac34()).thenReturn(ac34)
   }
 
-  override def setUpMocks(): Unit = {
+  override def setUpMocks(accountsRetriever: AccountsBoxRetriever): Unit = {
+    super.setUpMocks(accountsRetriever)
     setupCurrentYearMocks(AC12(None), AC405(None), AC410(Some(1)), AC415(None), AC420(None), AC425(None), AC34(None))
-    when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+    when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
     when(boxRetriever.acq8999()).thenReturn(ACQ8999(None))
-    super.setUpMocks()
   }
 
   testAccountsMoneyValidation("AC405", AC405.apply)
 
   "AC405 validation" should {
     "fail if no current year box populated" in {
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
 
       AC405(None).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.profit.loss.one.box.required", None))
@@ -57,7 +56,7 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
 
   "AC405 validation" should {
     "pass if at least one current year box populated" in {
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
 
       setupCurrentYearMocks(AC12(Some(1)), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
       AC405(None).validate(boxRetriever) shouldBe Set.empty
@@ -82,8 +81,8 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     }
 
     "pass validation if all current inputs are empty, CoHo Only filing, and ACQ8161 is false" in {
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
 
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
@@ -92,8 +91,8 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     }
     "fail validation if all current inputs are empty, CoHo Only filing, and ACQ8161 is true" in {
 
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-      when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
@@ -102,8 +101,8 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     }
     "fail validation if all current inputs are empty, Joint filing, and ACQ8161 is false" in {
 
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-      when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(false)))
 
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
@@ -112,8 +111,8 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     }
     "fail validation if all current inputs are empty, Joint filing, and ACQ8161 is true" in {
 
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-      when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 
       setupCurrentYearMocks(AC12(None), AC405(None), AC410(None), AC415(None), AC420(None), AC425(None), AC34(None))
@@ -122,8 +121,8 @@ class AC405Spec extends AccountsMoneyValidationFixture[Frs105AccountsBoxRetrieve
     }
 
     "pass validation if dormant where there would otherwise be an error" in {
-      when(boxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-      when(boxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+      when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+      when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
       when(boxRetriever.acq8999()).thenReturn(ACQ8999(Some(true)))
       when(boxRetriever.acq8161()).thenReturn(ACQ8161(Some(true)))
 

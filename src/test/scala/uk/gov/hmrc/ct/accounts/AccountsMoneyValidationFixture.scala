@@ -18,22 +18,24 @@ package uk.gov.hmrc.ct.accounts
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.frs102.boxes._
-import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.box.{CtValidation, ValidatableBox}
 
-trait AccountsMoneyValidationFixture[T <: AccountsBoxRetriever] extends WordSpec with Matchers with MockitoSugar {
+trait AccountsMoneyValidationFixture[T <: AccountsBoxRetriever]
+  extends WordSpec
+    with Matchers
+    with MockitoSugar {
 
   def boxRetriever: T
 
   val STANDARD_MIN = -99999999
   val STANDARD_MAX = 99999999
 
-  def setUpMocks(): Unit = {
-    when(boxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate())))
+  def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever): Unit = {
+    when(accountsBoxRetriever.ac205()).thenReturn(AC205(Some(new LocalDate())))
   }
 
   def testAccountsMoneyValidation(boxId: String, builder: (Option[Int]) => ValidatableBox[T], testEmpty: Boolean = true): Unit = {
@@ -49,8 +51,13 @@ trait AccountsMoneyValidationFixture[T <: AccountsBoxRetriever] extends WordSpec
     doTests(boxId, minValue, maxValue, builder, testEmpty = testEmpty)
   }
 
-  private def doTests(boxId: String, minValue: Int, maxValue: Int, builder: (Option[Int]) => ValidatableBox[T], testEmpty: Boolean, testMin: Boolean = true): Unit = {
-    setUpMocks()
+  private def doTests(boxId: String,
+                      minValue: Int,
+                      maxValue: Int,
+                      builder: (Option[Int]) => ValidatableBox[T],
+                      testEmpty: Boolean,
+                      testMin: Boolean = true): Unit = {
+    setUpMocks(boxRetriever)
     s"$boxId" should {
       "be valid when minimum" in {
         builder(Some(minValue)).validate(boxRetriever) shouldBe empty

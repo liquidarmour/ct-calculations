@@ -25,7 +25,7 @@ import uk.gov.hmrc.ct.validation.TurnoverValidation
 case class AC12(value: Option[Int]) extends CtBoxIdentifier(name = "Current Turnover/Sales")
   with CtOptionalInteger
   with Input
-  with ValidatableBox[AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[AccountsBoxRetriever]
   with TurnoverValidation {
 
   val accountsStart = {
@@ -38,17 +38,18 @@ case class AC12(value: Option[Int]) extends CtBoxIdentifier(name = "Current Turn
       boxRetriever.ac4()
   }
 
-  override def validate(boxRetriever: AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
-      val errors = collectErrors(
+  override def validate(boxRetriever: AccountsBoxRetriever): Set[CtValidation] = {
+    val filingAttributesBoxValueRetriever = boxRetriever.filingAttributesBoxValueRetriever
+    val errors = collectErrors(
         failIf(isFrs10xHmrcAbridgedReturnWithLongPoA(accountsStart, accountEnd)(boxRetriever)) {
           validateAsMandatory(this)
         },
-        failIf(boxRetriever.hmrcFiling().value)(
+        failIf(filingAttributesBoxValueRetriever.hmrcFiling().value)(
           collectErrors(
             validateHmrcTurnover(boxRetriever, accountsStart, accountEnd)
           )
         ),
-        failIf(!boxRetriever.hmrcFiling().value && boxRetriever.companiesHouseFiling().value)(
+        failIf(!filingAttributesBoxValueRetriever.hmrcFiling().value && filingAttributesBoxValueRetriever.companiesHouseFiling().value)(
           collectErrors(
             validateCoHoTurnover(boxRetriever, accountsStart, accountEnd)
           )

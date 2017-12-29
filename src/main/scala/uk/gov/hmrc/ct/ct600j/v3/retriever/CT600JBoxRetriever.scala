@@ -22,42 +22,27 @@ import uk.gov.hmrc.ct.ct600.v3.retriever.{AboutThisReturnBoxRetriever, CT600BoxR
 import uk.gov.hmrc.ct.ct600e.v3.retriever.CT600EBoxRetriever
 import uk.gov.hmrc.ct.ct600j.v3._
 
-trait CT600JBoxRetriever extends BoxRetriever {
+abstract class CT600JBoxRetriever(val aboutThisReturnBoxRetriever: Option[AboutThisReturnBoxRetriever],
+                                  val computationsBoxRetriever: Option[ComputationsBoxRetriever],
+                                  val cT600BoxRetriever: Option[CT600BoxRetriever],
+                                  val cT600EBoxRetriever: Option[CT600EBoxRetriever],
+                                  val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever) extends BoxRetriever {
 
-  self: AboutThisReturnBoxRetriever =>
+  def j1(): J1 = (cT600BoxRetriever.map(br => J1(br.b1())) orElse
+                  cT600EBoxRetriever.map( br => J1(br.e1().value)))
+                  .getOrElse(throw new IllegalStateException("Could not the company name"))
 
-  def j1(): J1 = {
-    this match {
-      case br: CT600BoxRetriever => J1(br.b1())
-      case br: CT600EBoxRetriever => J1(br.e1().value)
-      case _ => throw new IllegalStateException("Could not the company name")
-    }
+  def j2(): J2 = (cT600BoxRetriever.map(br => J2(br.b3())) orElse
+                  cT600EBoxRetriever.map(br => J2(br.e2().value)))
+                  .getOrElse(J2(filingAttributesBoxValueRetriever.utr().value))
 
-  }
+  def j3(): J3 = (aboutThisReturnBoxRetriever.map(br => J3(br.b30())) orElse
+                  computationsBoxRetriever.map( br => J3(br.cp1().value)))
+                  .getOrElse(throw new IllegalStateException("Could not get the AP start date."))
 
-  def j2(): J2 = {
-    this match {
-      case br: CT600BoxRetriever => J2(br.b3())
-      case br: CT600EBoxRetriever => J2(br.e2().value)
-      case br: FilingAttributesBoxValueRetriever => J2(br.utr().value)
-    }
-  }
-
-  def j3(): J3 = {
-    this match {
-      case br: AboutThisReturnBoxRetriever => J3(br.b30())
-      case br: ComputationsBoxRetriever => J3(br.cp1().value)
-      case _ => throw new IllegalStateException("Could not get the AP start date.")
-    }
-  }
-
-  def j4(): J4 = {
-    this match {
-      case br: AboutThisReturnBoxRetriever => J4(br.b35())
-      case br: ComputationsBoxRetriever => J4(br.cp2().value)
-      case _ => throw new IllegalStateException("Could not get the AP end date.")
-    }
-  }
+  def j4(): J4 = (aboutThisReturnBoxRetriever.map(br => J4(br.b35())) orElse
+                  computationsBoxRetriever.map( br => J4(br.cp2().value)))
+                  .getOrElse(throw new IllegalStateException("Could not get the AP end date."))
 
   def j5(): J5
   def j10(): J10

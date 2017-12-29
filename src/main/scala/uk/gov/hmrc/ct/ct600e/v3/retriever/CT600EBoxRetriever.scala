@@ -19,13 +19,11 @@ package uk.gov.hmrc.ct.ct600e.v3.retriever
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 import uk.gov.hmrc.ct.ct600e.v3._
 
-trait CT600EBoxRetriever extends BoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class CT600EBoxRetriever(filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever) extends BoxRetriever {
 
   def e1(): E1
 
-  def e2(): E2 = E2(utr())
+  def e2(): E2 = E2(filingAttributesBoxValueRetriever.utr())
 
   def e3(): E3
 

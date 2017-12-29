@@ -17,20 +17,19 @@
 package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import uk.gov.hmrc.ct.accounts.frs102.validation.DirectorsReportExistenceValidation
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
 import uk.gov.hmrc.ct.box._
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 case class AC8021(value: Option[Boolean]) extends CtBoxIdentifier(name = "Do you want to file a directors' report to Companies House?")
                                           with CtOptionalBoolean
                                           with Input
-                                          with SelfValidatableBox[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever, Option[Boolean]]
+                                          with SelfValidatableBox[Frs10xAccountsBoxRetriever, Option[Boolean]]
                                           with DirectorsReportExistenceValidation {
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
-    val coHoFiling = boxRetriever.companiesHouseFiling().value
-    val hmrcFiling = boxRetriever.hmrcFiling().value
-    val microEntityFiling = boxRetriever.microEntityFiling().value
+  override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
+    val coHoFiling = boxRetriever.filingAttributesBoxValueRetriever.companiesHouseFiling().value
+    val hmrcFiling = boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value
+    val microEntityFiling = boxRetriever.filingAttributesBoxValueRetriever.microEntityFiling().value
     val fileDRToHmrc = boxRetriever.ac8023()
 
     (coHoFiling, hmrcFiling, microEntityFiling, fileDRToHmrc) match {

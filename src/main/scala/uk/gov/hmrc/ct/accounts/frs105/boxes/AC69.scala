@@ -24,18 +24,20 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 case class AC69(value: Option[Int]) extends CtBoxIdentifier(name = "Total net assets or liabilities (previous PoA)")
   with CtOptionalInteger
-  with ValidatableBox[Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs105AccountsBoxRetriever]
   with AssetsEqualToSharesValidator {
 
-  override def validate(boxRetriever: Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs105AccountsBoxRetriever): Set[CtValidation] = {
 
-    validateAssetsEqualToShares("AC69", boxRetriever.ac491(), boxRetriever.companyType().isLimitedByGuarantee)
+    validateAssetsEqualToShares("AC69",
+      boxRetriever.ac491(),
+      boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee)
   }
 }
 
-object AC69 extends Calculated[AC69, Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever] with TotalNetAssetsLiabilitiesCalculator {
+object AC69 extends Calculated[AC69, Frs105AccountsBoxRetriever] with TotalNetAssetsLiabilitiesCalculator {
 
-  override def calculate(boxRetriever: Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever): AC69 = {
+  override def calculate(boxRetriever: Frs105AccountsBoxRetriever): AC69 = {
     import boxRetriever._
     calculatePreviousTotalNetAssetsLiabilities(ac63(), ac65(), ac67(), ac471())
   }

@@ -23,12 +23,12 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC8084(value: Option[Boolean]) extends CtBoxIdentifier(name = "The members have agreed to the preparation of abridged accounts for this accounting period in accordance with Section 444(2A).")
   with CtOptionalBoolean
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs102AccountsBoxRetriever]
   with Validators {
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
-      failIf(boxRetriever.abridgedFiling().value)(validateAsMandatory(this))
+      failIf(boxRetriever.filingAttributesBoxValueRetriever.abridgedFiling().value)(validateAsMandatory(this))
     )
   }
   

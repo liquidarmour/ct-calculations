@@ -18,20 +18,19 @@ package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.accounts.frs102.validation.DirectorsReportEnabledCalculator
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever}
 import uk.gov.hmrc.ct.box.ValidatableBox.ValidCoHoNamesCharacters
 import uk.gov.hmrc.ct.box._
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
 case class Directors(directors: List[Director] = List.empty) extends CtBoxIdentifier(name = "Directors.")
   with CtValue[List[Director]]
   with Input
-  with ValidatableBox[Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs10xAccountsBoxRetriever]
   with DirectorsReportEnabledCalculator {
 
   override def value = directors
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     validateDirectorRequired(boxRetriever) ++
       validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever) ++
       validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever) ++
@@ -41,14 +40,14 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     directors.foldRight(Set[CtValidation]())((dd, tail) => dd.validate(boxRetriever) ++ tail)
   }
 
-  private def validateCannotExist(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateCannotExist(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     failIf(!calculateDirectorsReportEnabled(boxRetriever) && directors.nonEmpty) {
-      val boxId = if (boxRetriever.hmrcFiling().value) "AC8023" else "AC8021"
+      val boxId = if (boxRetriever.filingAttributesBoxValueRetriever.hmrcFiling().value) "AC8023" else "AC8021"
       Set(CtValidation(None, s"error.Directors.$boxId.cannot.exist"))
     }
   }
 
-  private def validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateAtLeastOneDirectorIsAppointedIfAppointmentsIsYes(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     failIf (
       calculateDirectorsReportEnabled(boxRetriever) &&
       boxRetriever.acQ8003().value.getOrElse(false) &&
@@ -58,7 +57,7 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     }
   }
 
-  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateAtLeastOneDirectorResignedIfResignationsIsYes(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     failIf (
       calculateDirectorsReportEnabled(boxRetriever) &&
         boxRetriever.acQ8009().value.getOrElse(false) &&
@@ -68,7 +67,7 @@ case class Directors(directors: List[Director] = List.empty) extends CtBoxIdenti
     }
   }
 
-  private def validateDirectorRequired(boxRetriever: Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  private def validateDirectorRequired(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     failIf (calculateDirectorsReportEnabled(boxRetriever) && directors.isEmpty) {
       Set(CtValidation(Some("ac8001"), "error.Directors.ac8001.global.atLeast1", None))
     }
@@ -101,9 +100,9 @@ case class Director(id: String,
                     ac8007: Option[LocalDate] = None, // appointed date
                     ac8013: Option[LocalDate] = None,  // resignation date
                     ac199A: Option[Boolean] = None  // approver
-                     ) extends ValidatableBox[Frs10xDirectorsBoxRetriever] {
+                     ) extends ValidatableBox[Frs10xAccountsBoxRetriever] {
 
-  override def validate(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] =
+  override def validate(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] =
     validateStringByLength("ac8001", ac8001, "Directors.ac8001", 1, 40) ++
       validateRawStringByRegex("ac8001", ac8001, errorCodeBoxId = "Directors.ac8001", ValidCoHoNamesCharacters) ++
       validateAppointmentDateAsMandatoryWhenAppointed(boxRetriever) ++
@@ -120,7 +119,7 @@ case class Director(id: String,
     }
   }
 
-  def validateAppointmentDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
+  def validateAppointmentDateAsWithinPOA(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     (ac8007, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8007.$id", ac8007, ac3, ac4, "ac8007")
       case _ => Set()
@@ -134,7 +133,7 @@ case class Director(id: String,
     }
   }
 
-  def validateResignationDateAsWithinPOA(boxRetriever: Frs10xDirectorsBoxRetriever): Set[CtValidation] = {
+  def validateResignationDateAsWithinPOA(boxRetriever: Frs10xAccountsBoxRetriever): Set[CtValidation] = {
     (ac8013, boxRetriever.ac3().value, boxRetriever.ac4().value) match {
       case (Some(appDate), ac3, ac4) => validateDateAsBetweenInclusive(s"ac8013.$id", ac8013, ac3, ac4, "ac8013")
       case _ => Set()

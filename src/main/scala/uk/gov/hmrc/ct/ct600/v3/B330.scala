@@ -24,9 +24,9 @@ import uk.gov.hmrc.ct.ct600.v3.calculations.CorporationTaxCalculator
 case class B330(value: Int) extends CtBoxIdentifier("Financial Year FY1") with CtInteger
 
 // was B43
-object B330 extends CorporationTaxCalculator with Calculated[B330, ComputationsBoxRetriever] {
+object B330 extends CorporationTaxCalculator {
 
-  override def calculate(fieldValueRetriever: ComputationsBoxRetriever): B330 =
+  def calculate(fieldValueRetriever: ComputationsBoxRetriever): B330 =
       B330(financialYear1(
         HmrcAccountingPeriod(fieldValueRetriever.cp1(), fieldValueRetriever.cp2())
       ))

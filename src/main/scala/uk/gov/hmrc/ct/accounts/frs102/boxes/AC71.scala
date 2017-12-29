@@ -23,11 +23,11 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC71(value: Option[Int]) extends CtBoxIdentifier(name = "Called up share capital (previous PoA)")
   with CtOptionalInteger
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs102AccountsBoxRetriever]
   with Validators {
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
-    val limitedByGuarantee = boxRetriever.companyType().isLimitedByGuarantee
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
+    val limitedByGuarantee = boxRetriever.filingAttributesBoxValueRetriever.companyType().isLimitedByGuarantee
     val hasPY = boxRetriever.ac205().hasValue
     collectErrors(
       failIf(!hasPY || limitedByGuarantee)(

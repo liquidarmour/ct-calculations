@@ -18,12 +18,13 @@ package uk.gov.hmrc.ct.ct600a.v3
 
 import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.box.{CtBoxIdentifier, CtDate, Linked}
+import uk.gov.hmrc.ct.computations.CP2
 import uk.gov.hmrc.ct.ct600.v3.B35
 
 
 case class A4(value: LocalDate) extends CtBoxIdentifier(name = "AP End date") with CtDate
 
-object A4 extends Linked[B35, A4] {
+object A4 extends Linked[CP2, A4] {
 
-  override def apply(source: B35): A4 = A4(source.value)
+  override def apply(source: CP2): A4 = A4(source.value)
 }

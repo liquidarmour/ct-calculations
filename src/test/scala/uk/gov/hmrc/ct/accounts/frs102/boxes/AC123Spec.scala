@@ -17,14 +17,15 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes
 
 import org.mockito.Mockito._
-import uk.gov.hmrc.ct.accounts.{MockAbridgedAccountsRetriever, AccountsMoneyValidationFixture}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AccountsMoneyValidationFixture, MockAbridgedAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 
 class AC123Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetriever] with MockAbridgedAccountsRetriever {
 
-  override def setUpMocks() = {
-    super.setUpMocks()
+  override def setUpMocks(accountsBoxRetriever: AccountsBoxRetriever): Unit = {
+    super.setUpMocks(accountsBoxRetriever)
 
     import boxRetriever._
 
@@ -35,7 +36,7 @@ class AC123Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
   "AC123" should {
 
     "throw error when is different than AC43" in {
-      setUpMocks()
+      setUpMocks(boxRetriever)
       AC123(Some(10)).validate(boxRetriever) shouldBe Set(CtValidation(None, "error.intangible.assets.note.previousNetBookValue.notEqualToAssets"))
     }
 
@@ -58,7 +59,7 @@ class AC123Spec extends AccountsMoneyValidationFixture[Frs102AccountsBoxRetrieve
     }
 
     "validate successfully if nothing is wrong" in {
-      setUpMocks()
+      setUpMocks(boxRetriever)
       AC123(Some(100)).validate(boxRetriever) shouldBe Set.empty
     }
 

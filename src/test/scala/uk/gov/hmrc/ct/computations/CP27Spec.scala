@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.ct600j.v3
+package uk.gov.hmrc.ct.computations
 
-import uk.gov.hmrc.ct.accounts.frsse2008.retriever.Frsse2008AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
-import uk.gov.hmrc.ct.ct600.v3.retriever.CT600BoxRetriever
-import uk.gov.hmrc.ct.ct600j.v3.retriever.CT600JBoxRetriever
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.ct.BoxValidationFixture
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-trait TaxAvoidanceBoxRetrieverForTest extends CT600BoxRetriever with CT600JBoxRetriever with Frsse2008AccountsBoxRetriever with FilingAttributesBoxValueRetriever
+class CP27Spec extends WordSpec with MockitoSugar with Matchers with BoxValidationFixture[ComputationsBoxRetriever] {
+
+  val boxRetriever = mock[ComputationsBoxRetriever]
+
+  testBoxIsZeroOrPositive("CP27", CP27.apply)
+
+}

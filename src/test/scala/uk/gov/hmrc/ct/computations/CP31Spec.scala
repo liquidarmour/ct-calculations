@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.frs10x.retriever
+package uk.gov.hmrc.ct.computations
 
-import uk.gov.hmrc.ct.accounts.frs10x.boxes.ACQ8161
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.ct.BoxValidationFixture
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-trait Frs10xFilingQuestionsBoxRetriever extends AccountsBoxRetriever {
+class CP31Spec extends WordSpec with MockitoSugar with Matchers with BoxValidationFixture[ComputationsBoxRetriever] {
 
-  self: FilingAttributesBoxValueRetriever =>
+  val boxRetriever = mock[ComputationsBoxRetriever]
 
-  def acq8161(): ACQ8161
+  testBoxIsZeroOrPositive("CP31", CP31.apply)
+
 }

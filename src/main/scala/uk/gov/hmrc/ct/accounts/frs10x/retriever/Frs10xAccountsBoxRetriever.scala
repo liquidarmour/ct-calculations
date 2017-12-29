@@ -16,12 +16,19 @@
 
 package uk.gov.hmrc.ct.accounts.frs10x.retriever
 
-import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8081, AC8082, AC8083, AC8088}
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
+import uk.gov.hmrc.ct.accounts.frs10x.boxes._
+import uk.gov.hmrc.ct.accounts.retriever.{AccountsApprovalRequiredBoxRetriever, AccountsBoxRetriever}
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait Frs10xAccountsBoxRetriever extends AccountsBoxRetriever {
-  self: FilingAttributesBoxValueRetriever =>
+abstract class Frs10xAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever)
+  extends AccountsBoxRetriever(filingAttributesBoxRetriever)
+    with BoxRetriever
+    with AccountsApprovalRequiredBoxRetriever
+    with Frs10xDirectorsBoxRetriever
+    with Frs10xDormancyBoxRetriever {
+
+  def acq8161(): ACQ8161
 
   def ac8081(): AC8081
 
@@ -30,4 +37,8 @@ trait Frs10xAccountsBoxRetriever extends AccountsBoxRetriever {
   def ac8083(): AC8083
 
   def ac8088(): AC8088
+
+  def notTradedStatementRequired(): NotTradedStatementRequired = NotTradedStatementRequired.calculate(this)
+
+  def profitAndLossStatementRequired(): ProfitAndLossStatementRequired = ProfitAndLossStatementRequired.calculate(this)
 }

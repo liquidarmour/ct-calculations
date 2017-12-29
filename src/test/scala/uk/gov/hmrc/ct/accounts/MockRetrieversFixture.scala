@@ -17,46 +17,63 @@
 package uk.gov.hmrc.ct.accounts
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.ct.accounts.frs102.retriever._
 import uk.gov.hmrc.ct.accounts.frs105.retriever.Frs105AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever, Frs10xFilingQuestionsBoxRetriever}
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
 
-sealed trait TestAccountsRetriever extends AccountsBoxRetriever with FilingAttributesBoxValueRetriever
-
-sealed trait TestFrs10xAccountsRetriever extends Frs10xAccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xDirectorsBoxRetriever with Frs10xFilingQuestionsBoxRetriever
-
-sealed trait TestFrs102AccountsRetriever extends Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xDirectorsBoxRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDormancyBoxRetriever
-
-sealed trait TestFrs105AccountsRetriever extends Frs105AccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever with Frs10xDormancyBoxRetriever
-
-sealed trait TestAbridgedAccountsRetriever extends AbridgedAccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xDirectorsBoxRetriever with Frs10xFilingQuestionsBoxRetriever
-
-sealed trait TestFullAccountsRetriever extends FullAccountsBoxRetriever with FilingAttributesBoxValueRetriever with Frs10xDirectorsBoxRetriever with Frs10xFilingQuestionsBoxRetriever
 
 trait MockAccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestAccountsRetriever]
+  val boxRetriever = mock[AccountsBoxRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
+}
+
+trait MockComputationsRetriever extends MockitoSugar {
+  val boxRetriever = mock[ComputationsBoxRetriever]
+  val accountsBoxRetriever = mock[AccountsBoxRetriever]
+  when(boxRetriever.accountsBoxRetriever).thenReturn(accountsBoxRetriever)
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(accountsBoxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }
 
 trait MockFrs10xAccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestFrs10xAccountsRetriever]
+  val boxRetriever = mock[Frs10xAccountsBoxRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }
 
 trait MockFrs102AccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestFrs102AccountsRetriever]
+  val boxRetriever = mock[Frs102AccountsBoxRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
+}
+
+trait MockFrsse2008AccountsRetriever extends MockitoSugar {
+  val boxRetriever = mock[MockFrsse2008AccountsRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }
 
 trait MockFrs105AccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestFrs105AccountsRetriever](RETURNS_SMART_NULLS)
+  val boxRetriever = mock[Frs105AccountsBoxRetriever](RETURNS_SMART_NULLS)
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }
 
 trait MockAbridgedAccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestAbridgedAccountsRetriever]
+  val boxRetriever = mock[AbridgedAccountsBoxRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }
 
 trait MockFullAccountsRetriever extends MockitoSugar {
-  val boxRetriever = mock[TestFullAccountsRetriever]
+  val boxRetriever = mock[FullAccountsBoxRetriever]
+  val filingAttributesBoxValueRetriever = mock[FilingAttributesBoxValueRetriever]
+  when(boxRetriever.filingAttributesBoxValueRetriever).thenReturn(filingAttributesBoxValueRetriever)
 }

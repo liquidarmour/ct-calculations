@@ -16,22 +16,40 @@
 
 package uk.gov.hmrc.ct.accounts.frs102
 
+import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, AC8023, ACQ8009}
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, AC8023, ACQ8003, ACQ8009}
+import uk.gov.hmrc.ct.accounts.{AC3, AC4, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling}
 
-class ACQ8009Spec extends WordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
+class ACQ8009Spec
+  extends WordSpec
+    with Matchers
+    with MockitoSugar
+    with BeforeAndAfterEach
+    with MockFrs10xAccountsRetriever {
 
-  val mockBoxRetriever = mock[MockableFrs10xBoxretrieverWithFilingAttributes]
+  override protected def beforeEach(): Unit = {
+    when (boxRetriever.ac3()).thenReturn (AC3(new LocalDate(2015, 4, 6)) )
+    when (boxRetriever.ac4()).thenReturn (AC4(new LocalDate(2016, 4, 5)) )
 
-  override def beforeEach = {
-    DirectorsMockSetup.setupDefaults(mockBoxRetriever)
+    // directors report enabled responses
+    when (filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn (CompaniesHouseFiling (true) )
+    when (filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn (HMRCFiling (true) )
+    when (filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn (MicroEntityFiling (true) )
+    when (boxRetriever.ac8021()).thenReturn (AC8021 (Some (true) ) )
+    when (boxRetriever.ac8023()).thenReturn (AC8023 (Some (true) ) )
+
+    // no appointments response
+    when (boxRetriever.acQ8003 () ).thenReturn (ACQ8003 (Some (false) ) )
+    when (boxRetriever.acQ8009 () ).thenReturn (ACQ8009 (Some (false) ) )
+    super.beforeEach()
   }
+
+
 
 
   "ACQ8009 should" should {
@@ -40,24 +58,24 @@ class ACQ8009Spec extends WordSpec with Matchers with MockitoSugar with BeforeAn
 
       val secretary = ACQ8009(Some(true))
 
-      secretary.validate(mockBoxRetriever) shouldBe empty
+      secretary.validate(boxRetriever) shouldBe empty
     }
 
     "validate as mandatory" in {
 
       val secretary = ACQ8009(None)
 
-      secretary.validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("ACQ8009"), "error.ACQ8009.required", None))
+      secretary.validate(boxRetriever) shouldBe Set(CtValidation(Some("ACQ8009"), "error.ACQ8009.required", None))
     }
 
     "no validate if no directors report" in {
 
-      when(mockBoxRetriever.ac8021()).thenReturn(AC8021(None))
-      when(mockBoxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
+      when(boxRetriever.ac8021()).thenReturn(AC8021(None))
+      when(boxRetriever.ac8023()).thenReturn(AC8023(Some(false)))
 
       val secretary = ACQ8009(None)
 
-      secretary.validate(mockBoxRetriever) shouldBe empty
+      secretary.validate(boxRetriever) shouldBe empty
     }
   }
 }

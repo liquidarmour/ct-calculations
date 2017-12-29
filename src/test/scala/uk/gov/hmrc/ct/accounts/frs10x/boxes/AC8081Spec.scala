@@ -18,18 +18,13 @@ package uk.gov.hmrc.ct.accounts.frs10x.boxes
 
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.ct.accounts.AccountStatementValidationFixture
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xAccountsBoxRetriever, Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever, Frs10xFilingQuestionsBoxRetriever}
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AccountStatementValidationFixture, MockFrs10xAccountsRetriever}
 
-
-trait MockRetriever extends Frs10xAccountsBoxRetriever with Frs10xDormancyBoxRetriever {
-  self: FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever =>
-}
-
-class AC8081Spec extends AccountStatementValidationFixture[Frs10xAccountsBoxRetriever with Frs10xDormancyBoxRetriever] with BeforeAndAfterEach {
-
-  override val boxRetriever = mock[MockRetriever] (RETURNS_SMART_NULLS)
+class AC8081Spec
+  extends AccountStatementValidationFixture[Frs10xAccountsBoxRetriever]
+    with BeforeAndAfterEach
+    with MockFrs10xAccountsRetriever{
 
   override def setupMocks = {
     when(boxRetriever.acq8999()).thenReturn(ACQ8999(None))

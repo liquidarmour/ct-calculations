@@ -17,209 +17,189 @@
 package uk.gov.hmrc.ct.ct600.accounts
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.frs10x.boxes.{Directors, _}
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.MockFrs10xAccountsRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.box.CtValidation
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 import uk.gov.hmrc.ct.{CompaniesHouseFiling, HMRCFiling, MicroEntityFiling, StatutoryAccountsFiling}
 
 
-class AC8023Spec extends WordSpec with MockitoSugar with Matchers {
-
-  private trait TestBoxRetriever extends Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever
+class AC8023Spec extends WordSpec with MockitoSugar with Matchers with MockFrs10xAccountsRetriever {
 
   "AC8023 validate" should {
     "for HMRC Only micro entity filing" when {
       "return errors when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.required"))
+        AC8023(None).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.required"))
       }
 
       "validate successfully when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set()
       }
 
       "validate successfully when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set()
       }
     }
 
     "for Joint micro entity filing" when {
       "return errors when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.required"))
+        AC8023(None).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.required"))
       }
 
       "validate successfully when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set()
       }
 
       "validate successfully when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set()
       }
     }
 
     "for CoHo Only micro entity filing" when {
       "validate successfully when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(None).validate(boxRetriever) shouldBe Set()
       }
 
       "cannot exist when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
 
       "cannot exist when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(true))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(false))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
     }
 
     "for HMRC Only statutory filing" when {
       "validate successfully when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(None).validate(boxRetriever) shouldBe Set()
       }
 
       "validate successfully when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
 
       "validate successfully when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(false))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
     }
 
     "for Joint statutory filing" when {
       "return errors when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(None).validate(boxRetriever) shouldBe Set()
       }
 
       "validate successfully when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
 
       "validate successfully when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(true))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
     }
 
     "for CoHo Only statutory filing" when {
       "validate successfully when AC8023 is empty" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(None).validate(mockBoxRetriever) shouldBe Set()
+        AC8023(None).validate(boxRetriever) shouldBe Set()
       }
 
       "cannot exist when AC8023 is true" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(true)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(true)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
 
       "cannot exist when AC8023 is false" in {
-        val mockBoxRetriever = mock[TestBoxRetriever]
-        when(mockBoxRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
-        when(mockBoxRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
-        when(mockBoxRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
-        when(mockBoxRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
+        when(filingAttributesBoxValueRetriever.hmrcFiling()).thenReturn(HMRCFiling(false))
+        when(filingAttributesBoxValueRetriever.companiesHouseFiling()).thenReturn(CompaniesHouseFiling(true))
+        when(filingAttributesBoxValueRetriever.microEntityFiling()).thenReturn(MicroEntityFiling(false))
+        when(filingAttributesBoxValueRetriever.statutoryAccountsFiling()).thenReturn(StatutoryAccountsFiling(true))
 
-        AC8023(Some(false)).validate(mockBoxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
+        AC8023(Some(false)).validate(boxRetriever) shouldBe Set(CtValidation(Some("AC8023"), "error.AC8023.cannot.exist"))
       }
     }
   }

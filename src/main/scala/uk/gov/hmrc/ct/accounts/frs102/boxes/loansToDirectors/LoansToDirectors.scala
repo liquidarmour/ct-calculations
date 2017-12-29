@@ -26,13 +26,13 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class LoansToDirectors(loans: List[LoanToDirector] = List.empty, ac7501: AC7501) extends CtBoxIdentifier(name = "Loans To Directors")
   with CtValue[LoansToDirectors]
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever with Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever] {
+  with ValidatableBox[Frs102AccountsBoxRetriever] {
 
   import CompoundBoxValidationHelper._
 
   override def value = this
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors (
       cannotExistErrorIf(!boxRetriever.ac7500().orFalse && (loans.nonEmpty || ac7501.value.nonEmpty)),
 
@@ -51,7 +51,7 @@ case class LoansToDirectors(loans: List[LoanToDirector] = List.empty, ac7501: AC
     this.copy(loans = loans.map(_.calculateAC309A()))
   }
 
-  def validateLoans(boxRetriever: Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever)(): Set[CtValidation] = {
+  def validateLoans(boxRetriever: Frs102AccountsBoxRetriever)(): Set[CtValidation] = {
     val loansErrorList = for ((loan, index) <- loans.zipWithIndex) yield {
       val errors = loan.validate(boxRetriever)
       errors.map(error => contextualiseError("LoansToDirectors", "loans", error, index))
@@ -86,13 +86,13 @@ case class LoanToDirector(uuid: String,
                           ac308A: AC308A,
                           ac309A: AC309A
                          ) extends CtBoxIdentifier(name = "LoanToDirector")
-  with ValidatableBox[Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever]
+  with ValidatableBox[Frs102AccountsBoxRetriever]
   with Input
   with CtValue[LoanToDirector] {
 
   override def value = throw new NotImplementedError("should never be used")
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever): Set[CtValidation] =
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] =
     collectErrors(
       ac304A.validate(boxRetriever),
       ac305A.validate(boxRetriever),

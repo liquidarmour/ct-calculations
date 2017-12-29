@@ -18,10 +18,12 @@ package uk.gov.hmrc.ct.accounts.frs10x.retriever
 
 import uk.gov.hmrc.ct.accounts.frs10x.boxes._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
 
-trait Frs10xDormancyBoxRetriever extends AccountsBoxRetriever {
-  self: FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever =>
+trait Frs10xDormancyBoxRetriever
+  extends BoxRetriever {
+
+  self: Frs10xAccountsBoxRetriever =>
 
   def acq8999(): ACQ8999
 
@@ -32,8 +34,4 @@ trait Frs10xDormancyBoxRetriever extends AccountsBoxRetriever {
   def acq8990(): ACQ8990
 
   def ac8089(): AC8089
-
-  def notTradedStatementRequired(): NotTradedStatementRequired = NotTradedStatementRequired.calculate(this)
-
-  def profitAndLossStatementRequired(): ProfitAndLossStatementRequired = ProfitAndLossStatementRequired.calculate(this)
 }

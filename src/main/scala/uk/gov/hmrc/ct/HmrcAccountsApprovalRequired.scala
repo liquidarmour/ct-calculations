@@ -16,26 +16,37 @@
 
 package uk.gov.hmrc.ct
 
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDirectorsBoxRetriever, Frs10xFilingQuestionsBoxRetriever}
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xAccountsBoxRetriever
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.{Calculated, CtBoolean, CtBoxIdentifier}
+import uk.gov.hmrc.ct.computations.HmrcAccountingPeriod
 import uk.gov.hmrc.ct.version.CoHoVersions.{FRS102, FRS105}
 import uk.gov.hmrc.ct.version.calculations.ReturnVersionsCalculator
 import uk.gov.hmrc.ct.version.{CoHoEquivalent, HmrcAccounts, Return}
 
 case class HmrcAccountsApprovalRequired(value: Boolean) extends CtBoxIdentifier("True if approval required for HMRC version of accounts requires") with CtBoolean
 
-object HmrcAccountsApprovalRequired extends Calculated[HmrcAccountsApprovalRequired, FilingAttributesBoxValueRetriever] with HmrcAccountsApprovalRequiredCalculator {
+object HmrcAccountsApprovalRequired
+  extends HmrcAccountsApprovalRequiredCalculator(ReturnVersionsCalculator) {
 
-  override def calculate(boxRetriever: FilingAttributesBoxValueRetriever): HmrcAccountsApprovalRequired = calculateApprovalRequired(boxRetriever)
+  def calculate(boxRetriever: AccountsBoxRetriever,
+                         hmrcAccountingPeriod: Option[HmrcAccountingPeriod],
+                         charityAllExempt: Option[Boolean],
+                         charityNoIncome: Option[Boolean]): HmrcAccountsApprovalRequired =
+    calculateApprovalRequired(boxRetriever = boxRetriever,
+                              hmrcAccountingPeriod = hmrcAccountingPeriod,
+                              charityAllExempt = charityAllExempt,
+                              charityNoIncome = charityNoIncome)
 }
 
-trait HmrcAccountsApprovalRequiredCalculator extends ReturnVersionsCalculator {
+case class HmrcAccountsApprovalRequiredCalculator(returnVersionsCalculator: ReturnVersionsCalculator) {
 
+  def calculateApprovalRequired(boxRetriever: AccountsBoxRetriever,
+                                hmrcAccountingPeriod: Option[HmrcAccountingPeriod],
+                                charityAllExempt: Option[Boolean],
+                                charityNoIncome: Option[Boolean]): HmrcAccountsApprovalRequired = {
 
-  def calculateApprovalRequired(boxRetriever: FilingAttributesBoxValueRetriever): HmrcAccountsApprovalRequired = {
-
-    val returns = doCalculation(boxRetriever)
+    val returns = returnVersionsCalculator.returns(boxRetriever, hmrcAccountingPeriod, charityAllExempt, charityNoIncome)
     val hmrcAccountsReturn = findHmrcAccountsType(returns)
     val coHoAccountReturn = hmrcAccountsReturn.flatMap { hmrc =>
       findMatchingCohoAccounts(returns, hmrc)
@@ -54,20 +65,20 @@ trait HmrcAccountsApprovalRequiredCalculator extends ReturnVersionsCalculator {
     HmrcAccountsApprovalRequired(approvalRequired)
   }
 
-  private def hmrcApprovalRequiredForFRS102(boxRetriever: FilingAttributesBoxValueRetriever) = {
+  private def hmrcApprovalRequiredForFRS102(boxRetriever: AccountsBoxRetriever) = {
 
     val (drToCoHo, plToCoHo) = boxRetriever match {
-      case br: FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever => (br.ac8021().orFalse, br.acq8161().orFalse)
+      case br: Frs10xAccountsBoxRetriever => (br.ac8021().orFalse, br.acq8161().orFalse)
       case _ => (true, true)
     }
 
     !drToCoHo || !plToCoHo
   }
 
-  private def hmrcApprovalRequiredForFRS105(boxRetriever: FilingAttributesBoxValueRetriever) = {
+  private def hmrcApprovalRequiredForFRS105(boxRetriever: AccountsBoxRetriever) = {
 
     val (drToHmrc, drToCoHo, plToCoHo) = boxRetriever match {
-      case br: FilingAttributesBoxValueRetriever with Frs10xFilingQuestionsBoxRetriever with Frs10xDirectorsBoxRetriever => (br.ac8023().orFalse, br.ac8021().orFalse, br.acq8161().orFalse)
+      case br: Frs10xAccountsBoxRetriever => (br.ac8023().orFalse, br.ac8021().orFalse, br.acq8161().orFalse)
       case _ => (true, true, true)
     }
 

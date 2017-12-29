@@ -17,12 +17,11 @@
 package uk.gov.hmrc.ct.accounts.frs102.boxes.loansToDirectors
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import uk.gov.hmrc.ct.accounts.{AccountsFreeTextValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.accounts.frs102.retriever.Frs102AccountsBoxRetriever
 import uk.gov.hmrc.ct.accounts.frs10x.boxes.{AC8021, Director, Directors}
-import uk.gov.hmrc.ct.accounts.frs10x.retriever.Frs10xDirectorsBoxRetriever
+import uk.gov.hmrc.ct.accounts.{AccountsFreeTextValidationFixture, MockFrs102AccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
 import uk.gov.hmrc.ct.box.ValidatableBox._
 
@@ -30,7 +29,7 @@ class AC304ASpec extends WordSpec
   with MockitoSugar
   with Matchers
   with MockFrs102AccountsRetriever
-  with AccountsFreeTextValidationFixture[Frs102AccountsBoxRetriever with Frs10xDirectorsBoxRetriever]
+  with AccountsFreeTextValidationFixture[Frs102AccountsBoxRetriever]
   with BeforeAndAfterEach {
 
   override protected def beforeEach(): Unit = {
@@ -38,7 +37,10 @@ class AC304ASpec extends WordSpec
     when(boxRetriever.directors()).thenReturn(Directors(List(Director("1", "Test dude one"), Director("2", "Test dude two"))))
   }
 
-  testTextFieldValidation("AC304A", AC304A, testLowerLimit = Some(1), testUpperLimit = Some(StandardCohoNameFieldLimit), testMandatory = Some(true))
+  testTextFieldValidation("AC304A", AC304A,
+    testLowerLimit = Some(1),
+    testUpperLimit = Some(StandardCohoNameFieldLimit),
+    testMandatory = Some(true))
 
   "AC304A should" should {
 

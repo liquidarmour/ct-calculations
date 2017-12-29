@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.ct.accounts.retriever
 
+import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
 import uk.gov.hmrc.ct.accounts._
+import uk.gov.hmrc.ct.accounts.approval.boxes.{CompaniesHouseAccountsApproval, HmrcAccountsApproval}
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
+import uk.gov.hmrc.ct.computations.HmrcAccountingPeriod
 
-trait AccountsBoxRetriever extends BoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class AccountsBoxRetriever(val filingAttributesBoxValueRetriever: FilingAttributesBoxValueRetriever)
+  extends BoxRetriever {
 
   def companyAddress(): CompanyAddress
 
@@ -38,4 +40,23 @@ trait AccountsBoxRetriever extends BoxRetriever {
   def ac205(): AC205
 
   def ac206(): AC206
+
+  def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired =
+    CoHoAccountsApprovalRequired(filingAttributesBoxValueRetriever.companiesHouseFiling())
+
+  def accountingPeriod(): Option[HmrcAccountingPeriod]
+
+  def charityAllExempt(): Option[Boolean]
+
+  def charityNoIncome(): Option[Boolean]
+
+  def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired =
+    HmrcAccountsApprovalRequired.calculate(this,
+      hmrcAccountingPeriod = accountingPeriod(),
+      charityAllExempt = charityAllExempt(),
+      charityNoIncome = charityNoIncome())
+
+  def companiesHouseAccountsApproval(): CompaniesHouseAccountsApproval
+
+  def hmrcAccountsApproval(): HmrcAccountsApproval
 }

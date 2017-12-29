@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.ct.ct600j.v2.retriever
 
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.ct600j.v2.TAQ01
 
-trait CT600JBoxRetriever {
+trait CT600JBoxRetriever extends BoxRetriever {
 
   def taq01(): TAQ01
 }

@@ -27,7 +27,7 @@ case class B45(value: BigDecimal) extends CtBoxIdentifier(name = "Rate Of Tax") 
 object B45 extends CorporationTaxCalculator with Calculated[B45, CT600BoxRetriever] {
 
   override def calculate(fieldValueRetriever: CT600BoxRetriever): B45 =
-    B45(rateOfTaxFy1(HmrcAccountingPeriod(fieldValueRetriever.cp1(),fieldValueRetriever.cp2()),
+    B45(rateOfTaxFy1(HmrcAccountingPeriod(fieldValueRetriever.computationsBoxRetriever.cp1(),fieldValueRetriever.computationsBoxRetriever.cp2()),
                      fieldValueRetriever.b37(),
                      fieldValueRetriever.b42(),
                      fieldValueRetriever.b39(),

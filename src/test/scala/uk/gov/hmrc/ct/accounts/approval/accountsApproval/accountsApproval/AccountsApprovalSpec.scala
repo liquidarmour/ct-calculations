@@ -18,17 +18,14 @@ package uk.gov.hmrc.ct.accounts.approval.accountsApproval.accountsApproval
 
 import org.joda.time.LocalDate
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
 import uk.gov.hmrc.ct.accounts.approval.boxes._
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.accounts.{AC4, TestAccountsRetriever}
+import uk.gov.hmrc.ct.accounts.{AC4, MockAccountsRetriever, MockFrs10xAccountsRetriever}
 import uk.gov.hmrc.ct.box.CtValidation
+import uk.gov.hmrc.ct.{CoHoAccountsApprovalRequired, HmrcAccountsApprovalRequired}
 
-class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar {
-
-  val boxRetriever = mock[TestAccountsRetriever]
+class AccountsApprovalSpec extends WordSpec with Matchers with MockitoSugar with MockFrs10xAccountsRetriever {
 
   val Date = Some(new LocalDate())
   val True = Some(true)

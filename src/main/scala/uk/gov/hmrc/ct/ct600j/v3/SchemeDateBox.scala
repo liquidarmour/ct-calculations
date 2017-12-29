@@ -20,7 +20,10 @@ import org.joda.time.LocalDate
 import uk.gov.hmrc.ct.box._
 import uk.gov.hmrc.ct.ct600j.v3.retriever.CT600JBoxRetriever
 
-abstract class SchemeDateBox extends CtBoxIdentifier("Accounting period in which the expected advantage arises") with CtOptionalDate with Input with ValidatableBox[CT600JBoxRetriever] {
+abstract class SchemeDateBox extends CtBoxIdentifier("Accounting period in which the expected advantage arises")
+  with CtOptionalDate
+  with Input
+  with ValidatableBox[CT600JBoxRetriever] {
 
   val earliestSchemeDate = new LocalDate(2004, 3, 17)
 

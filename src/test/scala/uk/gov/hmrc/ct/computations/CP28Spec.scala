@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ct.accounts.approval.retriever
+package uk.gov.hmrc.ct.computations
 
-import uk.gov.hmrc.ct.accounts.approval.boxes.HmrcAccountsApproval
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
-import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.ct.BoxValidationFixture
+import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 
-trait HmrcAccountsApprovalBoxRetriever extends AccountsBoxRetriever {
-  self: FilingAttributesBoxValueRetriever =>
+class CP28Spec extends WordSpec with MockitoSugar with Matchers with BoxValidationFixture[ComputationsBoxRetriever] {
 
-  def hmrcAccountsApproval(): HmrcAccountsApproval
+  val boxRetriever = mock[ComputationsBoxRetriever]
+
+  testBoxIsZeroOrPositive("CP28", CP28.apply)
+
 }

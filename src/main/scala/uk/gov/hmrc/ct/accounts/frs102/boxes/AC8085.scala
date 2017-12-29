@@ -23,10 +23,10 @@ import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 case class AC8085(value: Option[Boolean]) extends CtBoxIdentifier(name = "These accounts have been prepared in accordance with the provisions applicable to companies subject to the small companies regime.")
   with CtOptionalBoolean
   with Input
-  with ValidatableBox[Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever]
+  with ValidatableBox[Frs102AccountsBoxRetriever]
   with Validators {
 
-  override def validate(boxRetriever: Frs102AccountsBoxRetriever with FilingAttributesBoxValueRetriever): Set[CtValidation] = {
+  override def validate(boxRetriever: Frs102AccountsBoxRetriever): Set[CtValidation] = {
     collectErrors(
       validateAsMandatory(this)
     )

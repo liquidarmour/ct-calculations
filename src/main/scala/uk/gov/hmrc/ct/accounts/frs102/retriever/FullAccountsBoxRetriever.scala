@@ -17,11 +17,12 @@
 package uk.gov.hmrc.ct.accounts.frs102.retriever
 
 import uk.gov.hmrc.ct.accounts.frs102.boxes._
+import uk.gov.hmrc.ct.accounts.frs10x.retriever.{Frs10xDirectorsBoxRetriever, Frs10xDormancyBoxRetriever}
+import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.FilingAttributesBoxValueRetriever
 
-trait FullAccountsBoxRetriever extends Frs102AccountsBoxRetriever {
-
-  self: FilingAttributesBoxValueRetriever =>
+abstract class FullAccountsBoxRetriever(filingAttributesBoxRetriever: FilingAttributesBoxValueRetriever)
+  extends Frs102AccountsBoxRetriever(filingAttributesBoxRetriever) {
 
   def ac13(): AC13
 

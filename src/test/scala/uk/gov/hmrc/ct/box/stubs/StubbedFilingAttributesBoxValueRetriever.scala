@@ -48,7 +48,7 @@ trait StubbedFilingAttributesBoxValueRetriever extends FilingAttributesBoxValueR
 
   override def countryOfRegistration(): CountryOfRegistration = ???
 
-  override def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired = ???
-
-  override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired = ???
+//  override def coHoAccountsApprovalRequired(): CoHoAccountsApprovalRequired = ???
+//FilingAttributesBoxValueRetrieverSpec
+//  override def hmrcAccountsApprovalRequired(): HmrcAccountsApprovalRequired = ???
 }

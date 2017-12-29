@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.ct.ct600a.v2.retriever
 
-import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
+import uk.gov.hmrc.ct.box.retriever.BoxRetriever
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600a.v2._
 
-trait CT600ABoxRetriever extends ComputationsBoxRetriever {
-
-  self: AccountsBoxRetriever =>
+abstract class CT600ABoxRetriever(val computationsBoxRetriever: ComputationsBoxRetriever) extends BoxRetriever {
 
   def lpq03(): LPQ03
 

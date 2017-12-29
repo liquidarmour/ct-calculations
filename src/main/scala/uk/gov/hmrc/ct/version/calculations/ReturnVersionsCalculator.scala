@@ -20,6 +20,7 @@ import org.joda.time.LocalDate
 import uk.gov.hmrc.ct._
 import uk.gov.hmrc.ct.accounts.retriever.AccountsBoxRetriever
 import uk.gov.hmrc.ct.box.retriever.{BoxRetriever, FilingAttributesBoxValueRetriever}
+import uk.gov.hmrc.ct.computations.HmrcAccountingPeriod
 import uk.gov.hmrc.ct.computations.retriever.ComputationsBoxRetriever
 import uk.gov.hmrc.ct.ct600e.v2.retriever.{CT600EBoxRetriever => V2CT600EBoxRetriever}
 import uk.gov.hmrc.ct.ct600e.v3.retriever.{CT600EBoxRetriever => V3CT600EBoxRetriever}
@@ -35,67 +36,23 @@ object ReturnVersionsCalculator extends ReturnVersionsCalculator
 
 trait ReturnVersionsCalculator {
 
-  def doCalculation[A <: BoxRetriever](boxRetriever: A): Set[Return] = {
-    boxRetriever match {
-
-      case br: V3CT600EBoxRetriever with AccountsBoxRetriever with FilingAttributesBoxValueRetriever =>
-        calculateReturnVersions(poaStartDate = br.ac3().value,
-                                apStartDate = Some(br.e3().value),
-                                apEndDate = Some(br.e4().value),
-                                coHoFiling = br.companiesHouseFiling(),
-                                hmrcFiling = br.hmrcFiling(),
-                                microEntityFiling = br.microEntityFiling(),
-                                statutoryAccountsFiling = br.statutoryAccountsFiling(),
-                                abridgedFiling = br.abridgedFiling(),
-                                abbreviatedAccountsFiling = br.abbreviatedAccountsFiling(),
-                                companyType = br.companyType(),
-                                charityAllExempt = br.e20().value,
-                                charityNoIncome = v3CharityNoIncome(br))
-
-      case br: V2CT600EBoxRetriever with AccountsBoxRetriever with FilingAttributesBoxValueRetriever =>
-        calculateReturnVersions(poaStartDate = br.ac3().value,
-                                apStartDate = Some(br.e1021().value),
-                                apEndDate = Some(br.e1022().value),
-                                coHoFiling = br.companiesHouseFiling(),
-                                hmrcFiling = br.hmrcFiling(),
-                                microEntityFiling = br.microEntityFiling(),
-                                statutoryAccountsFiling = br.statutoryAccountsFiling(),
-                                abridgedFiling = br.abridgedFiling(),
-                                abbreviatedAccountsFiling = br.abbreviatedAccountsFiling(),
-                                companyType = br.companyType(),
-                                charityAllExempt = br.e1011().value,
-                                charityNoIncome = v2CharityNoIncome(br))
-
-      case br: ComputationsBoxRetriever with AccountsBoxRetriever with FilingAttributesBoxValueRetriever =>
-        calculateReturnVersions(poaStartDate = br.ac3().value,
-                                apStartDate = Some(br.cp1().value),
-                                apEndDate = Some(br.cp2().value),
-                                coHoFiling = br.companiesHouseFiling(),
-                                hmrcFiling = br.hmrcFiling(),
-                                microEntityFiling = br.microEntityFiling(),
-                                statutoryAccountsFiling = br.statutoryAccountsFiling(),
-                                abridgedFiling = br.abridgedFiling(),
-                                abbreviatedAccountsFiling = br.abbreviatedAccountsFiling(),
-                                companyType = br.companyType(),
-                                charityAllExempt = None,
-                                charityNoIncome = None)
-
-      case br: FilingAttributesBoxValueRetriever with AccountsBoxRetriever =>
-        calculateReturnVersions(poaStartDate = br.ac3().value,
-                                apStartDate = None,
-                                apEndDate = None,
-                                coHoFiling = br.companiesHouseFiling(),
-                                hmrcFiling = br.hmrcFiling(),
-                                microEntityFiling = br.microEntityFiling(),
-                                statutoryAccountsFiling = br.statutoryAccountsFiling(),
-                                abridgedFiling = br.abridgedFiling(),
-                                abbreviatedAccountsFiling = br.abbreviatedAccountsFiling(),
-                                companyType = br.companyType(),
-                                charityAllExempt = None,
-                                charityNoIncome = None)
-
-      case _ => throw new IllegalArgumentException("The box retriever passed in must implement FilingAttributesBoxValueRetriever")
-    }
+  def returns(accountsBoxRetriever: AccountsBoxRetriever,
+              hmrcAccountingPeriod: Option[HmrcAccountingPeriod],
+              charityAllExempt: Option[Boolean],
+              charityNoIncome: Option[Boolean]): Set[Return] = {
+    import accountsBoxRetriever.filingAttributesBoxValueRetriever._
+    calculateReturnVersions(poaStartDate = accountsBoxRetriever.ac3().value,
+                            apStartDate = hmrcAccountingPeriod.map(_.start.value),
+                            apEndDate = hmrcAccountingPeriod.map(_.end.value),
+                            coHoFiling = companiesHouseFiling(),
+                            hmrcFiling = hmrcFiling(),
+                            microEntityFiling = microEntityFiling(),
+                            statutoryAccountsFiling = statutoryAccountsFiling(),
+                            abridgedFiling = abridgedFiling(),
+                            abbreviatedAccountsFiling = abbreviatedAccountsFiling(),
+                            companyType = companyType(),
+                            charityAllExempt = charityAllExempt,
+                            charityNoIncome = charityNoIncome)
   }
 
   private def ct600ForLimitedBySharesCharity(ct600Version: Option[Version], charityAllExempt: Option[Boolean], charityNoIncome: Option[Boolean]) = {
@@ -147,16 +104,17 @@ trait ReturnVersionsCalculator {
 
 
   protected def calculateReturnVersions(poaStartDate: LocalDate,
-                              apStartDate: Option[LocalDate], apEndDate: Option[LocalDate],
-                              coHoFiling: CompaniesHouseFiling,
-                              hmrcFiling: HMRCFiling,
-                              microEntityFiling: MicroEntityFiling,
-                              statutoryAccountsFiling: StatutoryAccountsFiling,
-                              abridgedFiling: AbridgedFiling,
-                              abbreviatedAccountsFiling: AbbreviatedAccountsFiling,
-                              companyType: FilingCompanyType,
-                              charityAllExempt: Option[Boolean],
-                              charityNoIncome: Option[Boolean]): Set[Return] = {
+                                        apStartDate: Option[LocalDate],
+                                        apEndDate: Option[LocalDate],
+                                        coHoFiling: CompaniesHouseFiling,
+                                        hmrcFiling: HMRCFiling,
+                                        microEntityFiling: MicroEntityFiling,
+                                        statutoryAccountsFiling: StatutoryAccountsFiling,
+                                        abridgedFiling: AbridgedFiling,
+                                        abbreviatedAccountsFiling: AbbreviatedAccountsFiling,
+                                        companyType: FilingCompanyType,
+                                        charityAllExempt: Option[Boolean],
+                                        charityNoIncome: Option[Boolean]): Set[Return] = {
 
     if (isIllegalArguments(companyType.value, hmrcFiling.value, coHoFiling.value, microEntityFiling.value)) {
       throw new IllegalArgumentException(s"")
@@ -253,7 +211,9 @@ trait ReturnVersionsCalculator {
 
   private def computationsVersionBasedOnDate(apStartDate: LocalDate, apEndDate: LocalDate): Version = {
     (apStartDate, apEndDate) match {
-      case (_, endDate) if endDate > LocalDate.parse("2017-03-31") =>
+      case (_ , endDate) if endDate > LocalDate.parse("2017-03-31") =>
+        ComputationsCT20171001
+      case (startDate, _) if startDate >= LocalDate.parse("2016-01-01") =>
         ComputationsCT20161001
       case (startDate, _) if startDate > LocalDate.parse("2015-03-31") =>
         ComputationsCT20150201
